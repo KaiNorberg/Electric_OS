@@ -2,10 +2,36 @@
 #include <efilib.h>
 #include <elf.h>
 
+#define PSF1_MAGIC0 0x36
+#define PSF1_MAGIC1 0x04
+
 typedef unsigned long long size_t;
+
+typedef struct
+{
+	void* Base;
+	size_t Size;
+	unsigned int Width;
+	unsigned int Height;
+	unsigned int PixelsPerScanline;
+} Framebuffer;
+
+typedef struct
+{
+	unsigned char magic[2];
+	unsigned char mode;
+	unsigned char charsize;
+} PSF1_HEADER;
+
+typedef struct
+{
+	PSF1_HEADER* psf1_header;
+	void* glyphBuffer;
+} PSF1_FONT;
 
 EFI_HANDLE ImageHandle;
 EFI_SYSTEM_TABLE* SystemTable;
+Framebuffer framebuffer;
 
 EFI_FILE* LoadFile(EFI_FILE* Directory, CHAR16* Path)
 {
@@ -30,6 +56,86 @@ EFI_FILE* LoadFile(EFI_FILE* Directory, CHAR16* Path)
 	}
 
 	return LoadedFile;
+}
+
+PSF1_FONT* LoadPSF1Font(EFI_FILE* Directory, CHAR16* Path)
+{
+	Print(L"[..] Loading font\r");
+
+	EFI_FILE* Font = LoadFile(Directory, Path);
+
+	if (Font == NULL)
+	{
+		Print(L"[ER] Font failed to load\n\r");
+		return NULL;
+	}
+
+	PSF1_HEADER* FontHeader;
+	SystemTable->BootServices->AllocatePool(EfiLoaderData, sizeof(PSF1_HEADER), (void**)&FontHeader);
+	UINTN size = sizeof(PSF1_HEADER);
+	Font->Read(Font, &size, FontHeader);
+
+	if (FontHeader->magic[0] != PSF1_MAGIC0 || FontHeader->magic[1] != PSF1_MAGIC1)
+	{
+		Print(L"[ER] Invalid font loaded\n\r");
+		return NULL;
+	}
+
+	UINTN GlyphBufferSize = FontHeader->charsize * 256;
+	if (FontHeader->mode == 1)
+	{
+		GlyphBufferSize = FontHeader->charsize * 512;
+	}
+
+	void* GlyphBuffer;
+	{
+		Font->SetPosition(Font, sizeof(PSF1_HEADER));
+		SystemTable->BootServices->AllocatePool(EfiLoaderData, GlyphBufferSize, (void**)&GlyphBuffer);
+		Font->Read(Font, &GlyphBufferSize, GlyphBuffer);
+	}
+
+	PSF1_FONT* FinishedFont;
+	SystemTable->BootServices->AllocatePool(EfiLoaderData, sizeof(PSF1_FONT), (void**)&FinishedFont);
+
+	FinishedFont->psf1_header = FontHeader;
+	FinishedFont->glyphBuffer = GlyphBuffer;
+
+	Print(L"[OK] Font loaded   		\n\r");
+	Print(L"FONT INFO\n\r");
+	Print(L"Char size: %d\n\r", FinishedFont->psf1_header->charsize);
+
+	return FinishedFont;
+}
+
+void InitializeGOP()
+{
+	EFI_GUID GOP_GUID = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
+	EFI_GRAPHICS_OUTPUT_PROTOCOL* GOP;
+	EFI_STATUS Status = uefi_call_wrapper(BS->LocateProtocol, 3, &GOP_GUID, NULL, (void**)&GOP);
+
+	Print(L"[..] Initializing GOP\r");
+	if (EFI_ERROR(Status))
+	{
+		Print(L"[ER] GOP Failed   		\n\r");
+		return;
+	}
+	else
+	{
+		Print(L"[OK] GOP initialized   \n\r");
+	}
+
+	framebuffer.Base = (void*)GOP->Mode->FrameBufferBase;
+	framebuffer.Size = GOP->Mode->FrameBufferSize;
+	framebuffer.Width = GOP->Mode->Info->HorizontalResolution;
+	framebuffer.Height = GOP->Mode->Info->VerticalResolution;
+	framebuffer.PixelsPerScanline = GOP->Mode->Info->PixelsPerScanLine;
+
+	Print(L"BUFFER INFO\n\r");
+	Print(L"Base: 0x%x\n\r", framebuffer.Base);
+	Print(L"Size: 0x%x\n\r", framebuffer.Size);
+	Print(L"Width: %d\n\r", framebuffer.Width);
+	Print(L"Height: %d\n\r", framebuffer.Height);
+	Print(L"PixelsPerScanline: %d\n\r", framebuffer.PixelsPerScanline);
 }
 
 int memcmp(const void* Ptr1, const void* Ptr2, size_t Size)
@@ -122,11 +228,13 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 		}
 	}
 
+	InitializeGOP();
+
+	PSF1_FONT* NewFont = LoadPSF1Font(NULL, L"zap-light16.psf");
+
 	Print(L"Entering kernel...\n\r");
-
-	int (*KernelStart)() = ((__attribute__((sysv_abi)) int (*)()) Header.e_entry);
-
-	Print(L"Kernel return: %d\n\r", KernelStart());
+	void (*KernelStart)(Framebuffer*, PSF1_FONT*) = ((__attribute__((sysv_abi)) void (*)(Framebuffer*, PSF1_FONT*)) Header.e_entry);
+	KernelStart(&framebuffer, NewFont);
 
 	return EFI_SUCCESS; // Exit the UEFI application
 }
