@@ -9,7 +9,7 @@ typedef unsigned long long size_t;
 
 typedef struct
 {
-	void* Base;
+	unsigned int* Base;
 	size_t Size;
 	unsigned int Width;
 	unsigned int Height;
@@ -25,13 +25,56 @@ typedef struct
 
 typedef struct
 {
-	PSF1_HEADER* psf1_header;
+	PSF1_HEADER* psf1_Header;
 	void* glyphBuffer;
 } PSF1_FONT;
 
 EFI_HANDLE ImageHandle;
 EFI_SYSTEM_TABLE* SystemTable;
 Framebuffer framebuffer;
+
+int memcmp(const void* aptr, const void* bptr, size_t n){
+	const unsigned char* a = aptr, *b = bptr;
+	for (size_t i = 0; i < n; i++){
+		if (a[i] < b[i]) return -1;
+		else if (a[i] > b[i]) return 1;
+	}
+	return 0;
+}
+
+Framebuffer* InitializeGOP()
+{
+	EFI_GUID GOP_GUID = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
+	EFI_GRAPHICS_OUTPUT_PROTOCOL* GOP;
+	EFI_STATUS Status = uefi_call_wrapper(BS->LocateProtocol, 3, &GOP_GUID, NULL, (void**)&GOP);
+
+	Print(L"[..] Initializing GOP\r");
+	if (EFI_ERROR(Status))
+	{
+		Print(L"[ER] GOP Failed   		\n\r");
+		return NULL;
+	}
+	else
+	{
+		Print(L"[OK] GOP initialized   \n\r");
+	}
+
+	framebuffer.Base = (unsigned int*)GOP->Mode->FrameBufferBase;
+	framebuffer.Size = GOP->Mode->FrameBufferSize;
+	framebuffer.Width = GOP->Mode->Info->HorizontalResolution;
+	framebuffer.Height = GOP->Mode->Info->VerticalResolution;
+	framebuffer.PixelsPerScanline = GOP->Mode->Info->PixelsPerScanLine;
+
+	Print(L"BUFFER INFO\n\r");
+	Print(L"Base: 0x%x\n\r", framebuffer.Base);
+	Print(L"Size: 0x%x\n\r", framebuffer.Size);
+	Print(L"Width: %d\n\r", framebuffer.Width);
+	Print(L"Height: %d\n\r", framebuffer.Height);
+	Print(L"PixelsPerScanline: %d\n\r", framebuffer.PixelsPerScanline);
+	Print(L"END");
+
+	return &framebuffer;
+}
 
 EFI_FILE* LoadFile(EFI_FILE* Directory, CHAR16* Path)
 {
@@ -97,65 +140,25 @@ PSF1_FONT* LoadPSF1Font(EFI_FILE* Directory, CHAR16* Path)
 	PSF1_FONT* FinishedFont;
 	SystemTable->BootServices->AllocatePool(EfiLoaderData, sizeof(PSF1_FONT), (void**)&FinishedFont);
 
-	FinishedFont->psf1_header = FontHeader;
-	FinishedFont->glyphBuffer = GlyphBuffer;
+	FinishedFont->psf1_Header = FontHeader;
+	FinishedFont->glyphBuffer = (char*)GlyphBuffer;
 
 	Print(L"[OK] Font loaded   		\n\r");
 	Print(L"FONT INFO\n\r");
-	Print(L"Char size: %d\n\r", FinishedFont->psf1_header->charsize);
+	Print(L"Char size: %d\n\r", FinishedFont->psf1_Header->charsize);
+	Print(L"END");
 
 	return FinishedFont;
 }
 
-void InitializeGOP()
+typedef struct
 {
-	EFI_GUID GOP_GUID = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
-	EFI_GRAPHICS_OUTPUT_PROTOCOL* GOP;
-	EFI_STATUS Status = uefi_call_wrapper(BS->LocateProtocol, 3, &GOP_GUID, NULL, (void**)&GOP);
-
-	Print(L"[..] Initializing GOP\r");
-	if (EFI_ERROR(Status))
-	{
-		Print(L"[ER] GOP Failed   		\n\r");
-		return;
-	}
-	else
-	{
-		Print(L"[OK] GOP initialized   \n\r");
-	}
-
-	framebuffer.Base = (void*)GOP->Mode->FrameBufferBase;
-	framebuffer.Size = GOP->Mode->FrameBufferSize;
-	framebuffer.Width = GOP->Mode->Info->HorizontalResolution;
-	framebuffer.Height = GOP->Mode->Info->VerticalResolution;
-	framebuffer.PixelsPerScanline = GOP->Mode->Info->PixelsPerScanLine;
-
-	Print(L"BUFFER INFO\n\r");
-	Print(L"Base: 0x%x\n\r", framebuffer.Base);
-	Print(L"Size: 0x%x\n\r", framebuffer.Size);
-	Print(L"Width: %d\n\r", framebuffer.Width);
-	Print(L"Height: %d\n\r", framebuffer.Height);
-	Print(L"PixelsPerScanline: %d\n\r", framebuffer.PixelsPerScanline);
-}
-
-int memcmp(const void* Ptr1, const void* Ptr2, size_t Size)
-{
-	const unsigned char* P1 = Ptr1, *P2 = Ptr2;
-
-	for (size_t i = 0; i < Size; i++)
-	{
-		if (P1[i] < P2[i])
-		{
-			return -1;
-		}
-		else if (P1[i] > P2[i])
-		{
-			return 1;
-		}
-	}
-
-	return 0;
-}
+	Framebuffer* framebuffer;
+	PSF1_FONT* psf1_Font;
+	EFI_MEMORY_DESCRIPTOR* mMap;
+	UINTN mMapSize;
+	UINTN mMapDescSize;
+} BootInfo;
 
 EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 {
@@ -164,6 +167,7 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 
 	InitializeLib(ImageHandle, SystemTable);
 
+	//Load kernel
 	Print(L"[..] Kernel loading\r");
 	EFI_FILE* Kernel = LoadFile(NULL, L"kernel.elf");
 	if (Kernel == NULL)
@@ -174,7 +178,6 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 	{
 		Print(L"[OK] Kernel load   \n\r");
 	}
-
 	Elf64_Ehdr Header;
 	{
 		UINTN FileInfoSize;
@@ -186,7 +189,6 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 		UINTN Size = sizeof(Header);
 		Kernel->Read(Kernel, &Size, &Header);
 	}
-
 	Print(L"[..] Checking kernel format\r");
 	if (memcmp(&Header.e_ident[EI_MAG0], ELFMAG, SELFMAG) != 0 ||
 		Header.e_ident[EI_CLASS] != ELFCLASS64 ||
@@ -200,7 +202,6 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 	{
 		Print(L"[OK] Kernal format         \n\r");
 	}
-
 	Elf64_Phdr* phdrs;
 	{
 		Kernel->SetPosition(Kernel, Header.e_phoff);
@@ -209,7 +210,6 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 		SystemTable->BootServices->AllocatePool(EfiLoaderData, size, (void**)&phdrs);
 		Kernel->Read(Kernel, &size, phdrs);
 	}
-
 	for (Elf64_Phdr* phdr = phdrs; (char*)phdr < (char*)phdrs + Header.e_phnum * Header.e_phentsize; phdr = (Elf64_Phdr*)((char*)phdr + Header.e_phentsize))
 	{
 		switch (phdr->p_type)
@@ -228,13 +228,33 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 		}
 	}
 
-	InitializeGOP();
+	PSF1_FONT* newFont = LoadPSF1Font(NULL, L"zap-light16.psf");
+	Framebuffer* newBuffer = InitializeGOP();
 
-	PSF1_FONT* NewFont = LoadPSF1Font(NULL, L"zap-light16.psf");
+	EFI_MEMORY_DESCRIPTOR* Map = NULL;
+	UINTN MapSize, MapKey;
+	UINTN DescriptorSize;
+	UINT32 DescriptorVersion;
+	{
 
-	Print(L"Entering kernel...\n\r");
-	void (*KernelStart)(Framebuffer*, PSF1_FONT*) = ((__attribute__((sysv_abi)) void (*)(Framebuffer*, PSF1_FONT*)) Header.e_entry);
-	KernelStart(&framebuffer, NewFont);
+		SystemTable->BootServices->GetMemoryMap(&MapSize, Map, &MapKey, &DescriptorSize, &DescriptorVersion);
+		SystemTable->BootServices->AllocatePool(EfiLoaderData, MapSize, (void**)&Map);
+		SystemTable->BootServices->GetMemoryMap(&MapSize, Map, &MapKey, &DescriptorSize, &DescriptorVersion);
+
+	}
+
+	void (*KernelStart)(BootInfo*) = ((__attribute__((sysv_abi)) void (*)(BootInfo*) ) Header.e_entry);
+
+	BootInfo bootInfo;
+	bootInfo.framebuffer = newBuffer;
+	bootInfo.psf1_Font = newFont;
+	bootInfo.mMap = Map;
+	bootInfo.mMapSize = MapSize;
+	bootInfo.mMapDescSize = DescriptorSize;
+
+	SystemTable->BootServices->ExitBootServices(ImageHandle, MapKey);
+
+	KernelStart(&bootInfo);
 
 	return EFI_SUCCESS; // Exit the UEFI application
 }
