@@ -243,7 +243,7 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 
 	}
 
-	void (*KernelStart)(BootInfo*) = ((__attribute__((sysv_abi)) void (*)(BootInfo*) ) Header.e_entry);
+	void (*KernelMain)(BootInfo*) = ((__attribute__((sysv_abi)) void (*)(BootInfo*) ) Header.e_entry);
 
 	BootInfo bootInfo;
 	bootInfo.framebuffer = newBuffer;

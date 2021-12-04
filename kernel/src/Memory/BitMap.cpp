@@ -2,16 +2,17 @@
 
 uint64_t BitMap::Size()
 {
-    return m_Size;
+    return this->ByteAmount;
 }
 
-bool BitMap::operator[](uint64_t Index)
+uint64_t BitMap::Entries()
 {
-    uint64_t ByteIndex = Index / 8;
-    uint64_t BitIndex = Index % 8;
-    uint8_t BitIndexer = 0b10000000 >> BitIndex;
+    return this->ByteAmount * 8;
+}
 
-    return (m_Buffer[ByteIndex] & BitIndexer) > 0;
+void* BitMap::GetBuffer()
+{
+    return (void*)this->Buffer;
 }
 
 void BitMap::Set(uint64_t Index, bool Value)
@@ -20,15 +21,24 @@ void BitMap::Set(uint64_t Index, bool Value)
     uint64_t BitIndex = Index % 8;
     uint8_t BitIndexer = 0b10000000 >> BitIndex;
 
-    m_Buffer[ByteIndex] &= ~BitIndexer;
+    Buffer[ByteIndex] &= ~BitIndexer;
     if (Value)
     {
-        m_Buffer[ByteIndex] |= BitIndexer;
+        Buffer[ByteIndex] |= BitIndexer;
     }
 }
 
-BitMap::BitMap(uint64_t Size, void* Buffer)
+bool BitMap::operator[](uint64_t Index)
 {
-    this->m_Size = Size;
-    this->m_Buffer = (uint8_t*)Buffer;
+    uint64_t ByteIndex = Index / 8;
+    uint64_t BitIndex = Index % 8;
+    uint8_t BitIndexer = 0b10000000 >> BitIndex;
+
+    return (Buffer[ByteIndex] & BitIndexer) > 0;
+}
+
+BitMap::BitMap(uint64_t Entries, void* Buffer)
+{
+    this->ByteAmount = Entries / 8;
+    this->Buffer = (uint8_t*)Buffer;
 }
