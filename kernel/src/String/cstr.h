@@ -3,12 +3,9 @@
 
 namespace cstr
 {
-    const char* to_string(uint64_t value);
-    const char* to_string(int64_t value);
-    const char* to_hstring(uint64_t value);
-    const char* to_hstring(uint32_t value);
-    const char* to_hstring(uint16_t value);
-    const char* to_hstring(uint8_t value);
-    const char* to_string(double value, uint8_t decimalPlaces);
-    const char* to_string(double value);
+    char IntToChar(uint8_t Number);
+
+    char* ToString(int64_t Number);
+
+    char* ToString(float Number, uint32_t DecimalAmount = 5);
 }

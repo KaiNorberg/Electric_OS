@@ -8,7 +8,7 @@ CC = gcc
 LD = ld
 
 CFLAGS = -ffreestanding -fshort-wchar
-LDFLAGS = -T $(LDS) -static -Bsymbolic -nostdlib
+LDFLAGS = -T $(LDS) -shared -Bsymbolic -nostdlib -fstack-protector
 
 SRCDIR := src
 OBJDIR := lib

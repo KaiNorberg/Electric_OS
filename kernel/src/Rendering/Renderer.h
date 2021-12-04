@@ -6,8 +6,6 @@
 
 namespace Renderer
 {
-    extern Point CursorPos;
-
     void Init(Framebuffer* framebuffer, PSF1_FONT* PSF1_Font);
 
     void PutChar(char chr, uint32_t Color, Point Pos);
