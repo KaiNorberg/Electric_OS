@@ -4,10 +4,10 @@
 
 namespace Renderer
 {
-    Point CursorPos;
-
-    Framebuffer* Screenbuffer;    
+    Framebuffer* Screenbuffer;
     PSF1_FONT* CurrentFont;
+
+    Point CursorPos;
 
     void Init(Framebuffer* framebuffer, PSF1_FONT* PSF1_Font)
     {
