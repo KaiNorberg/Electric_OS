@@ -13,9 +13,9 @@ public:
 
     void* GetBuffer();
 
-    bool operator[](uint64_t Index);
+    bool Set(uint64_t Index, bool Value);
 
-    void Set(uint64_t Index, bool Value);
+    bool operator[](uint64_t Index);
 
     BitMap() = default;
 

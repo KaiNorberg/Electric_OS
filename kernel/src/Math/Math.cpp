@@ -13,20 +13,25 @@ namespace Math
     uint32_t GetDigitAmount(uint32_t Number)
     {
         int Digits = 1;
-        if (Number >= 100000000) {
+        if (Number >= 100000000)
+        {
             Digits += 8;
             Number /= 100000000;
         }
-        if (Number >= 10000) {
+        if (Number >= 10000)
+        {
             Digits += 4;
             Number /= 10000;
         }
-        if (Number >= 100) {
+        if (Number >= 100)
+        {
             Digits += 2;
             Number /= 100;
         }
-        if (Number >= 10)
+        if (Number >= 10
+        {
             Digits++;
+        }
 
         return Digits;
     }

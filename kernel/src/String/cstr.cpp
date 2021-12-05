@@ -8,6 +8,11 @@ namespace cstr
         return (char)Number + '0';
     }
 
+    char* ToString(uint64_t Number)
+    {
+        return ToString((int64_t)Number);
+    }
+
     char IntToStringOutput[128];
     char* ToString(int64_t Number)
     {

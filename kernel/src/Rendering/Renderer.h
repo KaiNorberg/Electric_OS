@@ -3,6 +3,7 @@
 #include "Font.h"
 #include "Framebuffer.h"
 #include "../Math/Math.h"
+#include "../Memory/Memory.h"
 
 namespace Renderer
 {
@@ -11,4 +12,6 @@ namespace Renderer
     void PutChar(char chr, uint32_t Color, Point Pos);
 
     void Print(const char* str, uint32_t Color = 0xFFFFFFFF);
+
+    void Clear();
 }

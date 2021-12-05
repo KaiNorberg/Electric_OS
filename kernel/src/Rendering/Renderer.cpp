@@ -62,4 +62,9 @@ namespace Renderer
             chr++;
         }
     }
+
+    void Clear()
+    {
+        Memory::SetMemory(Screenbuffer->Base, 0, Screenbuffer->Size);
+    }
 }
