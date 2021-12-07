@@ -2,6 +2,11 @@
 
 extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 {
+	GDTDesc GDTDescriptor;
+	GDTDescriptor.Size = sizeof(GDT) - 1;
+	GDTDescriptor.Offset = (uint64_t)&DefaultGDT;
+	LoadGDT(&GDTDescriptor);
+
 	Renderer::Init(BootInfo->ScreenBuffer, BootInfo->PSF1Font);
 	PageFrameAllocator::Init(BootInfo->MemoryMap, BootInfo->MemoryMapSize, BootInfo->MemoryMapDescSize);
 	PageFrameAllocator::LockPages(&_KernelStart, ((uint64_t)&_KernelEnd - (uint64_t)&_KernelStart) / 4096 + 1);

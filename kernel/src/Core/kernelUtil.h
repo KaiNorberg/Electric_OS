@@ -3,6 +3,7 @@
 #include "../Memory/Paging/PageMapIndexer.h"
 #include "../Memory/Paging/PageTableManager.h"
 #include "../Memory/Paging/Paging.h"
+#include "../Memory/GDT/GDT.h"
 #include "../Memory/BitMap.h"
 #include "../Memory/Memory.h"
 #include "../String/cstr.h"

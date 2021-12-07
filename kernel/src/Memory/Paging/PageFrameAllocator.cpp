@@ -152,8 +152,8 @@ namespace PageFrameAllocator
                 continue;
             }
 
-            LockPage((void*)(FirstAvailablePage] * 4096));
-            return (void*)(FirstAvailablePage] * 4096);
+            LockPage((void*)(FirstAvailablePage * 4096));
+            return (void*)(FirstAvailablePage * 4096);
         }
 
         return nullptr;

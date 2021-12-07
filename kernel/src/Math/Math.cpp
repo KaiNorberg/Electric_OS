@@ -28,7 +28,7 @@ namespace Math
             Digits += 2;
             Number /= 100;
         }
-        if (Number >= 10
+        if (Number >= 10)
         {
             Digits++;
         }
