@@ -1,7 +1,8 @@
 #include "IDT.h"
 #include "Handlers.h"
 #include "../IO/IO.h"
-#include "../Memory/Paging/PageFrameAllocator.h"
+
+extern uint64_t _IDT;
 
 namespace IDT
 {
@@ -33,7 +34,7 @@ namespace IDT
     {
         static IDTR idtr;
         idtr.Limit = 0x0FFF;
-        idtr.Offset = (uint64_t)PageFrameAllocator::RequestPage();
+        idtr.Offset = (uint64_t)&_IDT;
 
         idtr.SetHandler(0x6, (uint64_t)InteruptHandlers::InvalidOP);
         idtr.SetHandler(0x7, (uint64_t)InteruptHandlers::DeviceNotDetected);

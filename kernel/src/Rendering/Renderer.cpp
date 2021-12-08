@@ -46,20 +46,25 @@ namespace Renderer
 
         while (*chr != 0)
         {
-            if (*chr == '\n')
-            {
-                CursorPos.Y += 16;
-            }
-            else if (*chr == '\r')
-            {
-                CursorPos.X = 0;
-            }
-            else
-            {
-                PutChar(*chr, Color, CursorPos);
-                CursorPos.X += 8;
-            }
+            Print(*chr);
             chr++;
+        }
+    }
+
+    void Print(char Chr, uint32_t Color)
+    {
+        if (Chr == '\n')
+        {
+            CursorPos.Y += 16;
+        }
+        else if (Chr == '\r')
+        {
+            CursorPos.X = 0;
+        }
+        else
+        {
+            PutChar(Chr, Color, CursorPos);
+            CursorPos.X += 8;
         }
     }
 

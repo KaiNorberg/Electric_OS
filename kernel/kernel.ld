@@ -4,6 +4,13 @@ ENTRY(_start)
 SECTIONS
 {
     _KernelStart = .;
+
+    .idt BLOCK(0x1000) : ALIGN(0x1000)
+    {
+        _IDT = .;
+        . = . + 0x1000;
+    }
+
     .text : ALIGN(0x1000)
     {
         *(.text)

@@ -3,10 +3,11 @@
 #include "../Rendering/Renderer.h"
 #include "../Core/Panic.h"
 #include "../IO/IO.h"
+#include "../UserInput/KeyBoard.h"
 
 namespace InteruptHandlers
 {
-    __attribute__((interrupt)) void InvalidOP(struct InterruptFrame* frame)
+    __attribute__((interrupt)) void InvalidOP(InterruptFrame* frame)
     {
         Panic("Invalid OP Code Detected");
         while(true)
@@ -15,7 +16,7 @@ namespace InteruptHandlers
         }
     }
 
-    __attribute__((interrupt)) void DeviceNotDetected(struct InterruptFrame* frame)
+    __attribute__((interrupt)) void DeviceNotDetected(InterruptFrame* frame)
     {
         Panic("Device Not Detected");
         while(true)
@@ -24,7 +25,7 @@ namespace InteruptHandlers
         }
     }
 
-    __attribute__((interrupt)) void DoubleFault(struct InterruptFrame* frame)
+    __attribute__((interrupt)) void DoubleFault(InterruptFrame* frame)
     {
         Panic("Double Fault");
         while(true)
@@ -33,7 +34,7 @@ namespace InteruptHandlers
         }
     }
 
-    __attribute__((interrupt)) void SegmentNotPresent(struct InterruptFrame* frame)
+    __attribute__((interrupt)) void SegmentNotPresent(InterruptFrame* frame)
     {
         Panic("Segment Not Present");
         while(true)
@@ -42,7 +43,7 @@ namespace InteruptHandlers
         }
     }
 
-    __attribute__((interrupt)) void StackSegmentFault(struct InterruptFrame* frame)
+    __attribute__((interrupt)) void StackSegmentFault(InterruptFrame* frame)
     {
         Panic("Stack Segment Fault");
         while(true)
@@ -51,7 +52,7 @@ namespace InteruptHandlers
         }
     }
 
-    __attribute__((interrupt)) void GeneralProtectionFault(struct InterruptFrame* frame)
+    __attribute__((interrupt)) void GeneralProtectionFault(InterruptFrame* frame)
     {
         Panic("General Protection Fault");
         while(true)
@@ -60,7 +61,7 @@ namespace InteruptHandlers
         }
     }
 
-    __attribute__((interrupt)) void PageFault(struct InterruptFrame* frame)
+    __attribute__((interrupt)) void PageFault(InterruptFrame* frame)
     {
         Panic("Page Fault");
         while(true)
@@ -69,10 +70,17 @@ namespace InteruptHandlers
         }
     }
 
-    __attribute__((interrupt)) void Keyboard(struct InterruptFrame* frame)
+    __attribute__((interrupt)) void Keyboard(InterruptFrame* frame)
     {
-        Renderer::Print("Press\n\r");
         uint8_t ScanCode = IO::InByte(0x60);
+
+        KeyBoard::HandleScanCode(ScanCode);
+
+        uint8_t Key = KeyBoard::GetKeyPress();
+        if (Key != 0)
+        {
+            Renderer::Print(Key);
+        }
 
         IO::OutByte(PIC1_COMMAND, PIC_EOI);
     }

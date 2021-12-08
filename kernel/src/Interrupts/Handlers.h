@@ -4,20 +4,21 @@ namespace InteruptHandlers
 {
     struct InterruptFrame;
 
-    __attribute__((interrupt)) void InvalidOP(struct InterruptFrame* frame);
+    __attribute__((interrupt)) void InvalidOP(InterruptFrame* frame);
 
-    __attribute__((interrupt)) void DeviceNotDetected(struct InterruptFrame* frame);
+    __attribute__((interrupt)) void DeviceNotDetected(InterruptFrame* frame);
 
-    __attribute__((interrupt)) void DoubleFault(struct InterruptFrame* frame);
+    __attribute__((interrupt)) void DoubleFault(InterruptFrame* frame);
 
-    __attribute__((interrupt)) void SegmentNotPresent(struct InterruptFrame* frame);
+    __attribute__((interrupt)) void SegmentNotPresent(InterruptFrame* frame);
 
-    __attribute__((interrupt)) void StackSegmentFault(struct InterruptFrame* frame);
+    __attribute__((interrupt)) void StackSegmentFault(InterruptFrame* frame);
 
-    __attribute__((interrupt)) void GeneralProtectionFault(struct InterruptFrame* frame);
+    __attribute__((interrupt)) void GeneralProtectionFault(InterruptFrame* frame);
 
-    __attribute__((interrupt)) void PageFault(struct InterruptFrame* frame);
+    __attribute__((interrupt)) void PageFault(InterruptFrame* frame);
 
-    __attribute__((interrupt)) void Keyboard(struct InterruptFrame* frame);
+    __attribute__((interrupt)) void Keyboard(InterruptFrame* frame);
 
+    __attribute__((interrupt)) void Mouse(InterruptFrame* frame);
 }
