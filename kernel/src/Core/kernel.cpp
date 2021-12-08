@@ -14,8 +14,8 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 
 	Renderer::Print("Hello, World!\n\r");
 
-	int* Test = (int*)0xFFFFFFFFFFFFFF;
-	*Test = 12;
+	//int* Test = (int*)0xFFFFFFFFFFFFFF;
+	//*Test = 12;
 
 	while(true)
 	{
