@@ -13,5 +13,5 @@ namespace Renderer
 
     void Print(const char* str, uint32_t Color = 0xFFFFFFFF);
 
-    void Clear();
+    void Clear(uint32_t Color = 0x000000);
 }

@@ -63,8 +63,18 @@ namespace Renderer
         }
     }
 
-    void Clear()
+    void Clear(uint32_t Color)
     {
-        Memory::SetMemory(Screenbuffer->Base, 0, Screenbuffer->Size);
+        CursorPos.X = 0;
+        CursorPos.Y = 0;
+
+        for (int Y = 0; Y < Screenbuffer->Height; Y++)
+        {
+            uint64_t pixPtrBase = (uint64_t)Screenbuffer->Base + (Screenbuffer->PixelsPerScanline * 4 * Y);
+            for (uint32_t* pixPtr = (uint32_t*)pixPtrBase; pixPtr < (uint32_t*)(pixPtrBase + Screenbuffer->PixelsPerScanline * 4); pixPtr ++)
+            {
+                *pixPtr = Color;
+            }
+        }
     }
 }

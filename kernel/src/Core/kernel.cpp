@@ -1,4 +1,4 @@
-#include "kernelUtil.h"
+#include "kernel.h"
 
 extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 {
@@ -13,9 +13,13 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 	PageFrameAllocator::LockPages(BootInfo->ScreenBuffer->Base, BootInfo->ScreenBuffer->Size / 0x1000 + 1);
 	PageTableManager::Init(BootInfo->ScreenBuffer);
 
-	Renderer::Clear();
+	IDT::SetupInterrupts();
 
-	Renderer::Print("Hello, World!");
+	Renderer::Clear();
+	Renderer::Print("Hello, World!\n\r");
+
+	//int* Test = (int*)0xFFFFFFFFFFFFFF;
+	//*Test = 12;
 
 	while(true)
 	{
