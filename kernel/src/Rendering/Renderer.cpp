@@ -73,10 +73,11 @@ namespace Renderer
         CursorPos.X = 0;
         CursorPos.Y = 0;
 
+        uint64_t BytesPerScanLine = Screenbuffer->PixelsPerScanline * 4;
         for (int Y = 0; Y < Screenbuffer->Height; Y++)
         {
-            uint64_t pixPtrBase = (uint64_t)Screenbuffer->Base + (Screenbuffer->PixelsPerScanline * 4 * Y);
-            for (uint32_t* pixPtr = (uint32_t*)pixPtrBase; pixPtr < (uint32_t*)(pixPtrBase + Screenbuffer->PixelsPerScanline * 4); pixPtr ++)
+            uint64_t pixPtrBase = (uint64_t)Screenbuffer->Base + (BytesPerScanLine * Y);
+            for (uint32_t* pixPtr = (uint32_t*)pixPtrBase; pixPtr < (uint32_t*)(pixPtrBase + BytesPerScanLine); pixPtr ++)
             {
                 *pixPtr = Color;
             }
