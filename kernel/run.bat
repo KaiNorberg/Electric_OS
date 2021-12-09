@@ -1,4 +1,4 @@
-set OSNAME=CustomOS
+set OSNAME=Electric_OS
 set BUILDDIR=%0/../bin
 set OVMFDIR=%0/../../OVMFbin
 set BUILDDIR=%BUILDDIR:"=%

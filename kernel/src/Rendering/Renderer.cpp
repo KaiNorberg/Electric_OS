@@ -46,7 +46,7 @@ namespace Renderer
 
         while (*chr != 0)
         {
-            Print(*chr);
+            Print(*chr, Color);
             chr++;
         }
     }

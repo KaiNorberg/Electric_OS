@@ -27,6 +27,11 @@ DIRS = $(wildcard $(SRCDIR)/*)
 
 kernel: $(OBJS) link
 
+$(OBJDIR)/%_ASM.o: $(SRCDIR)/%.asm
+	@echo !==== COMPILING $^
+	@mkdir -p $(@D)
+	$(ASMC) $(ASMFLAGS) $^ -f elf64 -o $@
+
 $(OBJDIR)/Interrupts/Handlers.o: $(SRCDIR)/Interrupts/Handlers.cpp
 	@echo !==== COMPILING $^
 	@mkdir -p $(@D)
@@ -36,11 +41,6 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@echo !==== COMPILING $^
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $^ -o $@
-
-$(OBJDIR)/%_ASM.o: $(SRCDIR)/%.asm
-	@echo !==== COMPILING $^
-	@mkdir -p $(@D)
-	$(ASMC) $(ASMFLAGS) $^ -f elf64 -o $@
 
 link:
 	@echo !==== LINKING
