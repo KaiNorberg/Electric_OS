@@ -3,16 +3,14 @@
 extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 {
 	Renderer::Init(BootInfo->ScreenBuffer, BootInfo->PSF1Font);
-	Renderer::Clear();
+	Renderer::Clear(ARGB(255, 0, 0, 255));
 
-	GDTDesc GDTDescriptor;
-	GDTDescriptor.Size = sizeof(GDT) - 1;
-	GDTDescriptor.Offset = (uint64_t)&DefaultGDT;
-	LoadGDT(&GDTDescriptor);
-
+	InitGDT();
 	IDT::SetupInterrupts();
 
-	Renderer::Print("Hello, World!\n\r");
+	Renderer::Print("Hello, World!\n\r", ARGB(255));
+
+	Renderer::SwapBuffers();
 
 	//int* Test = (int*)0xFFFFFFFFFFFFFF;
 	//*Test = 12;

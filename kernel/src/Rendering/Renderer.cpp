@@ -2,8 +2,11 @@
 
 #include <stdint.h>
 
+extern uint64_t _BACKBUFFER;
+
 namespace Renderer
 {
+    Framebuffer Backbuffer;
     Framebuffer* Screenbuffer;
     PSF1_FONT* CurrentFont;
 
@@ -12,16 +15,19 @@ namespace Renderer
     void Init(Framebuffer* framebuffer, PSF1_FONT* PSF1_Font)
     {
         Screenbuffer = framebuffer;
+        Backbuffer = *Screenbuffer;
+        Backbuffer.Base = (ARGB*)&_BACKBUFFER;
+
         CurrentFont = PSF1_Font;
         CursorPos.X = 0;
         CursorPos.Y = 0;
     }
 
-    void PutChar(char chr, uint32_t Color, Point Pos)
+    void PutChar(char chr, ARGB Color, Point Pos)
     {
-        char* FontPtr = CurrentFont->glyphBuffer + (chr * CurrentFont->psf1_header->charsize);
+        char* Glyph = CurrentFont->glyphBuffer + (chr * CurrentFont->psf1_header->charsize);
 
-        if (Pos.X > Screenbuffer->Width)
+        if (Pos.X > Backbuffer.Width)
         {
             Pos.X = 0;
             Pos.Y += 16;
@@ -31,27 +37,27 @@ namespace Renderer
         {
             for (uint64_t x = Pos.X; x < Pos.X + 8; x++)
             {
-                if ((*FontPtr & (0b10000000 >> (x - Pos.X))) > 0)
+                if ((*Glyph & (0b10000000 >> (x - Pos.X))) > 0)
                 {
-                    *(Screenbuffer->Base + x + (y * Screenbuffer->PixelsPerScanline)) = Color;
+                    Backbuffer.SetPixel(Point(x, y), Color);
                 }
             }
-            FontPtr++;
+            Glyph++;
         }
     }
 
-    void Print(const char* str, uint32_t Color)
+    void Print(const char* str, ARGB Color)
     {
         char* chr = (char*)str;
 
         while (*chr != 0)
         {
-            Print(*chr);
+            Print(*chr, Color);
             chr++;
         }
     }
 
-    void Print(char Chr, uint32_t Color)
+    void Print(char Chr, ARGB Color)
     {
         if (Chr == '\n')
         {
@@ -68,18 +74,22 @@ namespace Renderer
         }
     }
 
-    void Clear(uint32_t Color)
+    void Clear(ARGB Color)
     {
         CursorPos.X = 0;
         CursorPos.Y = 0;
 
-        for (int Y = 0; Y < Screenbuffer->Height; Y++)
+        for (int Y = 0; Y < Backbuffer.Height; Y++)
         {
-            uint64_t pixPtrBase = (uint64_t)Screenbuffer->Base + (Screenbuffer->PixelsPerScanline * 4 * Y);
-            for (uint32_t* pixPtr = (uint32_t*)pixPtrBase; pixPtr < (uint32_t*)(pixPtrBase + Screenbuffer->PixelsPerScanline * 4); pixPtr ++)
+            for (int X = 0; X < Backbuffer.Width; X++)
             {
-                *pixPtr = Color;
+                Backbuffer.SetPixel(Point(X, Y), Color);
             }
         }
+    }
+
+    void SwapBuffers()
+    {
+        Memory::Copy(Backbuffer.Base, Screenbuffer->Base, Backbuffer.Size);
     }
 }

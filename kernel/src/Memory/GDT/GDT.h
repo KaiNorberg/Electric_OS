@@ -31,3 +31,5 @@ struct GDT
 extern GDT DefaultGDT;
 
 extern "C" void LoadGDT(GDTDesc* GDTDescriptor);
+
+void InitGDT();

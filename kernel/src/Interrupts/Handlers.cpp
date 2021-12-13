@@ -80,6 +80,7 @@ namespace InteruptHandlers
         if (Key != 0)
         {
             Renderer::Print(Key);
+            Renderer::SwapBuffers();
         }
 
         IO::OutByte(PIC1_COMMAND, PIC_EOI);

@@ -11,6 +11,12 @@ SECTIONS
         . = . + 0x1000;
     }
 
+    .backbuffer BLOCK(0x21C0000) : ALIGN(0x1000)
+    {
+        _BACKBUFFER = .;
+        . = . + 0x21C0000;
+    }
+
     .text : ALIGN(0x1000)
     {
         *(.text)

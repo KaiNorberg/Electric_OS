@@ -24,4 +24,19 @@ namespace Memory
         }
     }
 
+    void Copy(void* Source, void* Dest, uint64_t Count)
+    {
+        while (Count-- > 0)
+        {
+            *(uint8_t*)Dest++ = *(uint8_t*)Source++;
+        }
+    }
+
+    void Copy64(void* Source, void* Dest, uint64_t Count)
+    {
+        while (Count -= 8 > 0)
+        {
+            *(uint64_t*)Dest++ = *(uint64_t*)Source++;
+        }
+    }
 }

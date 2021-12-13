@@ -2,12 +2,6 @@
 
 #include <stdint.h>
 
-struct Point
-{
-    uint32_t X;
-    uint32_t Y;
-};
-
 namespace Math
 {
     uint32_t GetDigit(uint32_t Number, uint32_t Digit);
