@@ -11,6 +11,9 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 
 	Renderer::Print("Hello, World!\n\r", ARGB(255));
 
+	*(SYSCALL_PANIC_ARG0) = "Hello, Test!";
+	asm("int $0xFF");
+
 	Renderer::SwapBuffers();
 
 	while (true)

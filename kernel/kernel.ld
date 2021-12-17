@@ -5,6 +5,11 @@ SECTIONS
 {
     _KernelStart = .;
 
+    .SYSCALL BLOCK(0x1000) : ALIGN(0x1000)
+    {
+        . = . + 0x1000;
+    }
+
     .idt BLOCK(0x1000) : ALIGN(0x1000)
     {
         _IDT = .;
