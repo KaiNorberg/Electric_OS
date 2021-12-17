@@ -1,4 +1,6 @@
 #include "KeyBoard.h"
+#include "Mouse.h"
+#include "../Rendering/Renderer.h"
 
 namespace KeyBoard
 {
@@ -25,7 +27,7 @@ namespace KeyBoard
         0,	/* Scroll Lock */
         0,	/* Home key */
         ARROW_UP,	/* Up Arrow */
-        0,	/* Page Up */
+        PAGE_UP,	/* Page Up */
         '-',
         ARROW_LEFT,	/* Left Arrow */
         0,
@@ -33,7 +35,7 @@ namespace KeyBoard
         '+',
         0,	/* 79 - End key*/
         ARROW_DOWN,	/* Down Arrow */
-        0,	/* Page Down */
+        PAGE_DOWN,	/* Page Down */
         0,	/* Insert Key */
         0,	/* Delete Key */
         0,   0,   0,
@@ -54,9 +56,40 @@ namespace KeyBoard
 
         uint8_t Key = ScanCodeTable[ScanCode];
 
-        PressedTable[Key] = !IsUp;
+        switch (Key)
+        {
+        case ARROW_UP:
+        {
+            Mouse::Position.Y -= 10;
+            Mouse::Position.Y = Math::Clamp(Mouse::Position.Y, 0, Renderer::GetScreenSize().Y - 16);
+        }
+        break;
+        case ARROW_DOWN:
+        {
+            Mouse::Position.Y += 10;
+            Mouse::Position.Y = Math::Clamp(Mouse::Position.Y, 0, Renderer::GetScreenSize().Y - 16);
+        }
+        break;
+        case ARROW_LEFT:
+        {
+            Mouse::Position.X -= 10;
+            Mouse::Position.X = Math::Clamp(Mouse::Position.X, 0, Renderer::GetScreenSize().X - 8);
+        }
+        break;
+        case ARROW_RIGHT:
+        {
+            Mouse::Position.X += 10;
+            Mouse::Position.X = Math::Clamp(Mouse::Position.X, 0, Renderer::GetScreenSize().X - 8);
+        }
+        break;
+        default:
+        {
+            PressedTable[Key] = !IsUp;
 
-        CurrentKey = Key * !IsUp;
+            CurrentKey = Key * !IsUp;
+        }
+        break;
+        }
     }
 
     char GetKeyPress()

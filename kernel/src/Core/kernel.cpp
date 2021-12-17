@@ -15,7 +15,7 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 
 	while (true)
 	{
-		Renderer::PutChar('M', ARGB(255, 255, 0, 0), Mouse::GetPosition());
+		Renderer::PutChar('M', ARGB(255, 255, 0, 0), Mouse::Position);
         Renderer::SwapBuffers();
 	}
 

@@ -83,10 +83,11 @@ namespace Mouse
         MouseRead();
     }
     
-    uint8_t MouseCycle = 0;
-    uint8_t MousePacket[4];
     void HandleMouseData(uint8_t Data)
     {
+        static uint8_t MouseCycle = 0;
+        static uint8_t MousePacket[4];
+        
         switch(MouseCycle)
         {
         case 0:
@@ -135,10 +136,5 @@ namespace Mouse
         }
         break;
         }
-    }
-
-    Point GetPosition()
-    {
-        return Position;
     }
 }

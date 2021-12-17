@@ -9,6 +9,8 @@
 #define ARROW_DOWN 0x50
 #define ARROW_LEFT 0x4B
 #define ARROW_RIGHT 0x4D
+#define PAGE_UP 0x49
+#define PAGE_DOWN 0x51
 
 namespace KeyBoard
 {

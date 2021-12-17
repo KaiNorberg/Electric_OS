@@ -4,9 +4,9 @@
 
 namespace Mouse
 {
+    extern Point Position;
+
     void InitPS2();
 
     void HandleMouseData(uint8_t Data);
-
-    Point GetPosition();
 }
