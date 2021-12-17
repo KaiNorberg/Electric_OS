@@ -254,7 +254,7 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 
 	SystemTable->BootServices->ExitBootServices(ImageHandle, MapKey);
 
-	KernelStart(&bootInfo);
+	KernelMain(&bootInfo);
 
 	return EFI_SUCCESS; // Exit the UEFI application
 }
