@@ -4,6 +4,7 @@
 #include "../Memory/Memory.h"
 #include "../String/cstr.h"
 #include "../UserInput/KeyBoard.h"
+#include "../UserInput/Mouse.h"
 
 struct BootLoaderInfo
 {

@@ -1,6 +1,7 @@
 #include "IDT.h"
 #include "Handlers.h"
 #include "../IO/IO.h"
+#include "../UserInput/Mouse.h"
 
 extern uint64_t _IDT;
 
@@ -45,8 +46,9 @@ namespace IDT
         idtr.SetHandler(0xE, (uint64_t)InteruptHandlers::PageFault);
 
         idtr.SetHandler(0x21, (uint64_t)InteruptHandlers::Keyboard);
+        idtr.SetHandler(0x2C, (uint64_t)InteruptHandlers::Mouse);
 
-        asm("lidt %0" : : "m" (idtr));
+        asm("LIDT %0" : : "m" (idtr));
 
         uint8_t a1 = IO::InByte(PIC1_DATA);
         IO::IOWait();
@@ -78,8 +80,11 @@ namespace IDT
         IO::OutByte(PIC2_DATA, a2);
         IO::IOWait();
 
-        IO::OutByte(PIC1_DATA, 0b11111101);
-        IO::OutByte(PIC2_DATA, 0b11111111);
+        Mouse::InitPS2();
+
+        IO::OutByte(PIC1_DATA, 0b11111001);
+        IO::OutByte(PIC2_DATA, 0b11101111);
+
         asm ("sti");
     }
 }

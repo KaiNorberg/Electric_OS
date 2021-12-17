@@ -4,6 +4,7 @@
 #include "../Core/Panic.h"
 #include "../IO/IO.h"
 #include "../UserInput/KeyBoard.h"
+#include "../UserInput/Mouse.h"
 
 namespace InteruptHandlers
 {
@@ -83,6 +84,16 @@ namespace InteruptHandlers
             Renderer::SwapBuffers();
         }
 
+        IO::OutByte(PIC1_COMMAND, PIC_EOI);
+    }
+
+    __attribute__((interrupt)) void Mouse(InterruptFrame* frame)
+    {
+        uint8_t MouseData = IO::InByte(0x60);
+
+        Mouse::HandleMouseData(MouseData);
+
+        IO::OutByte(PIC2_COMMAND, PIC_EOI);
         IO::OutByte(PIC1_COMMAND, PIC_EOI);
     }
 }

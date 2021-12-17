@@ -23,15 +23,9 @@ namespace Renderer
         CursorPos.Y = 0;
     }
 
-    void PutChar(char chr, ARGB Color, Point Pos)
+    void PutChar(char chr, ARGB const& Color, Point const& Pos)
     {
         char* Glyph = CurrentFont->glyphBuffer + (chr * CurrentFont->psf1_header->charsize);
-
-        if (Pos.X > Backbuffer.Width)
-        {
-            Pos.X = 0;
-            Pos.Y += 16;
-        }
 
         for (uint64_t y = Pos.Y; y < Pos.Y + 16; y++)
         {
@@ -68,7 +62,13 @@ namespace Renderer
             CursorPos.X = 0;
         }
         else
-        {
+        {        
+            if (CursorPos.X + 16 > Backbuffer.Width)
+            {
+                CursorPos.X = 0;
+                CursorPos.Y += 16;
+            }
+
             PutChar(Chr, Color, CursorPos);
             CursorPos.X += 8;
         }
@@ -91,5 +91,10 @@ namespace Renderer
     void SwapBuffers()
     {
         Memory::Copy(Backbuffer.Base, Screenbuffer->Base, Backbuffer.Size);
+    }
+
+    Point GetScreenSize()
+    {
+        return Point(Backbuffer.Width, Backbuffer.Height);
     }
 }
