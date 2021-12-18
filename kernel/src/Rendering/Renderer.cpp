@@ -2,11 +2,8 @@
 
 #include <stdint.h>
 
-extern uint64_t _BACKBUFFER;
-
 namespace Renderer
 {
-    Framebuffer Backbuffer;
     Framebuffer* Screenbuffer;
     PSF1_FONT* CurrentFont;
 
@@ -15,8 +12,6 @@ namespace Renderer
     void Init(Framebuffer* framebuffer, PSF1_FONT* PSF1_Font)
     {
         Screenbuffer = framebuffer;
-        Backbuffer = *Screenbuffer;
-        Backbuffer.Base = (ARGB*)&_BACKBUFFER;
 
         CurrentFont = PSF1_Font;
         CursorPos.X = 0;
@@ -33,7 +28,7 @@ namespace Renderer
             {
                 if ((*Glyph & (0b10000000 >> (x - Pos.X))) > 0)
                 {
-                    Backbuffer.SetPixel(Point(x, y), Color);
+                    Screenbuffer->SetPixel(Point(x, y), Color);
                 }
             }
             Glyph++;
@@ -63,7 +58,7 @@ namespace Renderer
         }
         else
         {        
-            if (CursorPos.X + 16 > Backbuffer.Width)
+            if (CursorPos.X + 16 > Screenbuffer->Width)
             {
                 CursorPos.X = 0;
                 CursorPos.Y += 16;
@@ -79,22 +74,17 @@ namespace Renderer
         CursorPos.X = 0;
         CursorPos.Y = 0;
 
-        for (int Y = 0; Y < Backbuffer.Height; Y++)
+        for (int Y = 0; Y < Screenbuffer->Height; Y++)
         {
-            for (int X = 0; X < Backbuffer.Width; X++)
+            for (int X = 0; X < Screenbuffer->Width; X++)
             {
-                Backbuffer.SetPixel(Point(X, Y), Color);
+                Screenbuffer->SetPixel(Point(X, Y), Color);
             }
         }
     }
 
-    void SwapBuffers()
-    {
-        Memory::Copy(Backbuffer.Base, Screenbuffer->Base, Backbuffer.Size);
-    }
-
     Point GetScreenSize()
     {
-        return Point(Backbuffer.Width, Backbuffer.Height);
+        return Point(Screenbuffer->Width, Screenbuffer->Height);
     }
 }

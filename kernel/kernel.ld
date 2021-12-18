@@ -5,8 +5,9 @@ SECTIONS
 {
     _KernelStart = .;
 
-    .SYSCALL BLOCK(0x1000) : ALIGN(0x1000)
+    .syscallargs BLOCK(0x1000) : ALIGN(0x1000)
     {
+        _SYS_CALL_ARGS = .;
         . = . + 0x1000;
     }
 
@@ -14,12 +15,6 @@ SECTIONS
     {
         _IDT = .;
         . = . + 0x1000;
-    }
-
-    .backbuffer BLOCK(0x21C0000) : ALIGN(0x1000)
-    {
-        _BACKBUFFER = .;
-        . = . + 0x21C0000;
     }
 
     .text : ALIGN(0x1000)
@@ -42,6 +37,6 @@ SECTIONS
         *(COMMON)
         *(.bss)
     }
-    _KernelEnd = .;
 
+    _KernelEnd = .;
 }

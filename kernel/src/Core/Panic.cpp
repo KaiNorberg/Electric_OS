@@ -10,7 +10,6 @@ void KernelPanic(const char* Message)
     Renderer::Print("UNEXPECTED ERROR OCCURRED\n\r");
     Renderer::Print("ERROR RETURNED FOLLOWING MESSAGE: ");
     Renderer::Print(Message);
-    Renderer::SwapBuffers();
-
+    
     asm("HLT");
 }

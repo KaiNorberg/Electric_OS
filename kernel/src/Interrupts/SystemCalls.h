@@ -2,14 +2,19 @@
 
 #include <stdint.h>
 
-extern uint64_t _KernelStart;
+extern uint64_t _SYS_CALL_ARGS;
 
-#define SYSCALL_PANIC_INT 0xFF
-#define SYSCALL_PANIC_ARG0 (char**)(((uint64_t)&_KernelStart) + 0x01)
+#define SYSCALL_INT 0x80
+#define SYSCALL_SELECTOR (uint64_t*)(((uint64_t)&_SYS_CALL_ARGS) + 0x08 * 0)
+#define SYSCALL_ARG0     (void*)(((uint64_t)&_SYS_CALL_ARGS) + 0x08 * 1)
+#define SYSCALL_ARG1     (void*)(((uint64_t)&_SYS_CALL_ARGS) + 0x08 * 2)
+#define SYSCALL_ARG2     (void*)(((uint64_t)&_SYS_CALL_ARGS) + 0x08 * 3)
+#define SYSCALL_ARG3     (void*)(((uint64_t)&_SYS_CALL_ARGS) + 0x08 * 4)
+#define SYSCALL_ARG4     (void*)(((uint64_t)&_SYS_CALL_ARGS) + 0x08 * 5)
 
-namespace SystemInterupts
+namespace SystemCalls
 {
-    struct InterruptFrame;
+    void SysCall();
 
-    __attribute__((interrupt)) void Panic(InterruptFrame* frame); //0xFF
+    void SysCall_Panic();
 }

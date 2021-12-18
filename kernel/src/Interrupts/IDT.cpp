@@ -49,7 +49,7 @@ namespace IDT
         idtr.SetHandler(0x21, (uint64_t)InteruptHandlers::Keyboard);
         idtr.SetHandler(0x2C, (uint64_t)InteruptHandlers::Mouse);
 
-        idtr.SetHandler(SYSCALL_PANIC_INT, (uint64_t)SystemInterupts::Panic);
+        idtr.SetHandler(SYSCALL_INT, (uint64_t)InteruptHandlers::SystemCall);
 
         asm("LIDT %0" : : "m" (idtr));
 

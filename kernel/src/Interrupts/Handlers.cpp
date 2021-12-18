@@ -1,5 +1,6 @@
 #include "Handlers.h"
 #include "IDT.h"
+#include "SystemCalls.h"
 #include "../Rendering/Renderer.h"
 #include "../Core/Panic.h"
 #include "../IO/IO.h"
@@ -77,13 +78,6 @@ namespace InteruptHandlers
 
         KeyBoard::HandleScanCode(ScanCode);
 
-        uint8_t Key = KeyBoard::GetKeyPress();
-        if (Key != 0)
-        {
-            Renderer::Print(Key);
-            Renderer::SwapBuffers();
-        }
-
         IO::OutByte(PIC1_COMMAND, PIC_EOI);
     }
 
@@ -95,5 +89,10 @@ namespace InteruptHandlers
 
         IO::OutByte(PIC2_COMMAND, PIC_EOI);
         IO::OutByte(PIC1_COMMAND, PIC_EOI);
+    }
+
+    __attribute__((interrupt)) void SystemCall(InterruptFrame* frame)
+    {
+        SystemCalls::SysCall();
     }
 }
