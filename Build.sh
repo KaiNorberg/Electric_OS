@@ -1,5 +1,6 @@
 #!/bin/sh
-cd kernel
-make kernel
+cd gnu-efi
+make bootloader
 cd ..
+make os
 make buildimg
