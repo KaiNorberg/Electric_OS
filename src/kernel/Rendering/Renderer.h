@@ -7,7 +7,10 @@
 #include "../Memory/Memory.h"
 
 namespace Renderer
-{
+{    
+    extern uint64_t XPos;
+    extern uint64_t YPos;
+
     void Init(Framebuffer* framebuffer, PSF1_FONT* PSF1_Font);
 
     void PutChar(char chr, ARGB const& Color, uint64_t X, uint64_t Y);

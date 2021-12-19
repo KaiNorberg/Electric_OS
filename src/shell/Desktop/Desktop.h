@@ -10,7 +10,5 @@ namespace Desktop
 
     void MainLoop();
 
-    void SetPixel(Point Pos, RGBA Color);
-
     void Clear(RGBA Color = RGBA(0, 0, 0, 255));
 }

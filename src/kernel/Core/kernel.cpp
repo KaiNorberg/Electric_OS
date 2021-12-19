@@ -16,6 +16,8 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 
 	InitGDT();
 
+	PIT::SetDivisor(20933);
+
 	IDT::SetupInterrupts();
 
 	Renderer::Print("Hello, World!\n\r");

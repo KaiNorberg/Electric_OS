@@ -18,6 +18,8 @@ namespace InteruptHandlers
 
     __attribute__((interrupt)) void PageFault(InterruptFrame* frame);
 
+    __attribute__((interrupt)) void PIT(InterruptFrame* frame);
+
     __attribute__((interrupt)) void Keyboard(InterruptFrame* frame);
 
     __attribute__((interrupt)) void Mouse(InterruptFrame* frame);

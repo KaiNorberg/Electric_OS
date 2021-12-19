@@ -2,9 +2,11 @@
 
 #include <stdint.h>
 
+#include "RGBA.h"
+
 struct Framebuffer
 {
-	uint32_t* Base;
+	RGBA* Base;
 	uint64_t Size;
 	uint32_t Width;
 	uint32_t Height;

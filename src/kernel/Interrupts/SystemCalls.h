@@ -17,4 +17,6 @@ namespace SystemCalls
     void SysCall();
 
     void SysCall_Panic();
+
+    void SysCall_GetTicks();
 }

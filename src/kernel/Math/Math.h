@@ -10,8 +10,6 @@ namespace Math
 
     uint32_t IntPow(uint32_t X, uint32_t E);
 
-    double Sqrt(double X);
-
     template <typename T>
     T Clamp(const T& n, const T& lower, const T& upper) 
     {

@@ -6,6 +6,7 @@
 #include "../IO/IO.h"
 #include "../UserInput/KeyBoard.h"
 #include "../UserInput/Mouse.h"
+#include "../PIT/PIT.h"
 
 namespace InteruptHandlers
 {
@@ -70,6 +71,13 @@ namespace InteruptHandlers
         {
             asm("HLT");
         }
+    }
+
+    __attribute__((interrupt)) void PIT(InterruptFrame* frame)
+    {
+        PIT::Tick();
+
+        IO::OutByte(PIC1_COMMAND, PIC_EOI);
     }
 
     __attribute__((interrupt)) void Keyboard(InterruptFrame* frame)
