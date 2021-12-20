@@ -1,5 +1,6 @@
 #include "../Rendering/Renderer.h"
 #include "../Interrupts/IDT.h"
+#include "../Interrupts/SystemCalls.h"
 #include "../Memory/GDT/GDT.h"
 #include "../Memory/Memory.h"
 #include "../String/cstr.h"

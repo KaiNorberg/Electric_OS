@@ -1,5 +1,6 @@
 #include "IDT.h"
 #include "Handlers.h"
+#include "SystemCalls.h"
 #include "../IO/IO.h"
 #include "../UserInput/Mouse.h"
 
@@ -50,11 +51,8 @@ namespace IDT
         idtr.SetHandler(0x21, (uint64_t)InteruptHandlers::Keyboard);
         idtr.SetHandler(0x2C, (uint64_t)InteruptHandlers::Mouse);
 
-<<<<<<< HEAD:src/kernel/Interrupts/IDT.cpp
         idtr.SetHandler(SYSCALL_INT, (uint64_t)InteruptHandlers::SystemCall);
 
-=======
->>>>>>> parent of 0d6c9a1 (Started work on system calls.):kernel/src/Interrupts/IDT.cpp
         asm("LIDT %0" : : "m" (idtr));
 
         uint8_t a1 = IO::InByte(PIC1_DATA);
