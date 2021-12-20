@@ -168,15 +168,15 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 	InitializeLib(ImageHandle, SystemTable);
 
 	//Load kernel
-	Print(L"[..] Kernel loading\r");
-	EFI_FILE* Kernel = LoadFile(NULL, L"kernel.elf");
+	Print(L"[..] Electric_OS.elf loading\r");
+	EFI_FILE* Kernel = LoadFile(NULL, L"Electric_OS.elf");
 	if (Kernel == NULL)
 	{
-		Print(L"[ER] Kernel load   \n\r");
+		Print(L"[ER] Electric_OS.elf load   \n\r");
 	}
 	else
 	{
-		Print(L"[OK] Kernel load   \n\r");
+		Print(L"[OK] Electric_OS.elf load   \n\r");
 	}
 	Elf64_Ehdr Header;
 	{
@@ -254,7 +254,7 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 
 	SystemTable->BootServices->ExitBootServices(ImageHandle, MapKey);
 
-	KernelStart(&bootInfo);
+	KernelMain(&bootInfo);
 
 	return EFI_SUCCESS; // Exit the UEFI application
 }
