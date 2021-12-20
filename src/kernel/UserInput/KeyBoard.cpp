@@ -63,7 +63,7 @@ namespace KeyBoard
             Mouse::YPos -= 10;
             uint64_t YSize;
             Renderer::GetScreenSize(nullptr, &YSize);
-            Mouse::YPos = Math::Clamp(Mouse::YPos, (uint64_t)0, YSize - 16);
+            Mouse::YPos = Math::Clamp(Mouse::YPos, 0, YSize - 16);
         }
         break;
         case ARROW_DOWN:
@@ -71,7 +71,7 @@ namespace KeyBoard
             Mouse::YPos += 10;
             uint64_t YSize;
             Renderer::GetScreenSize(nullptr, &YSize);
-            Mouse::YPos = Math::Clamp(Mouse::YPos, (uint64_t)0, YSize - 16);
+            Mouse::YPos = Math::Clamp(Mouse::YPos, 0, YSize - 16);
         }
         break;
         case ARROW_LEFT:
@@ -79,7 +79,7 @@ namespace KeyBoard
             Mouse::XPos -= 10;
             uint64_t XSize;
             Renderer::GetScreenSize(&XSize, nullptr);
-            Mouse::XPos = Math::Clamp(Mouse::XPos, (uint64_t)0, XSize - 8);
+            Mouse::XPos = Math::Clamp(Mouse::XPos, 0, XSize - 8);
         }
         break;
         case ARROW_RIGHT:
@@ -87,7 +87,7 @@ namespace KeyBoard
             Mouse::XPos += 10;
             uint64_t XSize;
             Renderer::GetScreenSize(&XSize, nullptr);
-            Mouse::XPos = Math::Clamp(Mouse::XPos, (uint64_t)0, XSize - 8);
+            Mouse::XPos = Math::Clamp(Mouse::XPos, 0, XSize - 8);
         }
         break;
         default:

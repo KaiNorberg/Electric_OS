@@ -4,8 +4,8 @@
 
 namespace Mouse
 {
-    extern uint64_t XPos;
-    extern uint64_t YPos;
+    extern int64_t XPos;
+    extern int64_t YPos;
 
     void InitPS2();
 

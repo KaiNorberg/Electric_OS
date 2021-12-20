@@ -13,4 +13,4 @@ struct Framebuffer
 	uint32_t PixelsPerScanline;
 
 	void SetPixel(uint64_t X, uint64_t Y, ARGB Color);
-};
+} __attribute__((packed));

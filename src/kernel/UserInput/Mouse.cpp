@@ -14,8 +14,8 @@
 
 namespace Mouse
 { 
-    uint64_t XPos;
-    uint64_t YPos;
+    int64_t XPos;
+    int64_t YPos;
 
     void MouseWait()
     {   
@@ -133,8 +133,8 @@ namespace Mouse
             uint64_t XSize;
             uint64_t YSize;
             Renderer::GetScreenSize(&XSize, &YSize);
-            XPos = Math::Clamp(XPos, (uint64_t)0, XSize - 8);
-            YPos = Math::Clamp(YPos, (uint64_t)0, YSize - 16);
+            XPos = Math::Clamp(XPos, 0, (int64_t)XSize - 8);
+            YPos = Math::Clamp(YPos, 0, (int64_t)YSize - 16);
         }
         break;
         }

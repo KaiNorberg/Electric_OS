@@ -12,7 +12,7 @@ ASMFLAGS =
 LDFLAGS = -T $(LDS) -shared -Bsymbolic -nostdlib -fstack-protector
 
 SRCDIR := src
-OBJDIR := lib
+OBJDIR := Build
 BUILDDIR = bin
 BOOTEFI := $(GNUEFI)/x86_64/bootloader/main.efi
 

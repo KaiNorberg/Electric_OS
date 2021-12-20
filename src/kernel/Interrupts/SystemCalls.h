@@ -19,4 +19,6 @@ namespace SystemCalls
     void SysCall_Panic();
 
     void SysCall_GetTicks();
+
+    void SysCall_GetMousePos();
 }

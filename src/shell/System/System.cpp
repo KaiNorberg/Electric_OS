@@ -27,12 +27,20 @@ namespace System
     {
         System::SetSelector(SYSCALL_GETTICKS_INDEX);
         asm("INT $0x80");
-        uint64_t StartTicks = *(uint64_t*)GetReturn();
-        while (*(uint64_t*)GetReturn() < StartTicks + Seconds * 57.0)
+        uint64_t StartTicks = *(uint64_t*)GetReturn(0);
+        while (*(uint64_t*)GetReturn(0) < StartTicks + Seconds * 57.0)
         {
             asm("HLT");
             asm("INT $0x80");
         }
+    }
+
+    Point GetMousePos()
+    {
+        System::SetSelector(SYSCALL_GETMOUSEPOS_INDEX);
+        asm("INT $0x80");
+
+        return Point(*((int64_t*)GetReturn(0)), *((int64_t*)GetReturn(1)));
     }
 
     void* GetSysCallAddr()
@@ -40,9 +48,9 @@ namespace System
         return SysCallAddr;
     }
 
-    void* GetReturn()
+    void* GetReturn(uint64_t Index)
     {
-        return (void*)(((uint64_t)SysCallAddr) + 0x08);
+        return (void*)(((uint64_t)SysCallAddr) + 0x08 * (Index + 1));
     }
 
     void SetSelector(uint64_t Selector)
