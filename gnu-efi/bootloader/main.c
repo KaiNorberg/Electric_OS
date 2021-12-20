@@ -56,7 +56,7 @@ Framebuffer* InitializeGOP()
 	}
 	else
 	{
-		Print(L"[OK] GOP initialized    \n\r");
+		Print(L"[OK] GOP initialized   \n\r");
 	}
 
 	framebuffer.Base = (unsigned int*)GOP->Mode->FrameBufferBase;
@@ -168,47 +168,47 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 	InitializeLib(ImageHandle, SystemTable);
 
 	//Load kernel
-	Print(L"[..] Electric_OS.elf loading\r");
-	EFI_FILE* ElfFile = LoadFile(NULL, L"Electric_OS.elf");
-	if (ElfFile == NULL)
+	Print(L"[..] Kernel loading\r");
+	EFI_FILE* Kernel = LoadFile(NULL, L"kernel.elf");
+	if (Kernel == NULL)
 	{
-		Print(L"[ER] Electric_OS.elf load   \n\r");
+		Print(L"[ER] Kernel load   \n\r");
 	}
 	else
 	{
-		Print(L"[OK] Electric_OS.elf load   \n\r");
+		Print(L"[OK] Kernel load   \n\r");
 	}
 	Elf64_Ehdr Header;
 	{
 		UINTN FileInfoSize;
 		EFI_FILE_INFO* FileInfo;
-		ElfFile->GetInfo(ElfFile, &gEfiFileInfoGuid, &FileInfoSize, NULL);
+		Kernel->GetInfo(Kernel, &gEfiFileInfoGuid, &FileInfoSize, NULL);
 		SystemTable->BootServices->AllocatePool(EfiLoaderData, FileInfoSize, (void**)&FileInfo);
-		ElfFile->GetInfo(ElfFile, &gEfiFileInfoGuid, &FileInfoSize, (void**)&FileInfo);
+		Kernel->GetInfo(Kernel, &gEfiFileInfoGuid, &FileInfoSize, (void**)&FileInfo);
 
 		UINTN Size = sizeof(Header);
-		ElfFile->Read(ElfFile, &Size, &Header);
+		Kernel->Read(Kernel, &Size, &Header);
 	}
-	Print(L"[..] Checking Electric_OS.elf format\r");
+	Print(L"[..] Checking kernel format\r");
 	if (memcmp(&Header.e_ident[EI_MAG0], ELFMAG, SELFMAG) != 0 ||
 		Header.e_ident[EI_CLASS] != ELFCLASS64 ||
 		Header.e_ident[EI_DATA] != ELFDATA2LSB ||
 		Header.e_machine != EM_X86_64 ||
 		Header.e_version != EV_CURRENT)
 	{
-		Print(L"[ER] Electric_OS.elf format         \n\r");
+		Print(L"[ER] Kernal format         \n\r");
 	}
 	else
 	{
-		Print(L"[OK] Electric_OS.elf format         \n\r");
+		Print(L"[OK] Kernal format         \n\r");
 	}
 	Elf64_Phdr* phdrs;
 	{
-		ElfFile->SetPosition(ElfFile, Header.e_phoff);
+		Kernel->SetPosition(Kernel, Header.e_phoff);
 
 		UINTN size = Header.e_phnum * Header.e_phentsize;
 		SystemTable->BootServices->AllocatePool(EfiLoaderData, size, (void**)&phdrs);
-		ElfFile->Read(ElfFile, &size, phdrs);
+		Kernel->Read(Kernel, &size, phdrs);
 	}
 	for (Elf64_Phdr* phdr = phdrs; (char*)phdr < (char*)phdrs + Header.e_phnum * Header.e_phentsize; phdr = (Elf64_Phdr*)((char*)phdr + Header.e_phentsize))
 	{
@@ -220,9 +220,9 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 			Elf64_Addr segment = phdr->p_paddr;
 			SystemTable->BootServices->AllocatePages(AllocateAddress, EfiLoaderData, pages, &segment);
 
-			ElfFile->SetPosition(ElfFile, phdr->p_offset);
+			Kernel->SetPosition(Kernel, phdr->p_offset);
 			UINTN size = phdr->p_filesz;
-			ElfFile->Read(ElfFile, &size, (void*)segment);
+			Kernel->Read(Kernel, &size, (void*)segment);
 		}
 		break;
 		}
@@ -254,7 +254,7 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 
 	SystemTable->BootServices->ExitBootServices(ImageHandle, MapKey);
 
-	KernelMain(&bootInfo);
+	KernelStart(&bootInfo);
 
 	return EFI_SUCCESS; // Exit the UEFI application
 }
