@@ -12,7 +12,7 @@ namespace InteruptHandlers
 {
     __attribute__((interrupt)) void InvalidOP(InterruptFrame* frame)
     {
-        KernelPanic("Invalid OP Code Detected");
+        Panic("Invalid OP Code Detected");
         while(true)
         {
             asm("HLT");
@@ -21,7 +21,7 @@ namespace InteruptHandlers
 
     __attribute__((interrupt)) void DeviceNotDetected(InterruptFrame* frame)
     {
-        KernelPanic("Device Not Detected");
+        Panic("Device Not Detected");
         while(true)
         {
             asm("HLT");
@@ -30,7 +30,7 @@ namespace InteruptHandlers
 
     __attribute__((interrupt)) void DoubleFault(InterruptFrame* frame)
     {
-        KernelPanic("Double Fault");
+        Panic("Double Fault");
         while(true)
         {
             asm("HLT");
@@ -39,7 +39,7 @@ namespace InteruptHandlers
 
     __attribute__((interrupt)) void SegmentNotPresent(InterruptFrame* frame)
     {
-        KernelPanic("Segment Not Present");
+        Panic("Segment Not Present");
         while(true)
         {
             asm("HLT");
@@ -48,7 +48,7 @@ namespace InteruptHandlers
 
     __attribute__((interrupt)) void StackSegmentFault(InterruptFrame* frame)
     {
-        KernelPanic("Stack Segment Fault");
+        Panic("Stack Segment Fault");
         while(true)
         {
             asm("HLT");
@@ -57,7 +57,7 @@ namespace InteruptHandlers
 
     __attribute__((interrupt)) void GeneralProtectionFault(InterruptFrame* frame)
     {
-        KernelPanic("General Protection Fault");
+        Panic("General Protection Fault");
         while(true)
         {
             asm("HLT");
@@ -66,7 +66,7 @@ namespace InteruptHandlers
 
     __attribute__((interrupt)) void PageFault(InterruptFrame* frame)
     {
-        KernelPanic("Page Fault");
+        Panic("Page Fault");
         while(true)
         {
             asm("HLT");

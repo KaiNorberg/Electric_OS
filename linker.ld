@@ -5,12 +5,15 @@ SECTIONS
 {
     _KernelStart = .;
 
+<<<<<<< HEAD:linker.ld
     .syscallargs BLOCK(0x1000) : ALIGN(0x1000)
     {
         _SYS_CALL_ADDR = .;
         . = . + 0x1000;
     }
 
+=======
+>>>>>>> parent of 0d6c9a1 (Started work on system calls.):kernel/kernel.ld
     .idt BLOCK(0x1000) : ALIGN(0x1000)
     {
         _IDT = .;
