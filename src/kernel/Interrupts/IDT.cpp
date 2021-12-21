@@ -45,6 +45,7 @@ namespace IDT
         idtr.SetHandler(0xD, (uint64_t)InteruptHandlers::GeneralProtectionFault);
         idtr.SetHandler(0xE, (uint64_t)InteruptHandlers::PageFault);
 
+        idtr.SetHandler(0x20, (uint64_t)InteruptHandlers::PIT);
         idtr.SetHandler(0x21, (uint64_t)InteruptHandlers::Keyboard);
         idtr.SetHandler(0x2C, (uint64_t)InteruptHandlers::Mouse);
 
@@ -82,7 +83,7 @@ namespace IDT
 
         Mouse::InitPS2();
 
-        IO::OutByte(PIC1_DATA, 0b11111001);
+        IO::OutByte(PIC1_DATA, 0b11111000);
         IO::OutByte(PIC2_DATA, 0b11101111);
 
         asm ("sti");

@@ -172,11 +172,11 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 	EFI_FILE* Kernel = LoadFile(NULL, L"Electric_OS.elf");
 	if (Kernel == NULL)
 	{
-		Print(L"[ER] Electric_OS.elf load   \n\r");
+		Print(L"[ER] Electric_OS.elf load    \n\r");
 	}
 	else
 	{
-		Print(L"[OK] Electric_OS.elf load   \n\r");
+		Print(L"[OK] Electric_OS.elf load    \n\r");
 	}
 	Elf64_Ehdr Header;
 	{

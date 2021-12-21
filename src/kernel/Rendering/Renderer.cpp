@@ -23,7 +23,12 @@ namespace Renderer
         CursorPos.Y = 0;
     }
 
-    void PutChar(char chr, ARGB const& Color, Point const& Pos)
+    void PutPixel(Point Pixel, ARGB Color)
+    {
+        *(uint64_t*)((uint64_t)Backbuffer.Base + Pixel.X * 4 + Pixel.Y * Backbuffer.PixelsPerScanline * 4) = Color.ToInt();
+    }
+
+    void PutChar(char chr, ARGB Color, Point Pos)
     {
         char* Glyph = CurrentFont->glyphBuffer + (chr * CurrentFont->psf1_header->charsize);
 
@@ -33,7 +38,7 @@ namespace Renderer
             {
                 if ((*Glyph & (0b10000000 >> (x - Pos.X))) > 0)
                 {
-                    Backbuffer.SetPixel(Point(x, y), Color);
+                    PutPixel(Point(x, y), Color);
                 }
             }
             Glyph++;
@@ -83,7 +88,7 @@ namespace Renderer
         {
             for (int X = 0; X < Backbuffer.Width; X++)
             {
-                Backbuffer.SetPixel(Point(X, Y), Color);
+                PutPixel(Point(X, Y), Color);
             }
         }
     }

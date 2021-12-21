@@ -5,6 +5,7 @@
 #include "../String/cstr.h"
 #include "../UserInput/KeyBoard.h"
 #include "../UserInput/Mouse.h"
+#include "../PIT/PIT.h"
 
 struct BootLoaderInfo
 {

@@ -5,6 +5,7 @@
 #include "../IO/IO.h"
 #include "../UserInput/KeyBoard.h"
 #include "../UserInput/Mouse.h"
+#include "../PIT/PIT.h"
 
 namespace InteruptHandlers
 {
@@ -71,18 +72,18 @@ namespace InteruptHandlers
         }
     }
 
+    __attribute__((interrupt)) void PIT(InterruptFrame* frame)
+    {
+        PIT::Tick();
+
+        IO::OutByte(PIC1_COMMAND, PIC_EOI);
+    }
+
     __attribute__((interrupt)) void Keyboard(InterruptFrame* frame)
     {
         uint8_t ScanCode = IO::InByte(0x60);
 
         KeyBoard::HandleScanCode(ScanCode);
-
-        uint8_t Key = KeyBoard::GetKeyPress();
-        if (Key != 0)
-        {
-            Renderer::Print(Key);
-            Renderer::SwapBuffers();
-        }
 
         IO::OutByte(PIC1_COMMAND, PIC_EOI);
     }

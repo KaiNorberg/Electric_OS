@@ -8,12 +8,20 @@ namespace cstr
         return (char)Number + '0';
     }
 
+    char IntToStringOutput[128];
     char* ToString(uint64_t Number)
     {
-        return ToString((int64_t)Number);
+        uint32_t DigitAmount = Math::GetDigitAmount(Number);
+
+        for (uint32_t i = DigitAmount; i-- > 0;)
+        {
+            IntToStringOutput[DigitAmount - i - 1] = IntToChar(Math::GetDigit(Number, i));
+        }
+        IntToStringOutput[DigitAmount] = '\0';
+
+        return IntToStringOutput;
     }
 
-    char IntToStringOutput[128];
     char* ToString(int64_t Number)
     {
         uint32_t DigitAmount = Math::GetDigitAmount(Number);

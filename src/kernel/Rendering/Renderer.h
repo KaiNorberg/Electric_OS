@@ -10,7 +10,9 @@ namespace Renderer
 {
     void Init(Framebuffer* framebuffer, PSF1_FONT* PSF1_Font);
 
-    void PutChar(char chr, ARGB const& Color, Point const& Pos);
+    void PutPixel(Point Pixel, ARGB Color);
+
+    void PutChar(char chr, ARGB Color, Point Pos);
 
     void Print(const char* str, ARGB Color = ARGB(255));
 
@@ -19,6 +21,8 @@ namespace Renderer
     void Clear(ARGB Color = ARGB(0));
 
     void SwapBuffers();
+
+    void PutPixel(Point Pixel, ARGB Color);
 
     Point GetScreenSize();
 }

@@ -12,6 +12,4 @@ struct Framebuffer
 	uint32_t Width;
 	uint32_t Height;
 	uint32_t PixelsPerScanline;
-
-	void SetPixel(Point Pixel, ARGB Color);
 };
