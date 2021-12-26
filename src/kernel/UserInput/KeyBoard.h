@@ -5,6 +5,7 @@
 #define ENTER 0x1C
 #define BACKSPACE 0x0E
 #define CONTROL 0x1D
+#define LEFT_SHIFT 0x2A
 #define ARROW_UP 0x48
 #define ARROW_DOWN 0x50
 #define ARROW_LEFT 0x4B
@@ -19,4 +20,6 @@ namespace KeyBoard
     char GetKeyPress();
 
     bool IsPressed(char Key);
+
+    bool IsHeld(char Key);
 }

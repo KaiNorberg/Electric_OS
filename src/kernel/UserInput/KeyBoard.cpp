@@ -13,7 +13,7 @@ namespace KeyBoard
         't', 'y', 'u', 'i', 'o', 'p', '[', ']', ENTER,	/* Enter key */
         CONTROL,			/* 29   - Control */
         'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',	/* 39 */
-        '\'', '`', 0,		/* Left shift */
+        '\'', '`', LEFT_SHIFT,		/* Left shift */
         '\\', 'z', 'x', 'c', 'v', 'b', 'n',			/* 49 */
         'm', ',', '.', '/',   0,				/* Right shift */
         '*',
@@ -50,11 +50,15 @@ namespace KeyBoard
 
     void HandleScanCode(uint8_t ScanCode)
     {
-        bool IsUp = ScanCode & (1 << 7);
-
-        ScanCode &= ~(1UL << 7);
+        bool IsUp = ScanCode & (0b10000000);
+        ScanCode &= ~(0b10000000);
 
         uint8_t Key = ScanCodeTable[ScanCode];
+
+        if (IsHeld(LEFT_SHIFT) && Key != LEFT_SHIFT)
+        {
+            Key &= ~(0b00100000);
+        }
 
         switch (Key)
         {
@@ -108,5 +112,10 @@ namespace KeyBoard
             CurrentKey = 0;
         }
         return IsPressed;
+    }
+
+    bool IsHeld(char Key)
+    {
+        return PressedTable[Key];
     }
 }

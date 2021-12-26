@@ -15,19 +15,13 @@ namespace PageAllocator
 
     uint64_t GetLockedMemory();
 
-    uint64_t GetReservedMemory();
-
     uint64_t GetTotalMemory();
 
     void* LockPage(void* Address);
 
-    void* ReservePage(void* Address);
-
     void* FreePage(void* Address);
 
     void LockPages(void* Address, uint64_t Count);
-
-    void ReservePages(void* Address, uint64_t Count);
 
     void FreePages(void* Address, uint64_t Count);
 }

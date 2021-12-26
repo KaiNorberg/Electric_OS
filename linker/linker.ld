@@ -11,18 +11,6 @@ SECTIONS
         . = . + 0x1000;
     }
 
-    .backbuffer : ALIGN(0x1000)
-    {
-        _BACKBUFFER = .;
-        . = . + 0x21C0000;
-    }
-    
-    .PageStatusMap : ALIGN(0x1000)
-    {
-        _PageStatusMap = .;
-        . = . + 0x800000;
-    }
-
     .text : ALIGN(0x1000)
     {
         *(.text)

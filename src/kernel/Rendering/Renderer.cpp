@@ -20,7 +20,7 @@ namespace Renderer
 
     void PutPixel(Point Pixel, ARGB Color)
     {
-        *(uint64_t*)((uint64_t)Screenbuffer->Base + Pixel.X * 4 + Pixel.Y * Screenbuffer->PixelsPerScanline * 4) = Color.ToInt();
+        *(uint32_t*)((uint64_t)Screenbuffer->Base + Pixel.X * 4 + Pixel.Y * Screenbuffer->PixelsPerScanline * 4) = Color.ToInt();
     }
 
     void PutChar(char chr, ARGB Color, Point Pos)

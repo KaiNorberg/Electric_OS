@@ -23,9 +23,6 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 	Renderer::Print("Locked Memory: ");
 	Renderer::Print(cstr::ToString(PageAllocator::GetLockedMemory() / 1048576));
 	Renderer::Print(" MB\n\r");
-	Renderer::Print("Reserved Memory: ");
-	Renderer::Print(cstr::ToString(PageAllocator::GetReservedMemory() / 1048576));
-	Renderer::Print(" MB\n\r");
 
 	for (int i = 0; i < 10; i++)
 	{
@@ -36,10 +33,12 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 		Renderer::Print("\n\r");
 	}
 
+	Point ScreenSize = Renderer::GetScreenSize();
+	Point OldMousePos = Mouse::Position;
 	bool Alternate = false;
 	uint64_t PrevTick = PIT::Ticks;
 	while (true)
-	{		
+	{				
 		if (PrevTick + PIT::GetFrequency() < PIT::Ticks)
 		{
 			ARGB Color;
@@ -64,12 +63,36 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 			Alternate = !Alternate;
 		}
 
-        uint8_t Key = KeyBoard::GetKeyPress();
-        if (Key != 0)
-        {
-            Renderer::Print(Key);
-        }
-		Renderer::PutChar('M', ARGB(255, 255, 0, 0), Mouse::Position);
+        for (int y = 0; y < 6; y++)
+		{		
+			Renderer::CursorPos = Point(ScreenSize.X / 2 - (21 * 8 * 3) / 2, ScreenSize.Y / 2  - (6 * 16 * 2) / 2 + 32 * y);
+			for (int x = 0; x < 21; x++)
+			{
+				char Char = x + y * 21;
+				if (KeyBoard::IsHeld(Char))
+				{
+					Renderer::PutChar(Char, ARGB(255, 255, 0, 0), Point(ScreenSize.X / 2 - (21 * 8 * 3) / 2 + x * 8 * 3, ScreenSize.Y / 2 - (6 * 16 * 2) + 32 * y));
+				}
+				else 
+				{
+					Renderer::PutChar(Char, ARGB(255, 0, 255, 0), Point(ScreenSize.X / 2 - (21 * 8 * 3) / 2 + x * 8 * 3, ScreenSize.Y / 2 - (6 * 16 * 2) + 32 * y));
+				}
+			}
+		}
+
+		if (OldMousePos.X != Mouse::Position.X || OldMousePos.Y != Mouse::Position.Y)
+		{
+			for (int Y = 0; Y < 16; Y++)
+			{
+				for (int X = 0; X < 8; X++)
+				{
+					Renderer::PutPixel(Point(OldMousePos.X + X, OldMousePos.Y + Y), ARGB(255, 0, 0, 255));
+				}
+			}
+
+			Renderer::PutChar('<', ARGB(255, 255, 0, 0), Mouse::Position);
+			OldMousePos = Mouse::Position;
+		}
 	}
 
 	while(true)

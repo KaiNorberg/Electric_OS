@@ -8,6 +8,8 @@
 
 namespace Renderer
 {
+    extern Point CursorPos;
+
     void Init(Framebuffer* framebuffer, PSF_FONT* PSF_Font);
 
     void PutPixel(Point Pixel, ARGB Color);
