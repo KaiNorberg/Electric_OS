@@ -2,19 +2,39 @@
 
 extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 {
-	Renderer::Init(BootInfo->ScreenBuffer, BootInfo->PSF1Font);
+	Renderer::Init(BootInfo->ScreenBuffer, BootInfo->PSFFont);
 	Renderer::Clear(ARGB(255, 0, 0, 255));
 
 	InitGDT();
 
-	PIT::SetFrequency(60);
+	PageAllocator::Init(BootInfo->MemoryMap);
+
+	PIT::SetFrequency(100);
 
 	IDT::SetupInterrupts();
 	
 	Renderer::Print("Hello, World!\n\r");
-	Renderer::Print("Memory Usage: ");
-	Renderer::Print(cstr::ToString((((uint64_t)&_KernelEnd) - ((uint64_t)&_KernelStart)) / 1048576));
+	Renderer::Print("Total Memory: ");
+	Renderer::Print(cstr::ToString(PageAllocator::GetTotalMemory() / 1048576));
 	Renderer::Print(" MB\n\r");
+	Renderer::Print("Used Memory: ");
+	Renderer::Print(cstr::ToString(PageAllocator::GetUsedMemory() / 1048576));
+	Renderer::Print(" MB\n\r");
+	Renderer::Print("Free Memory: ");
+	Renderer::Print(cstr::ToString(PageAllocator::GetFreeMemory() / 1048576));
+	Renderer::Print(" MB\n\r");
+	Renderer::Print("Reserved Memory: ");
+	Renderer::Print(cstr::ToString(PageAllocator::GetReservedMemory() / 1048576));
+	Renderer::Print(" MB\n\r");
+
+	/*for (int i = 0; i < 10; i++)
+	{
+		Renderer::Print("Random Page ");
+		Renderer::Print(cstr::ToString(i));
+		Renderer::Print(": ");
+		Renderer::Print(cstr::ToString((uint64_t)PageAllocator::RequestPage()));
+		Renderer::Print("\n\r");
+	}*/
 
 	Renderer::SwapBuffers();
 

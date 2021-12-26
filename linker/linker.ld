@@ -16,6 +16,17 @@ SECTIONS
         _BACKBUFFER = .;
         . = . + 0x21C0000;
     }
+    
+    .PageStatusMap BLOCK(0x800000) : ALIGN(0x1000)
+    {
+        _PageStatusMap = .;
+        . = . + 0x800000;
+    }
+
+    .block BLOCK(0x800000) : ALIGN(0x1000)
+    {
+        . = . + 0x800000;
+    }
 
     .text : ALIGN(0x1000)
     {
@@ -37,6 +48,6 @@ SECTIONS
         *(COMMON)
         *(.bss)
     }
+    
     _KernelEnd = .;
-
 }

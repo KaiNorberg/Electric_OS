@@ -11,6 +11,14 @@ struct EFI_MEMORY_DESCRIPTOR
     uint64_t Attribute;
 };
 
+struct EFI_MEMORY_MAP
+{
+	EFI_MEMORY_DESCRIPTOR* Base;
+	uint64_t Size;
+	uint64_t DescSize;
+	uint64_t Key;
+};
+
 enum class EFI_MEMORY_TYPE
 {
     EfiReservedMemoryType,

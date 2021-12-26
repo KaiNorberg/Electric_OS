@@ -8,17 +8,17 @@ namespace Renderer
 {
     Framebuffer Backbuffer;
     Framebuffer* Screenbuffer;
-    PSF1_FONT* CurrentFont;
+    PSF_FONT* CurrentFont;
 
     Point CursorPos;
 
-    void Init(Framebuffer* framebuffer, PSF1_FONT* PSF1_Font)
+    void Init(Framebuffer* framebuffer, PSF_FONT* PSF_Font)
     {
         Screenbuffer = framebuffer;
         Backbuffer = *Screenbuffer;
         Backbuffer.Base = (ARGB*)&_BACKBUFFER;
 
-        CurrentFont = PSF1_Font;
+        CurrentFont = PSF_Font;
         CursorPos.X = 0;
         CursorPos.Y = 0;
     }
@@ -30,7 +30,7 @@ namespace Renderer
 
     void PutChar(char chr, ARGB Color, Point Pos)
     {
-        char* Glyph = CurrentFont->glyphBuffer + (chr * CurrentFont->psf1_header->charsize);
+        char* Glyph = CurrentFont->glyphBuffer + (chr * CurrentFont->PSF_header->charsize);
 
         for (uint64_t y = Pos.Y; y < Pos.Y + 16; y++)
         {
