@@ -14,9 +14,6 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 	IDT::SetupInterrupts();
 	
 	Renderer::Print("Hello, World!\n\r");
-	Renderer::Print("Total Memory: ");
-	Renderer::Print(cstr::ToString(PageAllocator::GetTotalMemory() / 1048576));
-	Renderer::Print(" MB\n\r");
 	Renderer::Print("Free Memory: ");
 	Renderer::Print(cstr::ToString(PageAllocator::GetFreeMemory() / 1048576));
 	Renderer::Print(" MB\n\r");

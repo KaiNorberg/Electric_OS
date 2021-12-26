@@ -5,7 +5,6 @@
 
 extern uint64_t _KernelStart;
 extern uint64_t _KernelEnd;
-extern uint64_t _PageStatusMap;
 
 namespace PageAllocator
 {
@@ -74,11 +73,6 @@ namespace PageAllocator
             }
         }
         return LockedMemory;
-    }
-
-    uint64_t GetTotalMemory()
-    {
-        return PageAmount * 4096;
     }
 
     void* RequestPage()

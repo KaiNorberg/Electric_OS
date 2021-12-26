@@ -33,7 +33,7 @@ namespace Renderer
             {
                 if ((*Glyph & (0b10000000 >> (x - Pos.X))) > 0)
                 {
-                    PutPixel(Point(x, y), Color);
+                    *(uint64_t*)((uint64_t)Screenbuffer->Base + x * 4 + y * Screenbuffer->PixelsPerScanline * 4) = Color.ToInt();
                 }
             }
             Glyph++;
