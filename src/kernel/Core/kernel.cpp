@@ -36,8 +36,6 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 		Renderer::Print("\n\r");
 	}
 
-	Renderer::SwapBuffers();
-
 	bool Alternate = false;
 	uint64_t PrevTick = PIT::Ticks;
 	while (true)
@@ -72,8 +70,6 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
             Renderer::Print(Key);
         }
 		Renderer::PutChar('M', ARGB(255, 255, 0, 0), Mouse::Position);
-
-        Renderer::SwapBuffers();
 	}
 
 	while(true)

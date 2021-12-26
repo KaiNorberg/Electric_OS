@@ -2,11 +2,8 @@
 
 #include <stdint.h>
 
-extern uint64_t _BACKBUFFER;
-
 namespace Renderer
 {
-    Framebuffer Backbuffer;
     Framebuffer* Screenbuffer;
     PSF_FONT* CurrentFont;
 
@@ -15,8 +12,6 @@ namespace Renderer
     void Init(Framebuffer* framebuffer, PSF_FONT* PSF_Font)
     {
         Screenbuffer = framebuffer;
-        Backbuffer = *Screenbuffer;
-        Backbuffer.Base = (ARGB*)&_BACKBUFFER;
 
         CurrentFont = PSF_Font;
         CursorPos.X = 0;
@@ -25,7 +20,7 @@ namespace Renderer
 
     void PutPixel(Point Pixel, ARGB Color)
     {
-        *(uint64_t*)((uint64_t)Backbuffer.Base + Pixel.X * 4 + Pixel.Y * Backbuffer.PixelsPerScanline * 4) = Color.ToInt();
+        *(uint64_t*)((uint64_t)Screenbuffer->Base + Pixel.X * 4 + Pixel.Y * Screenbuffer->PixelsPerScanline * 4) = Color.ToInt();
     }
 
     void PutChar(char chr, ARGB Color, Point Pos)
@@ -68,7 +63,7 @@ namespace Renderer
         }
         else
         {        
-            if (CursorPos.X + 16 > Backbuffer.Width)
+            if (CursorPos.X + 16 > Screenbuffer->Width)
             {
                 CursorPos.X = 0;
                 CursorPos.Y += 16;
@@ -84,22 +79,17 @@ namespace Renderer
         CursorPos.X = 0;
         CursorPos.Y = 0;
 
-        for (int Y = 0; Y < Backbuffer.Height; Y++)
+        for (int Y = 0; Y < Screenbuffer->Height; Y++)
         {
-            for (int X = 0; X < Backbuffer.Width; X++)
+            for (int X = 0; X < Screenbuffer->Width; X++)
             {
                 PutPixel(Point(X, Y), Color);
             }
         }
     }
 
-    void SwapBuffers()
-    {
-        Memory::Copy(Backbuffer.Base, Screenbuffer->Base, Backbuffer.Size);
-    }
-
     Point GetScreenSize()
     {
-        return Point(Backbuffer.Width, Backbuffer.Height);
+        return Point(Screenbuffer->Width, Screenbuffer->Height);
     }
 }

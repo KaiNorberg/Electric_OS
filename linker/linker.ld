@@ -5,19 +5,19 @@ SECTIONS
 {
     _KernelStart = .;
 
-    .idt BLOCK(0x1000) : ALIGN(0x1000)
+    .idt : ALIGN(0x1000)
     {
         _IDT = .;
         . = . + 0x1000;
     }
 
-    .backbuffer BLOCK(0x21C0000) : ALIGN(0x1000)
+    .backbuffer : ALIGN(0x1000)
     {
         _BACKBUFFER = .;
         . = . + 0x21C0000;
     }
     
-    .PageStatusMap BLOCK(0x800000) : ALIGN(0x1000)
+    .PageStatusMap : ALIGN(0x1000)
     {
         _PageStatusMap = .;
         . = . + 0x800000;
