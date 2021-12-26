@@ -9,32 +9,30 @@ extern uint64_t _PageStatusMap;
 
 namespace PageAllocator
 {
-    bool* PageStatusMap;
-    uint64_t PageAmount;
+    enum PageStatus
+    {
+        Free = 0b00000000,
+        Locked = 0b00000001,
+        Reserved = 0b00000010
+    };
 
-    uint64_t TotalMemory;
-    uint64_t FreeMemory;
-    uint64_t ReservedMemory;
-    uint64_t UsedMemory;
+    uint8_t* PageStatusMap;
+    uint64_t PageAmount;
 
     void Init(EFI_MEMORY_MAP* MemoryMap)
     {   
-        TotalMemory = 0;
+        uint64_t TotalMemory = 0;
         for (int i = 0; i < MemoryMap->Size / MemoryMap->DescSize; i++)
         {
             EFI_MEMORY_DESCRIPTOR* Desc = (EFI_MEMORY_DESCRIPTOR*)((uint64_t)MemoryMap->Base + (i * MemoryMap->DescSize));
             TotalMemory += Desc->NumberOfPages * 4096;
         }
-        FreeMemory = TotalMemory;
-        UsedMemory = 0;
-        ReservedMemory = 0;
-
         PageAmount = TotalMemory / 4096 + 1;
 
-        PageStatusMap = (bool*)&_PageStatusMap; 
+        PageStatusMap = (uint8_t*)&_PageStatusMap; 
         for (int i = 0; i < PageAmount; i++)
         {
-            PageStatusMap[i] = 0;
+            PageStatusMap[i] = (uint8_t)PageStatus::Free;
         }
 
         LockPages(PageStatusMap, PageAmount / 4096 + 1);
@@ -53,104 +51,102 @@ namespace PageAllocator
 
     uint64_t GetFreeMemory()
     {
+        uint64_t FreeMemory = 0;
+        for (int i = 0; i < PageAmount; i++)
+        {
+            if (PageStatusMap[i] == (uint8_t)PageStatus::Free)
+            {
+                FreeMemory += 4096;
+            }
+        }
         return FreeMemory;
     }
 
-    uint64_t GetUsedMemory()
+    uint64_t GetLockedMemory()
     {
-        return UsedMemory;
+        uint64_t LockedMemory = 0;
+        for (int i = 0; i < PageAmount; i++)
+        {
+            if (PageStatusMap[i] == (uint8_t)PageStatus::Locked)
+            {
+                LockedMemory += 4096;
+            }
+        }
+        return LockedMemory;
     }
 
     uint64_t GetReservedMemory()
     {
+        uint64_t ReservedMemory = 0;
+        for (int i = 0; i < PageAmount; i++)
+        {
+            if (PageStatusMap[i] == (uint8_t)PageStatus::Reserved)
+            {
+                ReservedMemory += 4096;
+            }
+        }
         return ReservedMemory;
     }
 
     uint64_t GetTotalMemory()
     {
-        return TotalMemory;
+        return PageAmount * 4096;
     }
 
     void* RequestPage()
     {
-        //BROKEN ON REAL HARDWARE
-        /*for (uint64_t i = 0; i < PageAmount; i++)
+        for (uint64_t i = 0; i < PageAmount; i++)
         {
-            if (PageStatusMap[i] == false)
+            if (PageStatusMap[i] == (uint8_t)PageStatus::Free)
             {
-                LockPage((void*)(i * 4096));
-                return (void*)(i * 4096);
+                return LockPage((void*)(i * 4096));
             }
-        }*/
+        }
 
         return nullptr;
     }
 
-    void LockPage(void* Address)
+    void* LockPage(void* Address)
     {
         uint64_t PageIndex = (uint64_t)Address / 4096;
-        if (PageStatusMap[PageIndex] == true || PageIndex > PageAmount)
+        if (PageIndex > PageAmount)
         {
-            return;
+            return nullptr;
         }
-        PageStatusMap[PageIndex] = true;
+        PageStatusMap[PageIndex] = (uint8_t)PageStatus::Locked;
 
-        FreeMemory -= 4096;
-        UsedMemory += 4096;
+        return Address;
     }
 
-    void FreePage(void* Address)
+    void* ReservePage(void* Address)
     {
         uint64_t PageIndex = (uint64_t)Address / 4096;
-        if (PageStatusMap[PageIndex] == false || PageIndex > PageAmount)
+        if (PageIndex > PageAmount)
         {
-            return;
+            return nullptr;
         }
-        PageStatusMap[PageIndex] = false;
+        PageStatusMap[PageIndex] = (uint8_t)PageStatus::Reserved;
 
-        FreeMemory += 4096;
-        UsedMemory -= 4096;
+        return Address;
     }
 
-    void ReservePage(void* Address)
+    void* FreePage(void* Address)
     {
         uint64_t PageIndex = (uint64_t)Address / 4096;
-        if (PageStatusMap[PageIndex] == true || PageIndex > PageAmount)
+        if (PageIndex > PageAmount)
         {
-            return;
+            return nullptr;
         }
-        PageStatusMap[PageIndex] = true;
+        PageStatusMap[PageIndex] = (uint8_t)PageStatus::Free;
 
-        FreeMemory -= 4096;
-        ReservedMemory += 4096;
-    }
-
-    void UnReservePage(void* Address)
-    {
-        uint64_t PageIndex = (uint64_t)Address / 4096;
-        if (PageStatusMap[PageIndex] == false || PageIndex > PageAmount)
-        {
-            return;
-        }
-        PageStatusMap[PageIndex] = false;
-
-        FreeMemory += 4096;
-        ReservedMemory -= 4096;
+        return Address;
     }
 
     void LockPages(void* Address, uint64_t Count)
     {
         for (int i = 0; i < Count; i++)
         {
-            LockPage(Address + i * 4096);
-        }
-    }
-
-    void FreePages(void* Address, uint64_t Count)
-    {
-        for (int i = 0; i < Count; i++)
-        {
-            FreePage(Address + i * 4096);
+            LockPage((void*)((uint64_t)Address + i * 4096));
         }
     }
 
@@ -158,15 +154,15 @@ namespace PageAllocator
     {
         for (int i = 0; i < Count; i++)
         {
-            ReservePage(Address + i * 4096);
+            ReservePage((void*)((uint64_t)Address + i * 4096));
         }
     }
 
-    void UnReservePages(void* Address, uint64_t Count)
+    void FreePages(void* Address, uint64_t Count)
     {
         for (int i = 0; i < Count; i++)
         {
-            UnReservePage(Address + i * 4096);
+            FreePage((void*)((uint64_t)Address + i * 4096));
         }
     }
 }

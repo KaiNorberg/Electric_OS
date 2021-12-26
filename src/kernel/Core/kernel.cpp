@@ -17,24 +17,24 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 	Renderer::Print("Total Memory: ");
 	Renderer::Print(cstr::ToString(PageAllocator::GetTotalMemory() / 1048576));
 	Renderer::Print(" MB\n\r");
-	Renderer::Print("Used Memory: ");
-	Renderer::Print(cstr::ToString(PageAllocator::GetUsedMemory() / 1048576));
-	Renderer::Print(" MB\n\r");
 	Renderer::Print("Free Memory: ");
 	Renderer::Print(cstr::ToString(PageAllocator::GetFreeMemory() / 1048576));
+	Renderer::Print(" MB\n\r");
+	Renderer::Print("Locked Memory: ");
+	Renderer::Print(cstr::ToString(PageAllocator::GetLockedMemory() / 1048576));
 	Renderer::Print(" MB\n\r");
 	Renderer::Print("Reserved Memory: ");
 	Renderer::Print(cstr::ToString(PageAllocator::GetReservedMemory() / 1048576));
 	Renderer::Print(" MB\n\r");
 
-	/*for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 10; i++)
 	{
 		Renderer::Print("Random Page ");
 		Renderer::Print(cstr::ToString(i));
 		Renderer::Print(": ");
 		Renderer::Print(cstr::ToString((uint64_t)PageAllocator::RequestPage()));
 		Renderer::Print("\n\r");
-	}*/
+	}
 
 	Renderer::SwapBuffers();
 

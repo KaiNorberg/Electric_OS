@@ -23,11 +23,6 @@ SECTIONS
         . = . + 0x800000;
     }
 
-    .block BLOCK(0x800000) : ALIGN(0x1000)
-    {
-        . = . + 0x800000;
-    }
-
     .text : ALIGN(0x1000)
     {
         *(.text)
