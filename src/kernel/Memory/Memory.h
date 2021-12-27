@@ -6,7 +6,7 @@
 
 namespace Memory
 {
-    void SetMemory(void* Start, uint8_t Value, uint64_t Num);
+    void Set(void* Start, uint8_t Value, uint64_t Num);
 
     void Copy(void* Source, void* Dest, uint64_t Count);
 }

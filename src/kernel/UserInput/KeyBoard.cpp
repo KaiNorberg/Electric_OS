@@ -48,6 +48,14 @@ namespace KeyBoard
 
     volatile uint8_t CurrentKey = 0;
 
+    void Clear()
+    {
+        for (int i = 0; i < 255; i++)
+        {
+            PressedTable[i] = false;
+        }
+    }
+
     void HandleScanCode(uint8_t ScanCode)
     {
         bool IsUp = ScanCode & (0b10000000);

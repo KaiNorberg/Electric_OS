@@ -3,16 +3,20 @@
 extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 {
 	Renderer::Init(BootInfo->ScreenBuffer, BootInfo->PSFFont);
-	Renderer::Clear(ARGB(255, 0, 0, 255));
 
 	InitGDT();
 
-	PageAllocator::Init(BootInfo->MemoryMap);
+	PageAllocator::Init(BootInfo->MemoryMap, BootInfo->ScreenBuffer, BootInfo->PSFFont);
+	PageTableManager::Init(BootInfo->ScreenBuffer);
+
+	Renderer::Clear(ARGB(255, 0, 0, 255));
 
 	PIT::SetFrequency(100);
 
 	IDT::SetupInterrupts();
 	
+	KeyBoard::Clear();
+
 	Renderer::Print("Hello, World!\n\r");
 	Renderer::Print("Free Memory: ");
 	Renderer::Print(cstr::ToString(PageAllocator::GetFreeMemory() / 1048576));

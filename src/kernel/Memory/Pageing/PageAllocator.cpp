@@ -11,7 +11,7 @@ namespace PageAllocator
     uint8_t* PageStatusMap;
     uint64_t PageAmount;
 
-    void Init(EFI_MEMORY_MAP* MemoryMap)
+    void Init(EFI_MEMORY_MAP* MemoryMap, Framebuffer* ScreenBuffer, PSF_FONT* PSFFont)
     {   
         PageAmount = 0;
         for (int i = 0; i < MemoryMap->Size / MemoryMap->DescSize; i++)
@@ -47,6 +47,19 @@ namespace PageAllocator
             }
         }
         LockPages(&_KernelStart, ((uint64_t)&_KernelEnd - (uint64_t)&_KernelStart) / 4096 + 1);
+
+        for (int i = 0; i < MemoryMap->Size / MemoryMap->DescSize; i++)
+        {
+            EFI_MEMORY_DESCRIPTOR* Desc = (EFI_MEMORY_DESCRIPTOR*)((uint64_t)MemoryMap->Base + (i * MemoryMap->DescSize));
+            if (Desc->Type != (uint32_t)EFI_MEMORY_TYPE::EfiConventionalMemory)
+            {
+                LockPages(Desc->PhysicalStart, Desc->NumberOfPages);
+            }
+        }
+           
+        LockPages(ScreenBuffer->Base, ScreenBuffer->Size / 4096 + 1);
+
+        LockPage(PSFFont);
     }
 
     uint64_t GetFreeMemory()
@@ -73,6 +86,16 @@ namespace PageAllocator
             }
         }
         return LockedMemory;
+    }
+
+    uint64_t GetTotalMemory()
+    {
+        uint64_t TotalMemory = 0;
+        for (int i = 0; i < PageAmount; i++)
+        {
+            TotalMemory += 4096;
+        }
+        return TotalMemory;
     }
 
     void* RequestPage()

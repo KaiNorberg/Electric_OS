@@ -3,6 +3,7 @@
 #include "../Memory/GDT/GDT.h"
 #include "../Memory/Memory.h"
 #include "../Memory/Pageing/PageAllocator.h"
+#include "../Memory/Pageing/PageTable.h"
 #include "../String/cstr.h"
 #include "../UserInput/KeyBoard.h"
 #include "../UserInput/Mouse.h"

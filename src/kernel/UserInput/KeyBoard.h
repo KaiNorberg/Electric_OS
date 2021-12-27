@@ -14,7 +14,9 @@
 #define PAGE_DOWN 0x51
 
 namespace KeyBoard
-{
+{    
+    void Clear();
+
     void HandleScanCode(uint8_t ScanCode);
 
     char GetKeyPress();
