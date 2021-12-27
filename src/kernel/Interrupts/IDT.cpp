@@ -2,6 +2,7 @@
 #include "Handlers.h"
 #include "../IO/IO.h"
 #include "../UserInput/Mouse.h"
+#include "../Memory/Pageing/PageAllocator.h"
 
 extern uint64_t _IDT;
 

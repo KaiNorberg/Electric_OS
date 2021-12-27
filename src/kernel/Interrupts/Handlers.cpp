@@ -1,7 +1,7 @@
 #include "Handlers.h"
 #include "IDT.h"
 #include "../Rendering/Renderer.h"
-#include "../Core/Panic.h"
+#include "../Debug/Debug.h"
 #include "../IO/IO.h"
 #include "../UserInput/KeyBoard.h"
 #include "../UserInput/Mouse.h"
@@ -11,7 +11,7 @@ namespace InteruptHandlers
 {
     __attribute__((interrupt)) void InvalidOP(InterruptFrame* frame)
     {
-        Panic("Invalid OP Code Detected");
+        Debug::Error("Invalid OP Code Detected");
         while(true)
         {
             asm("HLT");
@@ -20,7 +20,7 @@ namespace InteruptHandlers
 
     __attribute__((interrupt)) void DeviceNotDetected(InterruptFrame* frame)
     {
-        Panic("Device Not Detected");
+        Debug::Error("Device Not Detected");
         while(true)
         {
             asm("HLT");
@@ -29,7 +29,7 @@ namespace InteruptHandlers
 
     __attribute__((interrupt)) void DoubleFault(InterruptFrame* frame)
     {
-        Panic("Double Fault");
+        Debug::Error("Double Fault");
         while(true)
         {
             asm("HLT");
@@ -38,7 +38,7 @@ namespace InteruptHandlers
 
     __attribute__((interrupt)) void SegmentNotPresent(InterruptFrame* frame)
     {
-        Panic("Segment Not Present");
+        Debug::Error("Segment Not Present");
         while(true)
         {
             asm("HLT");
@@ -47,7 +47,7 @@ namespace InteruptHandlers
 
     __attribute__((interrupt)) void StackSegmentFault(InterruptFrame* frame)
     {
-        Panic("Stack Segment Fault");
+        Debug::Error("Stack Segment Fault");
         while(true)
         {
             asm("HLT");
@@ -56,7 +56,7 @@ namespace InteruptHandlers
 
     __attribute__((interrupt)) void GeneralProtectionFault(InterruptFrame* frame)
     {
-        Panic("General Protection Fault");
+        Debug::Error("General Protection Fault");
         while(true)
         {
             asm("HLT");
@@ -65,7 +65,7 @@ namespace InteruptHandlers
 
     __attribute__((interrupt)) void PageFault(InterruptFrame* frame)
     {
-        Panic("Page Fault");
+        Debug::Error("Page Fault");
         while(true)
         {
             asm("HLT");

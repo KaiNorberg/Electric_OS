@@ -23,35 +23,38 @@ namespace Renderer
         *(uint32_t*)((uint64_t)Screenbuffer->Base + Pixel.X * 4 + Pixel.Y * Screenbuffer->PixelsPerScanline * 4) = Color.ToInt();
     }
 
-    void PutChar(char chr, ARGB Color, Point Pos)
+    void PutChar(char chr, ARGB Color, Point Pos, uint8_t Scale)
     {
         char* Glyph = CurrentFont->glyphBuffer + (chr * CurrentFont->PSF_header->charsize);
 
-        for (uint64_t y = Pos.Y; y < Pos.Y + 16; y++)
+        for (uint64_t y = 0; y < 16 * Scale; y++)
         {
-            for (uint64_t x = Pos.X; x < Pos.X + 8; x++)
+            for (uint64_t x = 0; x < 8 * Scale; x++)
             {
-                if ((*Glyph & (0b10000000 >> (x - Pos.X))) > 0)
+                if ((*Glyph & (0b10000000 >> x / Scale)) > 0)
                 {
-                    *(uint64_t*)((uint64_t)Screenbuffer->Base + x * 4 + y * Screenbuffer->PixelsPerScanline * 4) = Color.ToInt();
+                    *(uint64_t*)((uint64_t)Screenbuffer->Base + (x + Pos.X) * 4 + (y + Pos.Y) * Screenbuffer->PixelsPerScanline * 4) = Color.ToInt();
                 }
             }
-            Glyph++;
+            if (y % Scale == 0)
+            {
+                Glyph++;
+            }
         }
     }
 
-    void Print(const char* str, ARGB Color)
+    void Print(const char* str, ARGB Color, uint8_t Scale)
     {
         char* chr = (char*)str;
 
         while (*chr != 0)
         {
-            Print(*chr, Color);
+            Print(*chr, Color, Scale);
             chr++;
         }
     }
 
-    void Print(char Chr, ARGB Color)
+    void Print(char Chr, ARGB Color, uint8_t Scale)
     {
         if (Chr == '\n')
         {
@@ -69,8 +72,8 @@ namespace Renderer
                 CursorPos.Y += 16;
             }
 
-            PutChar(Chr, Color, CursorPos);
-            CursorPos.X += 8;
+            PutChar(Chr, Color, CursorPos, Scale);
+            CursorPos.X += 8 * Scale;
         }
     }
 

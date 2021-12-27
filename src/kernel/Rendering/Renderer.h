@@ -14,11 +14,11 @@ namespace Renderer
 
     void PutPixel(Point Pixel, ARGB Color);
 
-    void PutChar(char chr, ARGB Color, Point Pos);
+    void PutChar(char chr, ARGB Color, Point Pos, uint8_t Scale = 1);
 
-    void Print(const char* str, ARGB Color = ARGB(255));
+    void Print(const char* str, ARGB Color = ARGB(255), uint8_t Scale = 1);
 
-    void Print(char Chr, ARGB Color = ARGB(255));
+    void Print(char Chr, ARGB Color = ARGB(255), uint8_t Scale = 1);
 
     void Clear(ARGB Color = ARGB(0));
 

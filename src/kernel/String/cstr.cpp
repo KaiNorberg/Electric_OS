@@ -6,25 +6,14 @@ namespace cstr
     char IntToStringOutput[128];
     char* ToString(uint64_t Number)
     {
-        uint8_t size;
-        uint64_t sizeTest = Number;
-        while (sizeTest / 10 > 0)
-        {
-            sizeTest /= 10;
-            size++;
-        }
+        uint32_t DigitAmount = Math::GetDigitAmount(Number);
 
-        uint8_t index = 0;
-        while(Number / 10 > 0)
+        for (uint32_t i = DigitAmount; i-- > 0;)
         {
-            uint8_t remainder = Number % 10;
-            Number /= 10;
-            IntToStringOutput[size - index] = remainder + '0';
-            index++;
+            IntToStringOutput[DigitAmount - i - 1] = '0' + Math::GetDigit(Number, i);
         }
-        uint8_t remainder = Number % 10;
-        IntToStringOutput[size - index] = remainder + '0';
-        IntToStringOutput[size + 1] = 0; 
+        IntToStringOutput[DigitAmount] = '\0';
+
         return IntToStringOutput;
     }
 }
