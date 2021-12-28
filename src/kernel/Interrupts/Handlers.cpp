@@ -3,6 +3,7 @@
 #include "../Rendering/Renderer.h"
 #include "../Debug/Debug.h"
 #include "../IO/IO.h"
+#include "../RTC/RTC.h"
 #include "../UserInput/KeyBoard.h"
 #include "../UserInput/Mouse.h"
 #include "../PIT/PIT.h"
@@ -75,6 +76,10 @@ namespace InteruptHandlers
     __attribute__((interrupt)) void PIT(InterruptFrame* frame)
     {
         PIT::Tick();
+        if (PIT::GetFrequency() % 100 == 0)
+        {
+            RTC::Update();
+        }
 
         IO::OutByte(PIC1_COMMAND, PIC_EOI);
     }

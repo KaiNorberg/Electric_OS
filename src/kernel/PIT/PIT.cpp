@@ -33,7 +33,7 @@ namespace PIT
         Ticks = 0;
         
         IO::OutByte(0x40, (uint8_t)Divisor);
-        IO::IOWait();
+        IO::Wait();
         IO::OutByte(0x40, (uint8_t)(Divisor >> 8));
     }
 

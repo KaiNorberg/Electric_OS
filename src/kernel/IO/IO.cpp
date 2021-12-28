@@ -14,7 +14,7 @@ namespace IO
         return ReturnValue;
     }
 
-    void IOWait()
+    void Wait()
     {
         asm volatile("OUTB %%al, $0x80" : : "a"(0));
     }

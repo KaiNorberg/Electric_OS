@@ -17,7 +17,16 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 	
 	KeyBoard::Clear();
 
+	RTC::Update();
+
 	Renderer::Print("Hello, World!\n\r");
+	Renderer::Print("Current Time: ");
+	Renderer::Print(cstr::ToString(RTC::GetHour()));
+	Renderer::Print(" : ");
+	Renderer::Print(cstr::ToString(RTC::GetMinute()));
+	Renderer::Print(" : ");	
+	Renderer::Print(cstr::ToString(RTC::GetSecond()));
+	Renderer::Print("\n\r");
 	Renderer::Print("Free Memory: ");
 	Renderer::Print(cstr::ToString(PageAllocator::GetFreeMemory() / 1048576));
 	Renderer::Print(" MB\n\r");
@@ -33,7 +42,7 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 		Renderer::Print(cstr::ToString((uint64_t)PageAllocator::RequestPage()));
 		Renderer::Print("\n\r");
 	}
-
+	
 	Point ScreenSize = Renderer::GetScreenSize();
 	Point OldMousePos = Mouse::Position;
 	bool Alternate = false;

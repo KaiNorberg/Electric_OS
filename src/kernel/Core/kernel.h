@@ -8,6 +8,7 @@
 #include "../UserInput/KeyBoard.h"
 #include "../UserInput/Mouse.h"
 #include "../PIT/PIT.h"
+#include "../RTC/RTC.h"
 
 struct BootLoaderInfo
 {

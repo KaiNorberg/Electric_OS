@@ -8,5 +8,5 @@ namespace IO
 
     uint8_t InByte(uint16_t Port);
 
-    void IOWait();
+    void Wait();
 }

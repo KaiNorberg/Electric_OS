@@ -55,7 +55,6 @@ setup:
 	@mkdir $(SRCDIR)
 	@mkdir $(OBJDIR)
 
-#Might need to increase dd count.
 buildimg:
 	dd if=/dev/zero of=$(BUILDDIR)/$(OSNAME).img bs=512 count=93750
 	sudo mformat -i $(BUILDDIR)/$(OSNAME).img -f 1440 ::

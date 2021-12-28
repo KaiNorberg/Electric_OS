@@ -56,17 +56,20 @@ namespace Debug
         Renderer::Print("Ticks: ", ARGB(255), Scale);
         Renderer::Print(cstr::ToString(PIT::Ticks), ARGB(255), Scale);
 
-        Renderer::CursorPos = Point(StartPoint.X, StartPoint.Y + 16 * 7 * Scale);
+        Renderer::CursorPos = Point(StartPoint.X, StartPoint.Y + 16 * 8 * Scale);
+        Renderer::Print("Memory: ", ARGB(255), Scale);
+
+        Renderer::CursorPos = Point(StartPoint.X, StartPoint.Y + 16 * 9 * Scale);
         Renderer::Print("Total Memory: ", ARGB(255), Scale);
         Renderer::Print(cstr::ToString(PageAllocator::GetTotalMemory()  / 1048576), ARGB(255), Scale);
         Renderer::Print(" MB", ARGB(255), Scale);
 
-        Renderer::CursorPos = Point(StartPoint.X, StartPoint.Y + 16 * 9 * Scale);
+        Renderer::CursorPos = Point(StartPoint.X, StartPoint.Y + 16 * 10 * Scale);
         Renderer::Print("Locked Memory: ", ARGB(255), Scale);
         Renderer::Print(cstr::ToString(PageAllocator::GetLockedMemory()  / 1048576), ARGB(255), Scale);
         Renderer::Print(" MB", ARGB(255), Scale);
 
-        Renderer::CursorPos = Point(StartPoint.X, StartPoint.Y + 16 * 8 * Scale);
+        Renderer::CursorPos = Point(StartPoint.X, StartPoint.Y + 16 * 11 * Scale);
         Renderer::Print("Free Memory: ", ARGB(255), Scale);
         Renderer::Print(cstr::ToString(PageAllocator::GetFreeMemory()  / 1048576), ARGB(255), Scale);
         Renderer::Print(" MB", ARGB(255), Scale);

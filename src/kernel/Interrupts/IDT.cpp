@@ -53,34 +53,34 @@ namespace IDT
         asm("LIDT %0" : : "m" (idtr));
 
         uint8_t a1 = IO::InByte(PIC1_DATA);
-        IO::IOWait();
+        IO::Wait();
         uint8_t a2 = IO::InByte(PIC2_DATA);
-        IO::IOWait();
+        IO::Wait();
 
         IO::OutByte(PIC1_COMMAND, ICW1_INIT | ICW1_ICW4);
-        IO::IOWait();
+        IO::Wait();
         IO::OutByte(PIC2_COMMAND, ICW1_INIT | ICW1_ICW4);
-        IO::IOWait();
+        IO::Wait();
 
         IO::OutByte(PIC1_DATA, 0x20);
-        IO::IOWait();
+        IO::Wait();
         IO::OutByte(PIC2_DATA, 0x28);
-        IO::IOWait();
+        IO::Wait();
 
         IO::OutByte(PIC1_DATA, 4);
-        IO::IOWait();
+        IO::Wait();
         IO::OutByte(PIC2_DATA, 2);
-        IO::IOWait();
+        IO::Wait();
 
         IO::OutByte(PIC1_DATA, ICW4_8086);
-        IO::IOWait();
+        IO::Wait();
         IO::OutByte(PIC2_DATA, ICW4_8086);
-        IO::IOWait();
+        IO::Wait();
 
         IO::OutByte(PIC1_DATA, a1);
-        IO::IOWait();
+        IO::Wait();
         IO::OutByte(PIC2_DATA, a2);
-        IO::IOWait();
+        IO::Wait();
 
         Mouse::InitPS2();
 
