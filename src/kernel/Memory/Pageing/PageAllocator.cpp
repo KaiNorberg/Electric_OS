@@ -11,6 +11,8 @@ namespace PageAllocator
     uint8_t* PageStatusMap;
     uint64_t PageAmount;
 
+    uint64_t FirstFreePage = 0;
+
     void Init(EFI_MEMORY_MAP* MemoryMap, Framebuffer* ScreenBuffer, PSF_FONT* PSFFont)
     {   
         PageAmount = 0;
@@ -100,10 +102,11 @@ namespace PageAllocator
 
     void* RequestPage()
     {
-        for (uint64_t i = 0; i < PageAmount; i++)
+        for (uint64_t i = FirstFreePage; i < PageAmount; i++)
         {
             if (PageStatusMap[i] == 0)
             {
+                FirstFreePage = i + 1;
                 return LockPage((void*)(i * 4096));
             }
         }
@@ -131,6 +134,10 @@ namespace PageAllocator
             return nullptr;
         }
         PageStatusMap[PageIndex] = false;
+        if (FirstFreePage > PageIndex)
+        {
+            FirstFreePage = PageIndex;
+        }
 
         return Address;
     }

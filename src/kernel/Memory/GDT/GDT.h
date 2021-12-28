@@ -6,7 +6,7 @@ struct GDTDesc
 {
     uint16_t Size;
     uint64_t Offset;
-}__attribute__((packed)); //Dont add additional bytes
+}__attribute__((packed));
 
 struct GDTEntry
 {
@@ -16,7 +16,7 @@ struct GDTEntry
     uint8_t AccessByte;
     uint8_t Limit1_Flags;
     uint8_t Base2;
-}__attribute__((packed)); //Dont add additional bytes
+}__attribute__((packed));
 
 struct GDT
 {
@@ -26,7 +26,7 @@ struct GDT
     GDTEntry UserNull;
     GDTEntry UserCode;
     GDTEntry UserData;
-}__attribute__((packed)) __attribute__((aligned(0x1000))); //Dont add additional bytes
+}__attribute__((packed)) __attribute__((aligned(0x1000)));
 
 extern GDT DefaultGDT;
 

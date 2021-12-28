@@ -20,7 +20,12 @@ namespace Renderer
 
     void PutPixel(Point Pixel, ARGB Color)
     {
-        *(uint32_t*)((uint64_t)Screenbuffer->Base + Pixel.X * 4 + Pixel.Y * Screenbuffer->PixelsPerScanline * 4) = Color.ToInt();
+        *(ARGB*)((uint64_t)Screenbuffer->Base + Pixel.X * 4 + Pixel.Y * Screenbuffer->PixelsPerScanline * 4) = Color;
+    }
+
+    ARGB GetPixel(Point Pixel)
+    {
+        return *(ARGB*)((uint64_t)Screenbuffer->Base + Pixel.X * 4 + Pixel.Y * Screenbuffer->PixelsPerScanline * 4);
     }
 
     void PutChar(char chr, ARGB Color, Point Pos, uint8_t Scale)
@@ -33,7 +38,7 @@ namespace Renderer
             {
                 if ((*Glyph & (0b10000000 >> x / Scale)) > 0)
                 {
-                    *(uint64_t*)((uint64_t)Screenbuffer->Base + (x + Pos.X) * 4 + (y + Pos.Y) * Screenbuffer->PixelsPerScanline * 4) = Color.ToInt();
+                    *(ARGB*)((uint64_t)Screenbuffer->Base + (x + Pos.X) * 4 + (y + Pos.Y) * Screenbuffer->PixelsPerScanline * 4) = Color;
                 }
             }
             if (y % Scale == 0)

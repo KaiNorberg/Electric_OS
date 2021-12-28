@@ -18,6 +18,10 @@ namespace Mouse
 { 
     Point Position;
 
+    bool Draw = false;
+
+    ARGB BeforeBuffer[256];
+
     void MouseWait()
     {   
         uint64_t TimeOut = 100000;
@@ -62,7 +66,8 @@ namespace Mouse
     {
         Position.X = 500;
         Position.Y = 500;
-
+        Draw = false;
+    
         IO::OutByte(0x64, 0xA8);
         MouseWait();
 
@@ -81,6 +86,14 @@ namespace Mouse
 
         MouseWrite(0xF4);
         MouseRead();
+        
+        for (int Y = 0; Y < 16; Y++)
+        {
+            for (int X = 0; X < 16; X++)
+            {                            
+                BeforeBuffer[X + Y * 16] = Renderer::GetPixel(Point(Position.X + X, Position.Y + Y));
+            }
+        }
     }
     
     void HandleMouseData(uint8_t Data)
@@ -111,6 +124,20 @@ namespace Mouse
             MousePacket[2] = Data;
             MouseCycle = 0;
 
+            if (Draw)
+            {
+                for (int Y = 0; Y < 16; Y++)
+                {
+                    for (int X = 0; X < 16; X++)
+                    {                              
+                        if (X + Y < 12)
+                        {
+                            Renderer::PutPixel(Point(Position.X + X, Position.Y + Y), BeforeBuffer[X + Y * 16]);
+                        }
+                    }
+                }
+            }
+
             if (MousePacket[0] & PS2XSign)
             {      
                 MousePacket[1] = 256 - MousePacket[1];
@@ -133,6 +160,21 @@ namespace Mouse
 
             Position.X = Math::Clamp(Position.X, 0, Renderer::GetScreenSize().X - 8);
             Position.Y = Math::Clamp(Position.Y, 0, Renderer::GetScreenSize().Y - 16);
+            
+            if (Draw)
+            {
+                for (int Y = 0; Y < 16; Y++)
+                {
+                    for (int X = 0; X < 16; X++)
+                    {
+                        if (X + Y < 12)
+                        {
+                            BeforeBuffer[X + Y * 16] = Renderer::GetPixel(Point(Position.X + X, Position.Y + Y));
+                            Renderer::PutPixel(Point(Position.X + X, Position.Y + Y), ARGB(255));
+                        }
+                    }
+                }
+            }
         }
         break;
         }

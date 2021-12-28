@@ -18,8 +18,8 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 	KeyBoard::Clear();
 
 	RTC::Update();
-
-	Renderer::Print("Hello, World!\n\r");
+	
+	Renderer::Print("\n\rHello, World!\n\r");
 	Renderer::Print("Current Time: ");
 	Renderer::Print(cstr::ToString(RTC::GetHour()));
 	Renderer::Print(" : ");
@@ -73,6 +73,11 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 			Alternate = !Alternate;
 		}
 
+		if (KeyBoard::IsPressed('a'))
+		{
+			Mouse::Draw = !Mouse::Draw;
+		}
+
         for (int y = 0; y < 6; y++)
 		{		
 			Renderer::CursorPos = Point(ScreenSize.X / 2 - (21 * 8 * 3) / 2, ScreenSize.Y / 2  - (6 * 16 * 2) / 2 + 32 * y);
@@ -88,20 +93,6 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 					Renderer::PutChar(Char, ARGB(255, 0, 255, 0), Point(ScreenSize.X / 2 - (21 * 8 * 3) / 2 + x * 8 * 3, ScreenSize.Y / 2 - (6 * 16 * 2) + 32 * y));
 				}
 			}
-		}
-
-		if (OldMousePos.X != Mouse::Position.X || OldMousePos.Y != Mouse::Position.Y)
-		{
-			for (int Y = 0; Y < 16; Y++)
-			{
-				for (int X = 0; X < 8; X++)
-				{
-					Renderer::PutPixel(Point(OldMousePos.X + X, OldMousePos.Y + Y), ARGB(255, 0, 0, 255));
-				}
-			}
-
-			Renderer::PutChar('<', ARGB(255, 255, 0, 0), Mouse::Position);
-			OldMousePos = Mouse::Position;
 		}
 	}
 
