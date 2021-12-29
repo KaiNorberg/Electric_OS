@@ -28,7 +28,7 @@ namespace Renderer
         return *(ARGB*)((uint64_t)Screenbuffer->Base + Pixel.X * 4 + Pixel.Y * Screenbuffer->PixelsPerScanline * 4);
     }
 
-    void PutChar(char chr, ARGB Color, Point Pos, uint8_t Scale)
+    void PutChar(char chr, ARGB Background, ARGB Foreground, Point Pos, uint8_t Scale)
     {
         char* Glyph = CurrentFont->glyphBuffer + (chr * CurrentFont->PSF_header->charsize);
 
@@ -38,7 +38,11 @@ namespace Renderer
             {
                 if ((*Glyph & (0b10000000 >> x / Scale)) > 0)
                 {
-                    *(ARGB*)((uint64_t)Screenbuffer->Base + (x + Pos.X) * 4 + (y + Pos.Y) * Screenbuffer->PixelsPerScanline * 4) = Color;
+                    *(ARGB*)((uint64_t)Screenbuffer->Base + (x + Pos.X) * 4 + (y + Pos.Y) * Screenbuffer->PixelsPerScanline * 4) = Foreground;
+                }
+                else
+                {
+                    *(ARGB*)((uint64_t)Screenbuffer->Base + (x + Pos.X) * 4 + (y + Pos.Y) * Screenbuffer->PixelsPerScanline * 4) = Background;
                 }
             }
             if (y % Scale == 0)
@@ -48,22 +52,22 @@ namespace Renderer
         }
     }
 
-    void Print(const char* str, ARGB Color, uint8_t Scale)
+    void Print(const char* str, ARGB Background, ARGB Foreground, uint8_t Scale)
     {
         char* chr = (char*)str;
 
         while (*chr != 0)
         {
-            Print(*chr, Color, Scale);
+            Print(*chr, Background, Foreground, Scale);
             chr++;
         }
     }
 
-    void Print(char Chr, ARGB Color, uint8_t Scale)
+    void Print(char Chr, ARGB Background, ARGB Foreground, uint8_t Scale)
     {
         if (Chr == '\n')
         {
-            CursorPos.Y += 16;
+            CursorPos.Y += 16 * Scale;
         }
         else if (Chr == '\r')
         {
@@ -71,13 +75,13 @@ namespace Renderer
         }
         else
         {        
-            if (CursorPos.X + 16 > Screenbuffer->Width)
+            if (CursorPos.X + 16 * Scale > Screenbuffer->Width)
             {
                 CursorPos.X = 0;
-                CursorPos.Y += 16;
+                CursorPos.Y += 16 * Scale;
             }
 
-            PutChar(Chr, Color, CursorPos, Scale);
+            PutChar(Chr, Background, Foreground, CursorPos, Scale);
             CursorPos.X += 8 * Scale;
         }
     }

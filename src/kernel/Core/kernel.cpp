@@ -19,7 +19,7 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 
 	RTC::Update();
 	
-	Renderer::Print("\n\rHello, World!\n\r");
+	/*Renderer::Print("\n\rHello, World!\n\r");
 	Renderer::Print("Current Time: ");
 	Renderer::Print(cstr::ToString(RTC::GetHour()));
 	Renderer::Print(" : ");
@@ -94,7 +94,9 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 				}
 			}
 		}
-	}
+	}*/
+
+	tty::tty();
 
 	while(true)
 	{

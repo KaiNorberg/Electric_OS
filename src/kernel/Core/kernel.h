@@ -9,6 +9,7 @@
 #include "../UserInput/Mouse.h"
 #include "../PIT/PIT.h"
 #include "../RTC/RTC.h"
+#include "../tty/tty.h"
 
 struct BootLoaderInfo
 {
