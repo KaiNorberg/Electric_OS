@@ -4,13 +4,7 @@ ENTRY(KernelMain)
 SECTIONS
 {
     _KernelStart = .;
-
-    .idt : ALIGN(0x1000)
-    {
-        _IDT = .;
-        . = . + 0x1000;
-    }
-
+    
     .text : ALIGN(0x1000)
     {
         *(.text)

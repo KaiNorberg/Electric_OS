@@ -22,6 +22,8 @@ namespace Renderer
 
     void Print(char Chr, ARGB Background = ARGB(255), ARGB Foreground = ARGB(0), uint8_t Scale = 1);
 
+    void ScrollUp(uint64_t Amount);
+
     void Clear(ARGB Color = ARGB(0));
 
     Point GetScreenSize();

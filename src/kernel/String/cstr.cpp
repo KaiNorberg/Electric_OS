@@ -16,18 +16,50 @@ namespace cstr
 
         return IntToStringOutput;
     }
-        
-    uint64_t HashWord(const char* String)
+
+    uint64_t ToInt(const char* String)
     {
-        uint64_t Result = 7393913;
-        uint64_t Multiplier = 444833;
-        char* S = (char*)String;
+        uint64_t Result = 0;
+        uint64_t Multiplier = 1;
+        for (int i = Length(String) - 1; i >= 0; i--)
+        {
+            Result += (String[i] - '0') * Multiplier;
+            Multiplier *= 10;
+        }
+
+        return Result;
+    }
+
+    char* NextWord(const char* String)
+    {
+        uint64_t i = 0;
         while (true)
         {
-            Result *= (((uint64_t)*S) * Multiplier);
-            Multiplier *= ((uint64_t)*S);
-            S++;
-            if (*S != 0 && *S != ' ')
+            i++;
+            if (String[i] == 0)
+            {
+                i--;
+                break;
+            }
+            else if (String[i] == ' ')
+            {
+                i++;
+                break;
+            }
+        }
+        return (char*)(String + i);
+    }
+
+    uint64_t HashWord(const char* String)
+    {
+        uint64_t Result = 0;
+        uint64_t i = 0;
+        while (true)
+        {
+            Result += ((uint64_t)(String[i] & 0x0F)) << (4 * i);
+
+            i++;
+            if (String[i] == 0 || String[i] == ' ')
             {
                 break;
             }
@@ -35,19 +67,31 @@ namespace cstr
 
         return Result;
     }
-
-    uint64_t Hash(const char* String)
+        
+    uint64_t Length(const char* String)
     {
-        uint64_t Result = 7393913;
-        uint64_t Multiplier = 444833;
-        char* S = (char*)String;
-        while (*S != 0)
+        uint32_t i = 0;
+        while (true)
         {
-            Result *= (((uint64_t)*S) * Multiplier);
-            Multiplier *= ((uint64_t)*S);
-            S++;
+            if (String[i] == 0)
+            {
+                return i;
+            }
+            i++;
         }
 
-        return Result;
+        return 0;
+    }
+
+    char* Copy(char* Dest, const char* Source)
+    {
+        uint64_t SourceLength = Length(Source);
+
+        for (int i = 0; i < SourceLength; i++)
+        {
+            Dest[i] = Source[i];
+        }
+
+        return Dest + (SourceLength - 1);
     }
 }

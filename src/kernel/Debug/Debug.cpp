@@ -28,7 +28,9 @@ namespace Debug
         "Quite honestly, I wouldn't worry myself about that.",
         "This doesn't make any sense!",
         "It's not a good surprise...",
-        "Don't do that.",        
+        "Don't do that.",
+        "Layer 8 problem detected."
+        "PEBCAC detected."        
     };
 
     void Error(const char* Message)

@@ -20,6 +20,48 @@ namespace tty
         Renderer::Print(Message, Background, Foreground, Scale);
     }
 
+    void RunCommand(const char* Command)
+    {
+        if (cstr::HashWord(Command) == cstr::HashWord("clear"))
+        {
+            Renderer::Clear(ARGB(0));
+        }
+        else
+        {
+            char* Output = (char*)System::System(Command);
+            while (*Output != 0)
+            {
+                if (*Output == '\033')
+                {
+                    Output++;
+                    switch (*Output)
+                    {
+                    case 'F':
+                    {
+                        Foreground = ARGB(255, (Output[1] - '0') * 100 + (Output[2] - '0') * 10 + (Output[3] - '0'), 
+                        (Output[4] - '0') * 100 + (Output[5] - '0') * 10 + (Output[6] - '0'), 
+                        (Output[7] - '0') * 100 + (Output[8] - '0') * 10 + (Output[9] - '0'));
+                    }
+                    break;
+                    case 'B':
+                    {
+                        Background = ARGB(255, (Output[1] - '0') * 100 + (Output[2] - '0') * 10 + (Output[3] - '0'), 
+                        (Output[4] - '0') * 100 + (Output[5] - '0') * 10 + (Output[6] - '0'), 
+                        (Output[7] - '0') * 100 + (Output[8] - '0') * 10 + (Output[9] - '0'));
+                    }
+                    break;
+                    }
+                    Output += 9;
+                }
+                else
+                {
+                    Renderer::Print(*Output, Background, Foreground, Scale);
+                }
+                Output++;
+            }
+        }
+    }
+
     void tty()
     {
         Scale = 1;
@@ -33,15 +75,13 @@ namespace tty
             Input[i] = 0;
         }
 
-        Print("Terminal\n\r");
-        
-        Print(cstr::ToString(cstr::Hash("Test!")));
         Print("\n\r");
-        Print(cstr::ToString(cstr::Hash("eTst!")));
+        RunCommand("sysfetch");
+        Print("\n\r");
 
         while (true)
         {
-            Print("\n\r> ");
+            Print("> ");
 
             Point StartCursorPos = Renderer::CursorPos;
             uint64_t PrevTick = PIT::Ticks;
@@ -104,10 +144,10 @@ namespace tty
                 asm("HLT");
             }
 
-            //Handle input
             Print("\n\r");
-            Print(System::System(Input));
+            RunCommand(Input);
             Input[0] = 0;
+            Print("\n\r");
         }   
     }
 }

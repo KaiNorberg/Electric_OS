@@ -20,11 +20,21 @@ namespace Renderer
 
     void PutPixel(Point Pixel, ARGB Color)
     {
+        if (Pixel.X > Screenbuffer->Width || Pixel.X < 0 || Pixel.Y > Screenbuffer->Height || Pixel.Y < 0)
+        {
+            return;
+        }
+
         *(ARGB*)((uint64_t)Screenbuffer->Base + Pixel.X * 4 + Pixel.Y * Screenbuffer->PixelsPerScanline * 4) = Color;
     }
 
     ARGB GetPixel(Point Pixel)
-    {
+    {        
+        if (Pixel.X > Screenbuffer->Width || Pixel.X < 0 || Pixel.Y > Screenbuffer->Height || Pixel.Y < 0)
+        {
+            return ARGB(0);
+        }
+
         return *(ARGB*)((uint64_t)Screenbuffer->Base + Pixel.X * 4 + Pixel.Y * Screenbuffer->PixelsPerScanline * 4);
     }
 
@@ -80,9 +90,25 @@ namespace Renderer
                 CursorPos.X = 0;
                 CursorPos.Y += 16 * Scale;
             }
+            if (CursorPos.Y + 16 > Screenbuffer->Height)
+            {
+                ScrollUp(16);
+                CursorPos.Y -= 16;
+            }
 
             PutChar(Chr, Background, Foreground, CursorPos, Scale);
             CursorPos.X += 8 * Scale;
+        }
+    }
+
+    void ScrollUp(uint64_t Amount)
+    {
+        for (uint64_t Y = 0; Y < Screenbuffer->Height; Y++)
+        {
+            for (uint64_t X = 0; X < Screenbuffer->Width; X++)
+            {
+                PutPixel(Point(X, Y), GetPixel(Point(X, Y + Amount)));
+            }
         }
     }
 

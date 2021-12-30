@@ -19,6 +19,7 @@ namespace Mouse
     Point Position;
 
     bool Draw = false;
+    bool Cleared = false;
 
     ARGB BeforeBuffer[256];
 
@@ -66,7 +67,7 @@ namespace Mouse
     {
         Position.X = 500;
         Position.Y = 500;
-        Draw = false;
+        Draw = true;
     
         IO::OutByte(0x64, 0xA8);
         MouseWait();
@@ -124,7 +125,7 @@ namespace Mouse
             MousePacket[2] = Data;
             MouseCycle = 0;
 
-            if (Draw)
+            if (!Cleared)
             {
                 for (int Y = 0; Y < 16; Y++)
                 {
@@ -136,6 +137,7 @@ namespace Mouse
                         }
                     }
                 }
+                Cleared = true;
             }
 
             if (MousePacket[0] & PS2XSign)
@@ -174,6 +176,7 @@ namespace Mouse
                         }
                     }
                 }
+                Cleared = false;
             }
         }
         break;

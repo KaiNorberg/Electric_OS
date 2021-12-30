@@ -4,8 +4,6 @@
 #include "../UserInput/Mouse.h"
 #include "../Memory/Pageing/PageAllocator.h"
 
-extern uint64_t _IDT;
-
 namespace IDT
 {
     void IDTEntry::SetOffset(uint64_t Offset)
@@ -35,8 +33,9 @@ namespace IDT
     void SetupInterrupts()
     {
         static IDTR idtr;
+        static IDTEntry _IDT[256];
         idtr.Limit = 0x0FFF;
-        idtr.Offset = (uint64_t)&_IDT;
+        idtr.Offset = (uint64_t)_IDT;
 
         idtr.SetHandler(0x6, (uint64_t)InteruptHandlers::InvalidOP);
         idtr.SetHandler(0x7, (uint64_t)InteruptHandlers::DeviceNotDetected);
