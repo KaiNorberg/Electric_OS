@@ -67,8 +67,9 @@ namespace Mouse
     {
         Position.X = 500;
         Position.Y = 500;
-        Draw = true;
-    
+        Draw = false;
+        Cleared = false;
+
         IO::OutByte(0x64, 0xA8);
         MouseWait();
 
