@@ -1,6 +1,8 @@
 #pragma once
 
+#include <stdint.h>
+
 namespace System
 {
-    const char* System(const char* Command);
+    const char* System(const char* Input);
 }

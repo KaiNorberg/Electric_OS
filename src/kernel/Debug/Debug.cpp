@@ -33,45 +33,52 @@ namespace Debug
 
     void Error(const char* Message)
     {
+        asm("CLI");
+
         uint8_t Scale = 3;
         Point StartPoint = Point(100, 100);
 
         Renderer::Clear(ARGB(255, 0, 0, 0));
 
         Renderer::CursorPos = StartPoint;
-        Renderer::Print("KERNEL PANIC!\n\r", ARGB(255), Scale);
+        Renderer::Print("KERNEL PANIC!\n\r", ARGB(0), ARGB(255), Scale);
 
         Renderer::CursorPos = Point(StartPoint.X, StartPoint.Y + 16 * 1 * Scale);
-        Renderer::Print("// ", ARGB(255), Scale);
-        Renderer::Print(ErrorJokes[PIT::Ticks % 20], ARGB(255), Scale);
+        Renderer::Print("// ", ARGB(0), ARGB(255), Scale);
+        Renderer::Print(ErrorJokes[PIT::Ticks % 20], ARGB(0), ARGB(255), Scale);
 
         Renderer::CursorPos = Point(StartPoint.X, StartPoint.Y + 16 * 3 * Scale);
-        Renderer::Print("Error returned message: ", ARGB(255, 255, 0, 0), Scale);
-        Renderer::Print(Message, ARGB(255, 255, 0, 0), Scale);
+        Renderer::Print("Error returned message: ", ARGB(0), ARGB(255, 255, 0, 0), Scale);
+        Renderer::Print(Message, ARGB(0), ARGB(255, 255, 0, 0), Scale);
 
         Renderer::CursorPos = Point(StartPoint.X, StartPoint.Y + 16 * 5 * Scale);
-        Renderer::Print("Diagnostics: ", ARGB(255), Scale);
+        Renderer::Print("Diagnostics: ", ARGB(0), ARGB(255), Scale);
 
         Renderer::CursorPos = Point(StartPoint.X, StartPoint.Y + 16 * 6 * Scale);
-        Renderer::Print("Ticks: ", ARGB(255), Scale);
-        Renderer::Print(cstr::ToString(PIT::Ticks), ARGB(255), Scale);
+        Renderer::Print("Ticks = ", ARGB(0), ARGB(255), Scale);
+        Renderer::Print(cstr::ToString(PIT::Ticks), ARGB(0), ARGB(255), Scale);
 
         Renderer::CursorPos = Point(StartPoint.X, StartPoint.Y + 16 * 8 * Scale);
-        Renderer::Print("Memory: ", ARGB(255), Scale);
+        Renderer::Print("Memory: ", ARGB(0), ARGB(255), Scale);
 
         Renderer::CursorPos = Point(StartPoint.X, StartPoint.Y + 16 * 9 * Scale);
-        Renderer::Print("Total Memory: ", ARGB(255), Scale);
-        Renderer::Print(cstr::ToString(PageAllocator::GetTotalMemory()  / 1048576), ARGB(255), Scale);
-        Renderer::Print(" MB", ARGB(255), Scale);
+        Renderer::Print("Total Memory = ", ARGB(0), ARGB(255), Scale);
+        Renderer::Print(cstr::ToString(PageAllocator::GetTotalMemory()  / 1048576), ARGB(0), ARGB(255), Scale);
+        Renderer::Print(" MB", ARGB(0), ARGB(255), Scale);
 
         Renderer::CursorPos = Point(StartPoint.X, StartPoint.Y + 16 * 10 * Scale);
-        Renderer::Print("Locked Memory: ", ARGB(255), Scale);
-        Renderer::Print(cstr::ToString(PageAllocator::GetLockedMemory()  / 1048576), ARGB(255), Scale);
-        Renderer::Print(" MB", ARGB(255), Scale);
+        Renderer::Print("Locked Memory = ", ARGB(0), ARGB(255), Scale);
+        Renderer::Print(cstr::ToString(PageAllocator::GetLockedMemory()  / 1048576), ARGB(0), ARGB(255), Scale);
+        Renderer::Print(" MB", ARGB(0), ARGB(255), Scale);
 
         Renderer::CursorPos = Point(StartPoint.X, StartPoint.Y + 16 * 11 * Scale);
-        Renderer::Print("Free Memory: ", ARGB(255), Scale);
-        Renderer::Print(cstr::ToString(PageAllocator::GetFreeMemory()  / 1048576), ARGB(255), Scale);
-        Renderer::Print(" MB", ARGB(255), Scale);
+        Renderer::Print("Free Memory = ", ARGB(0), ARGB(255), Scale);
+        Renderer::Print(cstr::ToString(PageAllocator::GetFreeMemory()  / 1048576), ARGB(0), ARGB(255), Scale);
+        Renderer::Print(" MB", ARGB(0), ARGB(255), Scale);
+
+        while (true)
+        {
+            asm("HLT");
+        }
     }
 }

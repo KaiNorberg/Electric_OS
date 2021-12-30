@@ -9,7 +9,7 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 	PageAllocator::Init(BootInfo->MemoryMap, BootInfo->ScreenBuffer, BootInfo->PSFFont);
 	PageTableManager::Init(BootInfo->ScreenBuffer);
 
-	Renderer::Clear(ARGB(255, 0, 0, 255));
+	Renderer::Clear(ARGB(0));
 
 	PIT::SetFrequency(100);
 

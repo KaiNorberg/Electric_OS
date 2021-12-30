@@ -67,6 +67,11 @@ namespace KeyBoard
         {
             Key &= ~(0b00100000);
         }
+        else if (Key == LEFT_SHIFT)
+        {
+            PressedTable[Key] = !IsUp;
+            return;
+        }
 
         switch (Key)
         {

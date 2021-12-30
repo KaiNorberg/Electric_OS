@@ -10,6 +10,7 @@
 #include "../PIT/PIT.h"
 #include "../RTC/RTC.h"
 #include "../tty/tty.h"
+#include "../Debug/Debug.h"
 
 struct BootLoaderInfo
 {

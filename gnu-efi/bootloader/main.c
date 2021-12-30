@@ -268,7 +268,7 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 		}
 	}
 
-	PSF_FONT newFont = LoadPSFFont(NULL, L"zap-light16.psf");
+	PSF_FONT newFont = LoadPSFFont(NULL, L"zap-vga16.psf");
 	Framebuffer newBuffer = GetFramebuffer();
 	EFI_MEMORY_MAP newMap = GetMemoryMap();
 	
