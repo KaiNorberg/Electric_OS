@@ -1,7 +1,5 @@
 #include "System.h"
 
-#define OS_VERSION "Electric_OS 30/12/2021"
-
 #include "../String/cstr.h"
 #include "../UserInput/Mouse.h"
 #include "../RTC/RTC.h"
@@ -92,6 +90,34 @@ namespace System
 
         return "ERROR: Variable not found";
     }
+    
+    const char* CommandHelp(const char* Command)
+    {       
+        return 
+       "               Help Manual\n\n\r"
+       "\033F086182194set [VARIABLE] [VALUE]\n\r"
+       "    \033F224108117DESC:\n\r"
+       "        \033F255255255Sets the specified kernel variable to the specified value\n\r"
+       "    \033F224108117VARIABLE:\n\r"
+       "        \033F255255255mousedraw\n\r"
+       "    \033F224108117VALUE:\n\r"
+       "        \033F255255255Any positive integer\n\r"
+       "\033F086182194help\n\r"
+       "    \033F224108117DESC:\n\r"
+       "        \033F255255255Prints this menu\n\r"
+       "\033F086182194time\n\r"
+       "    \033F224108117DESC:\n\r"
+       "        \033F255255255Prints the current time\n\r"
+       "\033F086182194date\n\r"
+       "    \033F224108117DESC:\n\r"
+       "        \033F255255255Prints the current date\n\r"
+       "\033F086182194panic\n\r"
+       "    \033F224108117DESC:\n\r"
+       "        \033F255255255Causes a kernel panic\n\r"
+       "\033F086182194sysfetch\n\r"
+       "    \033F224108117DESC:\n\r"
+       "        \033F255255255A neofetch lookalike to give system information\n\r";
+    }
 
     char CommandTimeOutput[64];
     const char* CommandTime(const char* Command)
@@ -131,75 +157,75 @@ namespace System
     {                                    
         char* Temp = CommandSysfetchOutput;          
 
-        Temp = cstr::Copy(Temp, "\033F086182194         @@@@@@@@@@@@@    ") + 1;
-        Temp = cstr::Copy(Temp, "\n\r\033F086182194") + 1;
+        Temp = cstr::Copy(Temp, "\033F086182194        /ooooooooooo/   ") + 1;
+        Temp = cstr::Copy(Temp, "\n\r") + 1;
 
-        Temp = cstr::Copy(Temp, "        @@@@@@@@@@@@@     ") + 1;
+        Temp = cstr::Copy(Temp, "       /ooooooooooo/    ") + 1;
         Temp = cstr::Copy(Temp, "OS\033F255255255: ") + 1;
         Temp = cstr::Copy(Temp, OS_VERSION) + 1;
-        Temp = cstr::Copy(Temp, "\n\r\033F086182194") + 1;    
+        Temp = cstr::Copy(Temp, "\n\r") + 1;    
 
-        Temp = cstr::Copy(Temp, "       @@@@@@@@@@@@@      ") + 1;
+        Temp = cstr::Copy(Temp, "\033F086182194      /ooooooooooo/     ") + 1;
         Temp = cstr::Copy(Temp, "Uptime\033F255255255: ") + 1;
         Temp = cstr::Copy(Temp, cstr::ToString(PIT::Ticks / PIT::GetFrequency())) + 1;
         Temp = cstr::Copy(Temp, " s") + 1;
-        Temp = cstr::Copy(Temp, "\n\r\033F086182194") + 1; 
+        Temp = cstr::Copy(Temp, "\n\r") + 1; 
 
-        Temp = cstr::Copy(Temp, "      @@@@@@@@@@@@        ") + 1; 
+        Temp = cstr::Copy(Temp, "\033F086182194     /oooooooooo/       ") + 1; 
         Temp = cstr::Copy(Temp, "Time\033F255255255: ") + 1;  
         Temp = cstr::Copy(Temp, CommandTime(nullptr)) + 1;  
-        Temp = cstr::Copy(Temp, "\n\r\033F086182194") + 1; 
+        Temp = cstr::Copy(Temp, "\n\r") + 1; 
 
-        Temp = cstr::Copy(Temp, "     @@@@@@@@@@@@         ") + 1;  
+        Temp = cstr::Copy(Temp, "\033F086182194    /oooooooooo/        ") + 1;  
         Temp = cstr::Copy(Temp, "Date\033F255255255: ") + 1;  
         Temp = cstr::Copy(Temp, CommandDate(nullptr)) + 1;  
-        Temp = cstr::Copy(Temp, "\n\r\033F086182194") + 1;    
+        Temp = cstr::Copy(Temp, "\n\r") + 1;    
 
-        Temp = cstr::Copy(Temp, "    @@@@@@@@@@@@          ") + 1;  
+        Temp = cstr::Copy(Temp, "\033F086182194   /oooooooooo/         ") + 1;  
         Temp = cstr::Copy(Temp, "Memory\033F255255255: ") + 1;
 
         Temp = cstr::Copy(Temp, cstr::ToString(PageAllocator::GetLockedMemory() / 1048576)) + 1;
         Temp = cstr::Copy(Temp, " / ") + 1;
         Temp = cstr::Copy(Temp, cstr::ToString((PageAllocator::GetFreeMemory() + PageAllocator::GetLockedMemory()) / 1048576)) + 1;
         Temp = cstr::Copy(Temp, " MB") + 1; 
-        Temp = cstr::Copy(Temp, "\n\r\033F086182194") + 1;  
+        Temp = cstr::Copy(Temp, "\n\r") + 1;  
 
-        Temp = cstr::Copy(Temp, "   @@@@@@@@@@@@           ") + 1; 
-        Temp = cstr::Copy(Temp, "\n\r\033F086182194") + 1;   
+        Temp = cstr::Copy(Temp, "\033F086182194  /oooooooooo/          ") + 1; 
+        Temp = cstr::Copy(Temp, "\n\r") + 1;   
 
-        Temp = cstr::Copy(Temp, "  @@@@@@@@@@@@@@@@@@@@@@@ ") + 1;   
-        Temp = cstr::Copy(Temp, "\n\r\033F086182194") + 1;    
+        Temp = cstr::Copy(Temp, "\033F086182194 /ooooooooooooooooooooo/") + 1;   
+        Temp = cstr::Copy(Temp, "\n\r") + 1;    
 
-        Temp = cstr::Copy(Temp, " @@@@@@@@@@@@@@@@@@@@@@@  ") + 1; 
-        Temp = cstr::Copy(Temp, "\n\r\033F086182194") + 1;    
+        Temp = cstr::Copy(Temp, "\033F086182194/ooooooooooooooooooooo/ ") + 1; 
+        Temp = cstr::Copy(Temp, "\n\r") + 1;    
 
-        Temp = cstr::Copy(Temp, " @@@@@@@@@@@@@@@@@@@@@@   ") + 1; 
-        Temp = cstr::Copy(Temp, "\n\r\033F086182194") + 1;   
+        Temp = cstr::Copy(Temp, "\033F086182194/oooooooooooooooooooo/  ") + 1; 
+        Temp = cstr::Copy(Temp, "\n\r") + 1;   
 
-        Temp = cstr::Copy(Temp, "@@@@@@@@@@@@@@@@@@@@@     ") + 1; 
-        Temp = cstr::Copy(Temp, "\n\r\033F086182194") + 1;   
+        Temp = cstr::Copy(Temp, "\033F086182194oooooooooooooooooooo/    ") + 1; 
+        Temp = cstr::Copy(Temp, "\n\r") + 1;   
 
-        Temp = cstr::Copy(Temp, "           @@@@@@@@@      ") + 1;  
-        Temp = cstr::Copy(Temp, "\n\r\033F086182194") + 1;   
+        Temp = cstr::Copy(Temp, "\033F086182194          /ooooooo/     ") + 1;  
+        Temp = cstr::Copy(Temp, "\n\r") + 1;   
 
-        Temp = cstr::Copy(Temp, "          @@@@@@@@        ") + 1;  
-        Temp = cstr::Copy(Temp, "\n\r\033F086182194") + 1; 
+        Temp = cstr::Copy(Temp, "\033F086182194         /oooooo/       ") + 1;  
+        Temp = cstr::Copy(Temp, "\n\r") + 1; 
 
-        Temp = cstr::Copy(Temp, "         @@@@@@@@         ") + 1;  
-        Temp = cstr::Copy(Temp, "\n\r\033F086182194") + 1;  
+        Temp = cstr::Copy(Temp, "\033F086182194        /oooooo/        ") + 1;  
+        Temp = cstr::Copy(Temp, "\n\r") + 1;  
 
-        Temp = cstr::Copy(Temp, "         @@@@@@           ") + 1;  
+        Temp = cstr::Copy(Temp, "\033F086182194        /oooo/          ") + 1;  
         Temp = cstr::Copy(Temp, "\033B040044052   \033B224108117   \033B229192123   \033B152195121   \033B097175239   \033B198120221   \033B086182194   \033B220223228   ") + 1;   
-        Temp = cstr::Copy(Temp, "\n\r\033F086182194\033B000000000") + 1;   
+        Temp = cstr::Copy(Temp, "\n\r") + 1;   
 
-        Temp = cstr::Copy(Temp, "        @@@@@@            ") + 1;   
+        Temp = cstr::Copy(Temp, "\033F086182194\033B000000000       /oooo/           ") + 1;   
         Temp = cstr::Copy(Temp, "\033B040044052   \033B224108117   \033B229192123   \033B152195121   \033B097175239   \033B198120221   \033B086182194   \033B220223228   ") + 1;   
-        Temp = cstr::Copy(Temp, "\n\r\033F086182194\033B000000000") + 1;
+        Temp = cstr::Copy(Temp, "\n\r") + 1;
 
-        Temp = cstr::Copy(Temp, "       @@@@@@             ") + 1;   
+        Temp = cstr::Copy(Temp, "\033F086182194\033B000000000      /oooo/            ") + 1;   
         Temp = cstr::Copy(Temp, "\n\r\033F086182194") + 1;
 
-        Temp = cstr::Copy(Temp, "      @@@@@               \033F255255255") + 1;
+        Temp = cstr::Copy(Temp, "     /ooo/              \033F255255255") + 1;
 
         Temp[1] = 0;                   
         return CommandSysfetchOutput;
@@ -210,6 +236,7 @@ namespace System
         Command Commands[] =
         {
             Command("set", CommandSet),
+            Command("help", CommandHelp),
             Command("time", CommandTime),
             Command("date", CommandDate),
             Command("panic", CommandPanic),

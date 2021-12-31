@@ -74,8 +74,11 @@ namespace tty
         {
             Input[i] = 0;
         }
-
+                
         Print("\n\r");
+        Print("Welcome to the tty of ");
+        Print(OS_VERSION);
+        Print("!\n\n\r");
         RunCommand("sysfetch");
         Print("\n\r");
 
