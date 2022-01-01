@@ -78,7 +78,8 @@ namespace tty
         Print("\n\r");
         Print("Welcome to the tty of ");
         Print(OS_VERSION);
-        Print("!\n\n\r");
+        Print("!\n\r");
+        Print("Type \"help\" for a list of all available commands.\n\n\r");
         RunCommand("sysfetch");
         Print("\n\r");
 

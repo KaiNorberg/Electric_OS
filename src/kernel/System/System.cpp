@@ -94,29 +94,29 @@ namespace System
     const char* CommandHelp(const char* Command)
     {       
         return 
-       "               Help Manual\n\n\r"
-       "\033F086182194set [VARIABLE] [VALUE]\n\r"
-       "    \033F224108117DESC:\n\r"
-       "        \033F255255255Sets the specified kernel variable to the specified value\n\r"
-       "    \033F224108117VARIABLE:\n\r"
-       "        \033F255255255mousedraw\n\r"
-       "    \033F224108117VALUE:\n\r"
-       "        \033F255255255Any positive integer\n\r"
-       "\033F086182194help\n\r"
-       "    \033F224108117DESC:\n\r"
-       "        \033F255255255Prints this menu\n\r"
-       "\033F086182194time\n\r"
-       "    \033F224108117DESC:\n\r"
-       "        \033F255255255Prints the current time\n\r"
-       "\033F086182194date\n\r"
-       "    \033F224108117DESC:\n\r"
-       "        \033F255255255Prints the current date\n\r"
-       "\033F086182194panic\n\r"
-       "    \033F224108117DESC:\n\r"
-       "        \033F255255255Causes a kernel panic\n\r"
-       "\033F086182194sysfetch\n\r"
-       "    \033F224108117DESC:\n\r"
-       "        \033F255255255A neofetch lookalike to give system information\n\r";
+                                        "               Help Manual\n\n\r"
+        FOREGROUND_COLOR(086, 182, 194)"set [VARIABLE] [VALUE]\n\r"
+        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
+        FOREGROUND_COLOR(255, 255, 255)"        Sets the specified kernel variable to the specified value\n\r"
+        FOREGROUND_COLOR(224, 108, 117)"    VARIABLE:\n\r"
+        FOREGROUND_COLOR(255, 255, 255)"        mousedraw\n\r"
+        FOREGROUND_COLOR(224, 108, 117)"    VALUE:\n\r"
+        FOREGROUND_COLOR(255, 255, 255)"        Any positive integer\n\r"
+        FOREGROUND_COLOR(086, 182, 194)"help\n\r"
+        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
+        FOREGROUND_COLOR(255, 255, 255)"        Prints this menu\n\r"
+        FOREGROUND_COLOR(086, 182, 194)"time\n\r"
+        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
+        FOREGROUND_COLOR(255, 255, 255)"        Prints the current time\n\r"
+        FOREGROUND_COLOR(086, 182, 194)"date\n\r"
+        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
+        FOREGROUND_COLOR(255, 255, 255)"        Prints the current date\n\r"
+        FOREGROUND_COLOR(086, 182, 194)"panic\n\r"
+        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
+        FOREGROUND_COLOR(255, 255, 255)"        Causes a kernel panic\n\r"
+        FOREGROUND_COLOR(086, 182, 194)"sysfetch\n\r"
+        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
+        FOREGROUND_COLOR(255, 255, 255)"        A neofetch lookalike to give system information\n\r";
     }
 
     char CommandTimeOutput[64];
@@ -128,7 +128,7 @@ namespace System
         Temp = cstr::Copy(Temp, cstr::ToString(RTC::GetMinute())) + 1;
         Temp = cstr::Copy(Temp, ":") + 1;
         Temp = cstr::Copy(Temp, cstr::ToString(RTC::GetSecond())) + 1;
-        Temp[1] = 0;
+        *Temp = 0;
         return CommandTimeOutput;
     }
 
@@ -142,7 +142,7 @@ namespace System
         Temp = cstr::Copy(Temp, "/") + 1;
         Temp = cstr::Copy(Temp, "20") + 1;
         Temp = cstr::Copy(Temp, cstr::ToString(RTC::GetYear())) + 1;
-        Temp[1] = 0;
+        *Temp = 0;
         return CommandDateOutput;
     }
 
@@ -154,80 +154,93 @@ namespace System
 
     char CommandSysfetchOutput[1100];
     const char* CommandSysfetch(const char* Command)
-    {                                    
+    {                
         char* Temp = CommandSysfetchOutput;          
+     
+        auto WriteLine = [&](const char* Part1, const char* Part2 = nullptr) 
+        { 
+            Temp = cstr::Copy(Temp, FOREGROUND_COLOR(086, 182, 194)) + 1;
+            Temp = cstr::Copy(Temp, Part1) + 1;
+            Temp = cstr::Copy(Temp, FOREGROUND_COLOR(255, 255, 255)) + 1;
+            if (Part2 != nullptr)
+            {
+                Temp = cstr::Copy(Temp, Part2) + 1;
+            }
+        };  
 
-        Temp = cstr::Copy(Temp, "\033F086182194        /ooooooooooo/   ") + 1;
-        Temp = cstr::Copy(Temp, "\n\r") + 1;
+        auto Write = [&](const char* String)
+        {
+            Temp = cstr::Copy(Temp, String) + 1;
+        };
 
-        Temp = cstr::Copy(Temp, "       /ooooooooooo/    ") + 1;
-        Temp = cstr::Copy(Temp, "OS\033F255255255: ") + 1;
-        Temp = cstr::Copy(Temp, OS_VERSION) + 1;
-        Temp = cstr::Copy(Temp, "\n\r") + 1;    
+        WriteLine("        /ooooooooooo/   ", nullptr);
+        Write("\n\r");
 
-        Temp = cstr::Copy(Temp, "\033F086182194      /ooooooooooo/     ") + 1;
-        Temp = cstr::Copy(Temp, "Uptime\033F255255255: ") + 1;
-        Temp = cstr::Copy(Temp, cstr::ToString(PIT::Ticks / PIT::GetFrequency())) + 1;
-        Temp = cstr::Copy(Temp, " s") + 1;
-        Temp = cstr::Copy(Temp, "\n\r") + 1; 
+        WriteLine("       /ooooooooooo/     OS", ": ");
+        Write(OS_VERSION);
+        Write("\n\r");  
 
-        Temp = cstr::Copy(Temp, "\033F086182194     /oooooooooo/       ") + 1; 
-        Temp = cstr::Copy(Temp, "Time\033F255255255: ") + 1;  
-        Temp = cstr::Copy(Temp, CommandTime(nullptr)) + 1;  
-        Temp = cstr::Copy(Temp, "\n\r") + 1; 
+        WriteLine("      /ooooooooooo/      Uptime", ": ");
+        Write(cstr::ToString(PIT::Ticks / PIT::GetFrequency()));
+        Write(" s");
+        Write("\n\r"); 
 
-        Temp = cstr::Copy(Temp, "\033F086182194    /oooooooooo/        ") + 1;  
-        Temp = cstr::Copy(Temp, "Date\033F255255255: ") + 1;  
-        Temp = cstr::Copy(Temp, CommandDate(nullptr)) + 1;  
-        Temp = cstr::Copy(Temp, "\n\r") + 1;    
+        WriteLine("     /oooooooooo/        Time", ": ");
+        Write(CommandTime(nullptr));  
+        Write("\n\r"); 
 
-        Temp = cstr::Copy(Temp, "\033F086182194   /oooooooooo/         ") + 1;  
-        Temp = cstr::Copy(Temp, "Memory\033F255255255: ") + 1;
+        WriteLine("    /oooooooooo/         Date", ": ");  
+        Write(CommandDate(nullptr));  
+        Write("\n\r");    
 
-        Temp = cstr::Copy(Temp, cstr::ToString(PageAllocator::GetLockedMemory() / 1048576)) + 1;
-        Temp = cstr::Copy(Temp, " / ") + 1;
-        Temp = cstr::Copy(Temp, cstr::ToString((PageAllocator::GetFreeMemory() + PageAllocator::GetLockedMemory()) / 1048576)) + 1;
-        Temp = cstr::Copy(Temp, " MB") + 1; 
-        Temp = cstr::Copy(Temp, "\n\r") + 1;  
+        WriteLine("   /oooooooooo/          Memory", ": ");  
+        Write(cstr::ToString(PageAllocator::GetLockedMemory() / 1048576));
+        Write(" / ");
+        Write(cstr::ToString((PageAllocator::GetFreeMemory() + PageAllocator::GetLockedMemory()) / 1048576));
+        Write(" MB"); 
+        Write("\n\r");  
 
-        Temp = cstr::Copy(Temp, "\033F086182194  /oooooooooo/          ") + 1; 
-        Temp = cstr::Copy(Temp, "\n\r") + 1;   
+        WriteLine("  /oooooooooo/          ", nullptr); 
+        Write("\n\r");   
 
-        Temp = cstr::Copy(Temp, "\033F086182194 /ooooooooooooooooooooo/") + 1;   
-        Temp = cstr::Copy(Temp, "\n\r") + 1;    
+        WriteLine(" /ooooooooooooooooooooo/", nullptr);   
+        Write("\n\r");    
 
-        Temp = cstr::Copy(Temp, "\033F086182194/ooooooooooooooooooooo/ ") + 1; 
-        Temp = cstr::Copy(Temp, "\n\r") + 1;    
+        WriteLine("/ooooooooooooooooooooo/ ", nullptr); 
+        Write("\n\r");    
 
-        Temp = cstr::Copy(Temp, "\033F086182194/oooooooooooooooooooo/  ") + 1; 
-        Temp = cstr::Copy(Temp, "\n\r") + 1;   
+        WriteLine("/oooooooooooooooooooo/  ", nullptr); 
+        Write("\n\r");   
 
-        Temp = cstr::Copy(Temp, "\033F086182194oooooooooooooooooooo/    ") + 1; 
-        Temp = cstr::Copy(Temp, "\n\r") + 1;   
+        WriteLine("oooooooooooooooooooo/    ", nullptr); 
+        Write("\n\r");   
 
-        Temp = cstr::Copy(Temp, "\033F086182194          /ooooooo/     ") + 1;  
-        Temp = cstr::Copy(Temp, "\n\r") + 1;   
+        WriteLine("          /ooooooo/     ", nullptr);  
+        Write("\n\r");   
 
-        Temp = cstr::Copy(Temp, "\033F086182194         /oooooo/       ") + 1;  
-        Temp = cstr::Copy(Temp, "\n\r") + 1; 
+        WriteLine("         /oooooo/       ", nullptr);  
+        Write("\n\r"); 
 
-        Temp = cstr::Copy(Temp, "\033F086182194        /oooooo/        ") + 1;  
-        Temp = cstr::Copy(Temp, "\n\r") + 1;  
+        WriteLine("        /oooooo/        ", nullptr);  
+        Write("\n\r");  
 
-        Temp = cstr::Copy(Temp, "\033F086182194        /oooo/          ") + 1;  
-        Temp = cstr::Copy(Temp, "\033B040044052   \033B224108117   \033B229192123   \033B152195121   \033B097175239   \033B198120221   \033B086182194   \033B220223228   ") + 1;   
-        Temp = cstr::Copy(Temp, "\n\r") + 1;   
+        WriteLine("        /oooo/          ", nullptr);  
+        Write(" \033B040044052   \033B224108117   \033B229192123   \033B152195121   \033B097175239   \033B198120221   \033B086182194   \033B220223228   ");  
+        Write("\033B000000000"); 
+        Write("\n\r");   
 
-        Temp = cstr::Copy(Temp, "\033F086182194\033B000000000       /oooo/           ") + 1;   
-        Temp = cstr::Copy(Temp, "\033B040044052   \033B224108117   \033B229192123   \033B152195121   \033B097175239   \033B198120221   \033B086182194   \033B220223228   ") + 1;   
-        Temp = cstr::Copy(Temp, "\n\r") + 1;
+        WriteLine("       /oooo/           ", nullptr);   
+        Write(" \033B040044052   \033B224108117   \033B229192123   \033B152195121   \033B097175239   \033B198120221   \033B086182194   \033B220223228   ");   
+        Write("\033B000000000"); 
+        Write("\n\r");
 
-        Temp = cstr::Copy(Temp, "\033F086182194\033B000000000      /oooo/            ") + 1;   
-        Temp = cstr::Copy(Temp, "\n\r\033F086182194") + 1;
+        WriteLine("      /oooo/            ", nullptr);   
+        Write("\n\r");
 
-        Temp = cstr::Copy(Temp, "     /ooo/              \033F255255255") + 1;
+        WriteLine("     /ooo/              ", nullptr);
+        Write("\n\r");
 
-        Temp[1] = 0;                   
+        *Temp = 0;                   
         return CommandSysfetchOutput;
     }                                                                                                                                                            
 

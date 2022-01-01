@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-#define OS_VERSION "Electric_OS 30/12/2021"
+#define OS_VERSION "Electric_OS 01/01/2022"
 
 namespace System
 {
