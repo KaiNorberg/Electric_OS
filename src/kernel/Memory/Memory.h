@@ -5,8 +5,8 @@
 #include <stdint.h>
 
 namespace Memory
-{
-    void Set(void* Start, uint8_t Value, uint64_t Num);
+{    
+    void Set(void* Source, uint8_t Value, const uint64_t Count);
 
-    void Copy(void* Source, void* Dest, uint64_t Count);
+    void Copy(void* Source, void* Dest, const uint64_t Count);
 }

@@ -34,16 +34,20 @@ namespace IDT
     {
         static IDTR idtr;
         static IDTEntry _IDT[256];
+        
         idtr.Limit = 0x0FFF;
         idtr.Offset = (uint64_t)_IDT;
 
+        idtr.SetHandler(0x5, (uint64_t)InteruptHandlers::BoundRange);
         idtr.SetHandler(0x6, (uint64_t)InteruptHandlers::InvalidOP);
         idtr.SetHandler(0x7, (uint64_t)InteruptHandlers::DeviceNotDetected);
         idtr.SetHandler(0x8, (uint64_t)InteruptHandlers::DoubleFault);
+        idtr.SetHandler(0xA, (uint64_t)InteruptHandlers::InvalidTSS);
         idtr.SetHandler(0xB, (uint64_t)InteruptHandlers::SegmentNotPresent);
         idtr.SetHandler(0xC, (uint64_t)InteruptHandlers::StackSegmentFault);
         idtr.SetHandler(0xD, (uint64_t)InteruptHandlers::GeneralProtectionFault);
         idtr.SetHandler(0xE, (uint64_t)InteruptHandlers::PageFault);
+        idtr.SetHandler(0x10, (uint64_t)InteruptHandlers::FloatingPoint);
 
         idtr.SetHandler(0x20, (uint64_t)InteruptHandlers::PIT);
         idtr.SetHandler(0x21, (uint64_t)InteruptHandlers::Keyboard);

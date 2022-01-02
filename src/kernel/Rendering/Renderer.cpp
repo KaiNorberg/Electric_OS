@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "../PIT/PIT.h"
 
 #include <stdint.h>
 
@@ -92,8 +93,8 @@ namespace Renderer
             }
             if (CursorPos.Y + 16 > Screenbuffer->Height)
             {
-                ScrollUp(16);
-                CursorPos.Y -= 16;
+                ScrollUp(32);
+                CursorPos.Y -= 32;
             }
 
             PutChar(Chr, Background, Foreground, CursorPos, Scale);
@@ -103,13 +104,9 @@ namespace Renderer
 
     void ScrollUp(uint64_t Amount)
     {
-        for (uint64_t Y = 0; Y < Screenbuffer->Height; Y++)
-        {
-            for (uint64_t X = 0; X < Screenbuffer->Width; X++)
-            {
-                PutPixel(Point(X, Y), GetPixel(Point(X, Y + Amount)));
-            }
-        }
+        uint64_t Offset = Screenbuffer->PixelsPerScanline * Amount;
+        Memory::Copy(Screenbuffer->Base + Offset, Screenbuffer->Base, Screenbuffer->Size - Offset * 4);
+        Memory::Set(Screenbuffer->Base + Screenbuffer->PixelsPerScanline * (Screenbuffer->Height - Amount), 0, Offset * 4);
     }
 
     void Clear(ARGB Color)
@@ -117,13 +114,7 @@ namespace Renderer
         CursorPos.X = 0;
         CursorPos.Y = 0;
 
-        for (int Y = 0; Y < Screenbuffer->Height; Y++)
-        {
-            for (int X = 0; X < Screenbuffer->Width; X++)
-            {
-                PutPixel(Point(X, Y), Color);
-            }
-        }
+        Memory::Set(Screenbuffer->Base, 0, Screenbuffer->Size);
     }
 
     Point GetScreenSize()

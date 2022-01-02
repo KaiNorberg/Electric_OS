@@ -5,20 +5,33 @@
 #include "../PIT/PIT.h"
 
 namespace Memory
-{
-    void Set(void* Start, uint8_t Value, uint64_t Num)
+{    
+    void Set(void* Source, uint8_t Value, const uint64_t Count)
     {
-        for (uint64_t i = 0; i < Num; i++)
+        uint64_t Value64 = ((uint64_t)Value << 0) + ((uint64_t)Value << 8) + ((uint64_t)Value << 16) + ((uint64_t)Value << 24) + 
+        ((uint64_t)Value << 32) + ((uint64_t)Value << 40) + ((uint64_t)Value << 48) + ((uint64_t)Value << 56);
+        
+        for (int i = 0; i < Count / 8; i++)
         {
-            *(uint8_t*)((uint64_t)Start + i) = Value;
+            ((uint64_t*)Source)[i] = Value64;
+        }
+
+        for (int i = Count; i < Count - Count % 8; i++)
+        {
+            ((uint8_t*)Source)[i] = Value;
         }
     }
 
-    void Copy(void* Source, void* Dest, uint64_t Count)
+    void Copy(void* Source, void* Dest, const uint64_t Count)
     {
-        while (Count-- > 0)
+        for (int i = 0; i < Count / 8; i++)
         {
-            *(uint8_t*)Dest++ = *(uint8_t*)Source++;
+            ((uint64_t*)Dest)[i] = ((uint64_t*)Source)[i];
+        }
+
+        for (int i = Count; i < Count - Count % 8; i++)
+        {
+            ((uint8_t*)Dest)[i] = ((uint64_t*)Dest)[i];
         }
     }
 }

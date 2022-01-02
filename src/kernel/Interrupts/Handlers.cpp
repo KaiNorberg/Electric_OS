@@ -9,7 +9,16 @@
 #include "../PIT/PIT.h"
 
 namespace InteruptHandlers
-{
+{    
+    __attribute__((interrupt)) void BoundRange(InterruptFrame* frame)
+    {
+        Debug::Error("Bound Range Exceeded");
+        while(true)
+        {
+            asm("HLT");
+        }
+    }
+
     __attribute__((interrupt)) void InvalidOP(InterruptFrame* frame)
     {
         Debug::Error("Invalid OP Code Detected");
@@ -31,6 +40,15 @@ namespace InteruptHandlers
     __attribute__((interrupt)) void DoubleFault(InterruptFrame* frame)
     {
         Debug::Error("Double Fault");
+        while(true)
+        {
+            asm("HLT");
+        }
+    }
+
+    __attribute__((interrupt)) void InvalidTSS(InterruptFrame* frame)
+    {
+        Debug::Error("Invalid TSS");
         while(true)
         {
             asm("HLT");
@@ -73,6 +91,15 @@ namespace InteruptHandlers
         }
     }
 
+    __attribute__((interrupt)) void FloatingPoint(InterruptFrame* frame)
+    {
+        Debug::Error("Floating Point Exception");
+        while(true)
+        {
+            asm("HLT");
+        }
+    }
+
     __attribute__((interrupt)) void PIT(InterruptFrame* frame)
     {
         PIT::Tick();
@@ -85,7 +112,7 @@ namespace InteruptHandlers
     }
 
     __attribute__((interrupt)) void Keyboard(InterruptFrame* frame)
-    {
+    {        
         uint8_t ScanCode = IO::InByte(0x60);
 
         KeyBoard::HandleScanCode(ScanCode);
