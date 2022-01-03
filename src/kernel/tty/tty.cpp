@@ -1,6 +1,6 @@
 #include "tty.h"
 
-#include "../Rendering/Renderer.h"
+#include "../Renderer/Renderer.h"
 #include "../UserInput/KeyBoard.h"
 #include "../PIT/PIT.h"
 #include "../String/cstr.h"

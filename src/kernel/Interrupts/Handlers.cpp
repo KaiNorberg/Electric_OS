@@ -1,6 +1,6 @@
 #include "Handlers.h"
 #include "IDT.h"
-#include "../Rendering/Renderer.h"
+#include "../Renderer/Renderer.h"
 #include "../Debug/Debug.h"
 #include "../IO/IO.h"
 #include "../RTC/RTC.h"

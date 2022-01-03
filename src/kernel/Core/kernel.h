@@ -1,4 +1,4 @@
-#include "../Rendering/Renderer.h"
+#include "../Renderer/Renderer.h"
 #include "../Interrupts/IDT.h"
 #include "../Memory/GDT/GDT.h"
 #include "../Memory/Memory.h"

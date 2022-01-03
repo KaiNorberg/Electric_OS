@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 #include "../IO/IO.h"
-#include "../Rendering/Renderer.h"
+#include "../Renderer/Renderer.h"
 #include "../Math/Math.h"
 
 #define PS2Leftbutton 0b00000001

@@ -1,6 +1,6 @@
 #include "KeyBoard.h"
 #include "Mouse.h"
-#include "../Rendering/Renderer.h"
+#include "../Renderer/Renderer.h"
 
 namespace KeyBoard
 {

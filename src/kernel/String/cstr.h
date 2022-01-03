@@ -13,6 +13,8 @@ namespace cstr
 
     char* NextWord(const char* String);
 
+    uint64_t LineAmount(const char* String);
+
     uint64_t HashWord(const char* String);
 
     uint64_t Length(const char* String);

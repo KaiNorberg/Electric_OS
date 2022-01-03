@@ -50,6 +50,21 @@ namespace cstr
         return (char*)(String + i);
     }
 
+    uint64_t LineAmount(const char* String)
+    {
+        uint64_t Amount = 1;
+        char* S = (char*)String;
+        while (*S != 0)
+        {
+            if (*S == '\n')
+            {
+                Amount++;
+            }
+            S++;
+        }
+        return Amount;
+    }
+
     uint64_t HashWord(const char* String)
     {
         uint64_t Result = 0;

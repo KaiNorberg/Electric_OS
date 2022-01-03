@@ -1,6 +1,4 @@
 #include "PageAllocator.h"
-
-#include "../../Rendering/Renderer.h"
 #include "../../String/cstr.h"
 
 extern uint64_t _KernelStart;

@@ -1,5 +1,5 @@
 #include "Debug.h"
-#include "../Rendering/Renderer.h"
+#include "../Renderer/Renderer.h"
 #include "../PIT/PIT.h"
 #include "../RTC/RTC.h"
 #include "../String/cstr.h"

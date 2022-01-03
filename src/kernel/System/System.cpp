@@ -94,7 +94,6 @@ namespace System
     const char* CommandHelp(const char* Command)
     {       
         return 
-                                        "               Help Manual\n\n\r"
         FOREGROUND_COLOR(086, 182, 194)"set [VARIABLE] [VALUE]\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        Sets the specified kernel variable to the specified value\n\r"

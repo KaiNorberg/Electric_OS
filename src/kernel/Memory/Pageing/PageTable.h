@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-#include "../../Rendering/Framebuffer.h"
+#include "../../Renderer/Framebuffer.h"
 
 struct PageDirEntry
 {

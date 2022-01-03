@@ -2,14 +2,16 @@
 
 #include "../efiMemory.h"
 #include "../Memory.h"
-#include "../../Rendering/Framebuffer.h"
-#include "../../Rendering/Font.h"
+#include "../../Renderer/Framebuffer.h"
+#include "../../Renderer/Font.h"
 
 
 #include <stdint.h>
 
 namespace PageAllocator
-{
+{    
+    extern uint64_t PageAmount;
+
     void Init(EFI_MEMORY_MAP* MemoryMap, Framebuffer* ScreenBuffer, PSF_FONT* PSFFont);
 
     void* RequestPage();
