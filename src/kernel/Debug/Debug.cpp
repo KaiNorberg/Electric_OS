@@ -3,7 +3,7 @@
 #include "../PIT/PIT.h"
 #include "../RTC/RTC.h"
 #include "../String/cstr.h"
-#include "../Memory/Pageing/PageAllocator.h"
+#include "../Memory/Paging/PageAllocator.h"
 #include "../System/System.h"
 
 namespace Debug

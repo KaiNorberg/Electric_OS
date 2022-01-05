@@ -5,7 +5,7 @@
 #include "../RTC/RTC.h"
 #include "../PIT/PIT.h"
 #include "../Debug/Debug.h"
-#include "../Memory/Pageing/PageAllocator.h"
+#include "../Memory/Paging/PageAllocator.h"
 
 namespace System
 {
