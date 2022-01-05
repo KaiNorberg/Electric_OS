@@ -2,6 +2,7 @@
 #include "../Interrupts/IDT.h"
 #include "../Memory/GDT/GDT.h"
 #include "../Memory/Memory.h"
+#include "../Memory/Heap.h"
 #include "../Memory/Paging/PageAllocator.h"
 #include "../Memory/Paging/PageTable.h"
 #include "../String/cstr.h"
