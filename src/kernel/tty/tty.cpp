@@ -8,7 +8,7 @@
 
 namespace tty
 {
-    uint8_t Scale; 
+    /*uint8_t Scale; 
 
     ARGB Background;
     ARGB Foreground;
@@ -82,7 +82,6 @@ namespace tty
         Print("Type \"help\" for a list of all available commands.\n\n\r");
         RunCommand("sysfetch");
         Print("\n\r");
-        Renderer::SwapBuffers();
 
         while (true)
         {
@@ -145,7 +144,7 @@ namespace tty
                         Renderer::PutChar(' ', Background, Foreground, Renderer::CursorPos, Scale);
                     }
                 }
-
+                
                 Renderer::SwapBuffers();
                 asm("HLT");
             }
@@ -155,5 +154,5 @@ namespace tty
             Input[0] = 0;
             Print("\n\r");
         }   
-    }
+    }*/
 }

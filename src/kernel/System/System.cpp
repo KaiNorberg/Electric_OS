@@ -1,7 +1,7 @@
 #include "System.h"
 
 #include "../String/cstr.h"
-#include "../UserInput/Mouse.h"
+#include "../Renderer/Renderer.h"
 #include "../RTC/RTC.h"
 #include "../PIT/PIT.h"
 #include "../Debug/Debug.h"
@@ -71,7 +71,7 @@ namespace System
     {
         SettableInt SettableInts[] =
         {
-            SettableInt("mousedraw", &Mouse::Draw, sizeof(Mouse::Draw))
+            SettableInt("drawmouse", &Renderer::DrawMouse, sizeof(Renderer::DrawMouse))
         };
 
         char* Variable = cstr::NextWord(Command);
@@ -266,9 +266,4 @@ namespace System
 
         return "ERROR: Command not found";
     }
-
-    /*const char* System(const char* Input)
-    {
-        return Input;
-    }*/
 }

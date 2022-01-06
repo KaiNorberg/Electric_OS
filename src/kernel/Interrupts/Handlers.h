@@ -29,4 +29,6 @@ namespace InteruptHandlers
     __attribute__((interrupt)) void Keyboard(InterruptFrame* frame);
 
     __attribute__((interrupt)) void Mouse(InterruptFrame* frame);
+
+    __attribute__((interrupt)) void SystemCall(InterruptFrame* frame);
 }

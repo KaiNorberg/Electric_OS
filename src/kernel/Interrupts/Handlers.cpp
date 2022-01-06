@@ -7,6 +7,7 @@
 #include "../UserInput/KeyBoard.h"
 #include "../UserInput/Mouse.h"
 #include "../PIT/PIT.h"
+#include "../System/SystemCalls.h"
 
 namespace InteruptHandlers
 {    
@@ -127,6 +128,13 @@ namespace InteruptHandlers
         Mouse::HandleMouseData(MouseData);
 
         IO::OutByte(PIC2_COMMAND, PIC_EOI);
+        IO::OutByte(PIC1_COMMAND, PIC_EOI);
+    }    
+
+    __attribute__((interrupt)) void SystemCall(InterruptFrame* frame)
+    {
+        SystemCalls::Call();
+
         IO::OutByte(PIC1_COMMAND, PIC_EOI);
     }
 }

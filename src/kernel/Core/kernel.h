@@ -12,6 +12,7 @@
 #include "../RTC/RTC.h"
 #include "../tty/tty.h"
 #include "../Debug/Debug.h"
+#include "../System/SystemCalls.h"
 
 struct BootLoaderInfo
 {

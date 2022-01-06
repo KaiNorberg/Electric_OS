@@ -19,8 +19,14 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 	IDT::SetupInterrupts();
 	
 	KeyBoard::Clear();
+	
+	SystemCalls::Args[0] = 0;
+	SystemCalls::Args[1] = (uint64_t)"panic";
+	asm("int $0x80");
+	Renderer::Print((char*)SystemCalls::Args[1]);
+	Renderer::SwapBuffers();
 
-	tty::tty();
+	//tty::tty();
 
 	while(true)
 	{

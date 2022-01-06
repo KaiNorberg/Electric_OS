@@ -2,28 +2,40 @@
 #include "../PIT/PIT.h"
 #include "../String/cstr.h"
 #include "../Memory/Heap.h"
+#include "../UserInput/Mouse.h"
 
 #include <stdint.h>
 
 namespace Renderer
 {
-    Framebuffer* Screenbuffer;
+    Framebuffer* Frontbuffer;
     Framebuffer Backbuffer;
 
     PSF_FONT* CurrentFont;
 
     Point CursorPos;
 
+    ARGB Background;
+    ARGB Foreground;
+
+    bool DrawMouse; 
+
     void Init(Framebuffer* framebuffer, PSF_FONT* PSF_Font)
     {
-        Screenbuffer = framebuffer;
+        Frontbuffer = framebuffer;
 
-        Backbuffer = *Screenbuffer;
+        Backbuffer = *Frontbuffer;
         Backbuffer.Base = (ARGB*)Heap::Allocate(Backbuffer.Size);
 
         CurrentFont = PSF_Font;
+
         CursorPos.X = 0;
         CursorPos.Y = 0;
+
+        Background = ARGB(0);
+        Foreground = ARGB(255);
+
+        DrawMouse = false;
     }
 
     void PutPixel(Point Pixel, ARGB Color)
@@ -36,6 +48,16 @@ namespace Renderer
         *(ARGB*)((uint64_t)Backbuffer.Base + Pixel.X * 4 + Pixel.Y * Backbuffer.PixelsPerScanline * 4) = Color;
     }
 
+    void PutPixelFront(Point Pixel, ARGB Color)
+    {
+        if (Pixel.X > Frontbuffer->Width || Pixel.X < 0 || Pixel.Y > Frontbuffer->Height || Pixel.Y < 0)
+        {
+            return;
+        }
+
+        *(ARGB*)((uint64_t)Frontbuffer->Base + Pixel.X * 4 + Pixel.Y * Frontbuffer->PixelsPerScanline * 4) = Color;
+    }
+
     ARGB GetPixel(Point Pixel)
     {        
         if (Pixel.X > Backbuffer.Width || Pixel.X < 0 || Pixel.Y > Backbuffer.Height || Pixel.Y < 0)
@@ -46,7 +68,17 @@ namespace Renderer
         return *(ARGB*)((uint64_t)Backbuffer.Base + Pixel.X * 4 + Pixel.Y * Backbuffer.PixelsPerScanline * 4);
     }
 
-    void PutChar(char chr, ARGB Background, ARGB Foreground, Point Pos, uint8_t Scale)
+    ARGB GetPixelFront(Point Pixel)
+    {        
+        if (Pixel.X > Frontbuffer->Width || Pixel.X < 0 || Pixel.Y > Frontbuffer->Height || Pixel.Y < 0)
+        {
+            return ARGB(0);
+        }
+
+        return *(ARGB*)((uint64_t)Frontbuffer->Base + Pixel.X * 4 + Pixel.Y * Frontbuffer->PixelsPerScanline * 4);
+    }
+
+    void PutChar(char chr, Point Pos, uint8_t Scale)
     {
         char* Glyph = CurrentFont->glyphBuffer + (chr * CurrentFont->PSF_header->charsize);
 
@@ -70,18 +102,43 @@ namespace Renderer
         }
     }
 
-    void Print(const char* str, ARGB Background, ARGB Foreground, uint8_t Scale)
+    void Print(const char* str, uint8_t Scale)
     {
-        char* chr = (char*)str;
-
-        while (*chr != 0)
+        for (int i = 0; i < cstr::Length(str); i++)
         {
-            Print(*chr, Background, Foreground, Scale);
-            chr++;
+            if (str[i] == '\033')
+            {
+                if (i + 11 > cstr::Length(str))
+                {
+                    return;
+                }
+
+                i++;
+                switch (str[i])
+                {
+                case 'F':
+                {
+                    Foreground = ARGB(255, (str[i + 1] - '0') * 100 + (str[i + 2] - '0') * 10 + (str[i + 3] - '0'), 
+                    (str[i + 4] - '0') * 100 + (str[i + 5] - '0') * 10 + (str[i + 6] - '0'), 
+                    (str[i + 7] - '0') * 100 + (str[i + 8] - '0') * 10 + (str[i + 9] - '0'));
+                }
+                break;
+                case 'B':
+                {
+                    Background = ARGB(255, (str[i + 1] - '0') * 100 + (str[i + 2] - '0') * 10 + (str[i + 3] - '0'), 
+                    (str[i + 4] - '0') * 100 + (str[i + 5] - '0') * 10 + (str[i + 6] - '0'), 
+                    (str[i + 7] - '0') * 100 + (str[i + 8] - '0') * 10 + (str[i + 9] - '0'));
+                }
+                break;
+                }
+                i += 10;
+            }
+
+            Print(str[i], Scale);
         }
     }
 
-    void Print(char Chr, ARGB Background, ARGB Foreground, uint8_t Scale)
+    void Print(char Chr, uint8_t Scale)
     {
         if (Chr == '\n')
         {
@@ -104,7 +161,7 @@ namespace Renderer
                 CursorPos.Y -= 32;
             }
 
-            PutChar(Chr, Background, Foreground, CursorPos, Scale);
+            PutChar(Chr, CursorPos, Scale);
             CursorPos.X += 8 * Scale;
         }
     }
@@ -118,7 +175,21 @@ namespace Renderer
 
     void SwapBuffers()
     {
-        Memory::Copy(Backbuffer.Base, Screenbuffer->Base, Backbuffer.Size);
+        Memory::Copy(Backbuffer.Base, Frontbuffer->Base, Backbuffer.Size);
+
+        if (DrawMouse)
+        {
+            for (int Y = 0; Y < 16; Y++)
+            {
+                for (int X = 0; X < 16; X++)
+                {
+                    if (X + Y < 12)
+                    {
+                        PutPixelFront(Point(Mouse::Position.X + X, Mouse::Position.Y + Y), ARGB(255));
+                    }
+                }
+            }
+        }
     }
 
     void Clear(ARGB Color)

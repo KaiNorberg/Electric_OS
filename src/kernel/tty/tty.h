@@ -2,5 +2,5 @@
 
 namespace tty
 {
-    void tty();
+    //void tty();
 }
