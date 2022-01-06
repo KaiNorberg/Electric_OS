@@ -20,12 +20,9 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 	
 	KeyBoard::Clear();
 	
-	SystemCalls::Args[0] = 0;
-	SystemCalls::Args[1] = (uint64_t)"panic";
-	asm("int $0x80");
-	Renderer::Print((char*)SystemCalls::Args[1]);
+	Renderer::Print((char*)System::Call(0, "sysfetch"));
 	Renderer::SwapBuffers();
-
+	
 	//tty::tty();
 
 	while(true)

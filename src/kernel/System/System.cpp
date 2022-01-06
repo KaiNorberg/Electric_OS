@@ -7,6 +7,8 @@
 #include "../Debug/Debug.h"
 #include "../Memory/Paging/PageAllocator.h"
 
+#include <cstdarg>
+
 namespace System
 {
     struct Command
@@ -265,5 +267,22 @@ namespace System
         }
 
         return "ERROR: Command not found";
+    }
+
+    slib::SYSRV Call(uint64_t Selector...)
+    {
+        va_list Args;
+        va_start(Args, Selector);
+
+        switch (Selector)
+        {
+        case 0:
+        {
+            return (slib::SYSRV)System::System(va_arg(Args, const char*));
+        }
+        break;
+        }
+
+        return 0;
     }
 }
