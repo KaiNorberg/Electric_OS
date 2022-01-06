@@ -1,12 +1,15 @@
 #include "Renderer.h"
 #include "../PIT/PIT.h"
 #include "../String/cstr.h"
+#include "../Memory/Heap.h"
 
 #include <stdint.h>
 
 namespace Renderer
 {
     Framebuffer* Screenbuffer;
+    Framebuffer Backbuffer;
+
     PSF_FONT* CurrentFont;
 
     Point CursorPos;
@@ -15,6 +18,9 @@ namespace Renderer
     {
         Screenbuffer = framebuffer;
 
+        Backbuffer = *Screenbuffer;
+        Backbuffer.Base = (ARGB*)Heap::Allocate(Backbuffer.Size);
+
         CurrentFont = PSF_Font;
         CursorPos.X = 0;
         CursorPos.Y = 0;
@@ -22,22 +28,22 @@ namespace Renderer
 
     void PutPixel(Point Pixel, ARGB Color)
     {
-        if (Pixel.X > Screenbuffer->Width || Pixel.X < 0 || Pixel.Y > Screenbuffer->Height || Pixel.Y < 0)
+        if (Pixel.X > Backbuffer.Width || Pixel.X < 0 || Pixel.Y > Backbuffer.Height || Pixel.Y < 0)
         {
             return;
         }
 
-        *(ARGB*)((uint64_t)Screenbuffer->Base + Pixel.X * 4 + Pixel.Y * Screenbuffer->PixelsPerScanline * 4) = Color;
+        *(ARGB*)((uint64_t)Backbuffer.Base + Pixel.X * 4 + Pixel.Y * Backbuffer.PixelsPerScanline * 4) = Color;
     }
 
     ARGB GetPixel(Point Pixel)
     {        
-        if (Pixel.X > Screenbuffer->Width || Pixel.X < 0 || Pixel.Y > Screenbuffer->Height || Pixel.Y < 0)
+        if (Pixel.X > Backbuffer.Width || Pixel.X < 0 || Pixel.Y > Backbuffer.Height || Pixel.Y < 0)
         {
             return ARGB(0);
         }
 
-        return *(ARGB*)((uint64_t)Screenbuffer->Base + Pixel.X * 4 + Pixel.Y * Screenbuffer->PixelsPerScanline * 4);
+        return *(ARGB*)((uint64_t)Backbuffer.Base + Pixel.X * 4 + Pixel.Y * Backbuffer.PixelsPerScanline * 4);
     }
 
     void PutChar(char chr, ARGB Background, ARGB Foreground, Point Pos, uint8_t Scale)
@@ -50,11 +56,11 @@ namespace Renderer
             {
                 if ((*Glyph & (0b10000000 >> x / Scale)) > 0)
                 {
-                    *(ARGB*)((uint64_t)Screenbuffer->Base + (x + Pos.X) * 4 + (y + Pos.Y) * Screenbuffer->PixelsPerScanline * 4) = Foreground;
+                    *(ARGB*)((uint64_t)Backbuffer.Base + (x + Pos.X) * 4 + (y + Pos.Y) * Backbuffer.PixelsPerScanline * 4) = Foreground;
                 }
                 else
                 {
-                    *(ARGB*)((uint64_t)Screenbuffer->Base + (x + Pos.X) * 4 + (y + Pos.Y) * Screenbuffer->PixelsPerScanline * 4) = Background;
+                    *(ARGB*)((uint64_t)Backbuffer.Base + (x + Pos.X) * 4 + (y + Pos.Y) * Backbuffer.PixelsPerScanline * 4) = Background;
                 }
             }
             if (y % Scale == 0)
@@ -87,12 +93,12 @@ namespace Renderer
         }
         else
         {        
-            if (CursorPos.X + 16 * Scale > Screenbuffer->Width)
+            if (CursorPos.X + 16 * Scale > Backbuffer.Width)
             {
                 CursorPos.X = 0;
                 CursorPos.Y += 16 * Scale;
             }
-            if (CursorPos.Y + 16 > Screenbuffer->Height)
+            if (CursorPos.Y + 16 > Backbuffer.Height)
             {
                 ScrollUp(32);
                 CursorPos.Y -= 32;
@@ -105,11 +111,14 @@ namespace Renderer
 
     void ScrollUp(uint64_t Amount)
     {
-        uint64_t Offset = Screenbuffer->PixelsPerScanline * Amount;
-        Memory::Copy(Screenbuffer->Base + Offset, Screenbuffer->Base, Screenbuffer->Size - Offset * 4);
-        Memory::Set(Screenbuffer->Base + Screenbuffer->PixelsPerScanline * (Screenbuffer->Height - Amount), 0, Offset * 4);
+        uint64_t Offset = Backbuffer.PixelsPerScanline * Amount;
+        Memory::Copy(Backbuffer.Base + Offset, Backbuffer.Base, Backbuffer.Size - Offset * 4);
+        Memory::Set(Backbuffer.Base + Backbuffer.PixelsPerScanline * (Backbuffer.Height - Amount), 0, Offset * 4);
+    }
 
-       // PIT::Sleep(1);
+    void SwapBuffers()
+    {
+        Memory::Copy(Backbuffer.Base, Screenbuffer->Base, Backbuffer.Size);
     }
 
     void Clear(ARGB Color)
@@ -117,11 +126,11 @@ namespace Renderer
         CursorPos.X = 0;
         CursorPos.Y = 0;
 
-        Memory::Set(Screenbuffer->Base, 0, Screenbuffer->Size);
+        Memory::Set(Backbuffer.Base, 0, Backbuffer.Size);
     }
 
     Point GetScreenSize()
     {
-        return Point(Screenbuffer->Width, Screenbuffer->Height);
+        return Point(Backbuffer.Width, Backbuffer.Height);
     }
 }
