@@ -1,7 +1,7 @@
 #include "Heap.h"
 
-#include "../Memory/Paging/PageAllocator.h"
-#include "../Memory/Paging/PageTable.h"
+#include "kernel/Memory/Paging/PageAllocator.h"
+#include "kernel/Memory/Paging/PageTable.h"
 
 #define HEAP_START 0x100000000000
 #define HEAP_STARTSIZE 0x10 * 4096

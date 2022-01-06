@@ -1,5 +1,6 @@
 #include "PageAllocator.h"
-#include "../../String/cstr.h"
+
+#include "STL/String/cstr.h"
 
 extern uint64_t _KernelStart;
 extern uint64_t _KernelEnd;
@@ -11,7 +12,7 @@ namespace PageAllocator
 
     uint64_t FirstFreePage = 0;
 
-    void Init(EFI_MEMORY_MAP* MemoryMap, Framebuffer* ScreenBuffer, PSF_FONT* PSFFont)
+    void Init(EFI_MEMORY_MAP* MemoryMap, STL::Framebuffer* ScreenBuffer, STL::PSF_FONT * PSFFont)
     {   
         PageAmount = 0;
         for (int i = 0; i < MemoryMap->Size / MemoryMap->DescSize; i++)

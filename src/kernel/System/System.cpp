@@ -1,11 +1,12 @@
 #include "System.h"
 
-#include "../String/cstr.h"
-#include "../Renderer/Renderer.h"
-#include "../RTC/RTC.h"
-#include "../PIT/PIT.h"
-#include "../Debug/Debug.h"
-#include "../Memory/Paging/PageAllocator.h"
+#include "STL/String/cstr.h"
+
+#include "kernel/Renderer/Renderer.h"
+#include "kernel/RTC/RTC.h"
+#include "kernel/PIT/PIT.h"
+#include "kernel/Debug/Debug.h"
+#include "kernel/Memory/Paging/PageAllocator.h"
 
 #include <cstdarg>
 
@@ -21,7 +22,7 @@ namespace System
         {
             this->Function = Function;
             this->Name = Name;
-            this->Hash = cstr::HashWord(Name);
+            this->Hash = STL::HashWord(Name);
         }
     };
 
@@ -63,7 +64,7 @@ namespace System
         SettableInt(const char* Name, void* Variable, uint8_t VariableSize)
         {
             this->Name = Name;
-            this->Hash = cstr::HashWord(Name);
+            this->Hash = STL::HashWord(Name);
             this->Variable = Variable;
             this->VariableSize = VariableSize;
         }
@@ -76,16 +77,16 @@ namespace System
             SettableInt("drawmouse", &Renderer::DrawMouse, sizeof(Renderer::DrawMouse))
         };
 
-        char* Variable = cstr::NextWord(Command);
-        char* Value = cstr::NextWord(Variable);
+        char* Variable = STL::NextWord(Command);
+        char* Value = STL::NextWord(Variable);
 
-        uint64_t VariableHash = cstr::HashWord(Variable);
+        uint64_t VariableHash = STL::HashWord(Variable);
 
         for (int i = 0; i < sizeof(SettableInts)/sizeof(SettableInts[0]); i++)
         {
             if (VariableHash == SettableInts[i].Hash)
             {
-                SettableInts[i].SetVariable(cstr::ToInt(Value));
+                SettableInts[i].SetVariable(STL::ToInt(Value));
                 return "Variable set";
             }
         }
@@ -124,11 +125,11 @@ namespace System
     const char* CommandTime(const char* Command)
     {
         char* Temp = CommandTimeOutput;
-        Temp = cstr::Copy(Temp, cstr::ToString(RTC::GetHour())) + 1;
-        Temp = cstr::Copy(Temp, ":") + 1;
-        Temp = cstr::Copy(Temp, cstr::ToString(RTC::GetMinute())) + 1;
-        Temp = cstr::Copy(Temp, ":") + 1;
-        Temp = cstr::Copy(Temp, cstr::ToString(RTC::GetSecond())) + 1;
+        Temp = STL::CopyString(Temp, STL::ToString(RTC::GetHour())) + 1;
+        Temp = STL::CopyString(Temp, ":") + 1;
+        Temp = STL::CopyString(Temp, STL::ToString(RTC::GetMinute())) + 1;
+        Temp = STL::CopyString(Temp, ":") + 1;
+        Temp = STL::CopyString(Temp, STL::ToString(RTC::GetSecond())) + 1;
         *Temp = 0;
         return CommandTimeOutput;
     }
@@ -137,12 +138,12 @@ namespace System
     const char* CommandDate(const char* Command)
     {
         char* Temp = CommandDateOutput;
-        Temp = cstr::Copy(Temp, cstr::ToString(RTC::GetDay())) + 1;
-        Temp = cstr::Copy(Temp, "/") + 1;
-        Temp = cstr::Copy(Temp, cstr::ToString(RTC::GetMonth())) + 1;
-        Temp = cstr::Copy(Temp, "/") + 1;
-        Temp = cstr::Copy(Temp, "20") + 1;
-        Temp = cstr::Copy(Temp, cstr::ToString(RTC::GetYear())) + 1;
+        Temp = STL::CopyString(Temp, STL::ToString(RTC::GetDay())) + 1;
+        Temp = STL::CopyString(Temp, "/") + 1;
+        Temp = STL::CopyString(Temp, STL::ToString(RTC::GetMonth())) + 1;
+        Temp = STL::CopyString(Temp, "/") + 1;
+        Temp = STL::CopyString(Temp, "20") + 1;
+        Temp = STL::CopyString(Temp, STL::ToString(RTC::GetYear())) + 1;
         *Temp = 0;
         return CommandDateOutput;
     }
@@ -160,18 +161,18 @@ namespace System
      
         auto WriteLine = [&](const char* Part1, const char* Part2 = nullptr) 
         { 
-            Temp = cstr::Copy(Temp, FOREGROUND_COLOR(086, 182, 194)) + 1;
-            Temp = cstr::Copy(Temp, Part1) + 1;
-            Temp = cstr::Copy(Temp, FOREGROUND_COLOR(255, 255, 255)) + 1;
+            Temp = STL::CopyString(Temp, FOREGROUND_COLOR(086, 182, 194)) + 1;
+            Temp = STL::CopyString(Temp, Part1) + 1;
+            Temp = STL::CopyString(Temp, FOREGROUND_COLOR(255, 255, 255)) + 1;
             if (Part2 != nullptr)
             {
-                Temp = cstr::Copy(Temp, Part2) + 1;
+                Temp = STL::CopyString(Temp, Part2) + 1;
             }
         };  
 
         auto Write = [&](const char* String)
         {
-            Temp = cstr::Copy(Temp, String) + 1;
+            Temp = STL::CopyString(Temp, String) + 1;
         };
 
         WriteLine("        /ooooooooooo/   ", nullptr);
@@ -182,7 +183,7 @@ namespace System
         Write("\n\r");  
 
         WriteLine("      /ooooooooooo/      Uptime", ": ");
-        Write(cstr::ToString(PIT::Ticks / PIT::GetFrequency()));
+        Write(STL::ToString(PIT::Ticks / PIT::GetFrequency()));
         Write(" s");
         Write("\n\r"); 
 
@@ -195,9 +196,9 @@ namespace System
         Write("\n\r");    
 
         WriteLine("   /oooooooooo/          Memory", ": ");  
-        Write(cstr::ToString(PageAllocator::GetLockedMemory() / 1048576));
+        Write(STL::ToString(PageAllocator::GetLockedMemory() / 1048576));
         Write(" / ");
-        Write(cstr::ToString((PageAllocator::GetFreeMemory() + PageAllocator::GetLockedMemory()) / 1048576));
+        Write(STL::ToString((PageAllocator::GetFreeMemory() + PageAllocator::GetLockedMemory()) / 1048576));
         Write(" MB"); 
         Write("\n\r");  
 
@@ -257,7 +258,7 @@ namespace System
             Command("sysfetch", CommandSysfetch)
         };
 
-        uint64_t Hash = cstr::HashWord(Input);
+        uint64_t Hash = STL::HashWord(Input);
         for (int i = 0; i < sizeof(Commands)/sizeof(Commands[0]); i++)
         {
             if (Hash == Commands[i].Hash)
@@ -269,7 +270,7 @@ namespace System
         return "ERROR: Command not found";
     }
 
-    slib::SYSRV Call(uint64_t Selector...)
+    STL::SYSRV Call(uint64_t Selector...)
     {
         va_list Args;
         va_start(Args, Selector);
@@ -278,7 +279,7 @@ namespace System
         {
         case 0:
         {
-            return (slib::SYSRV)System::System(va_arg(Args, const char*));
+            return (STL::SYSRV)System::System(va_arg(Args, const char*));
         }
         break;
         }

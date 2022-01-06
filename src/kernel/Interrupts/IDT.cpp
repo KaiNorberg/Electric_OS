@@ -1,8 +1,8 @@
 #include "IDT.h"
 #include "Handlers.h"
-#include "../IO/IO.h"
-#include "../UserInput/Mouse.h"
-#include "../Memory/Paging/PageAllocator.h"
+#include "kernel/IO/IO.h"
+#include "kernel/Input/Mouse.h"
+#include "kernel/Memory/Paging/PageAllocator.h"
 
 namespace IDT
 {

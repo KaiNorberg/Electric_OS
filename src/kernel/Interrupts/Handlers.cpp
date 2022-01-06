@@ -1,12 +1,12 @@
 #include "Handlers.h"
 #include "IDT.h"
-#include "../Renderer/Renderer.h"
-#include "../Debug/Debug.h"
-#include "../IO/IO.h"
-#include "../RTC/RTC.h"
-#include "../UserInput/KeyBoard.h"
-#include "../UserInput/Mouse.h"
-#include "../PIT/PIT.h"
+#include "kernel/Renderer/Renderer.h"
+#include "kernel/Debug/Debug.h"
+#include "kernel/IO/IO.h"
+#include "kernel/RTC/RTC.h"
+#include "kernel/Input/KeyBoard.h"
+#include "kernel/Input/Mouse.h"
+#include "kernel/PIT/PIT.h"
 
 namespace InteruptHandlers
 {    
@@ -93,7 +93,7 @@ namespace InteruptHandlers
 
     __attribute__((interrupt)) void FloatingPoint(InterruptFrame* frame)
     {
-        Debug::Error("Floating Point Exception");
+        Debug::Error("Floating STL::Point Exception");
         while(true)
         {
             asm("HLT");

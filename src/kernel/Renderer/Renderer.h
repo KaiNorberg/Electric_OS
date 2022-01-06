@@ -1,31 +1,31 @@
 #pragma once
 
-#include "Font.h"
-#include "ARGB.h"
-#include "Framebuffer.h"
-#include "../Math/Math.h"
-#include "../Memory/Memory.h"
+#include "STL/Graphics/Font.h"
+#include "STL/Graphics/ARGB.h"
+#include "STL/Graphics/Framebuffer.h"
+#include "STL/Math/Math.h"
+#include "STL/Memory/Memory.h"
 
 namespace Renderer
 {
-    extern Point CursorPos;
+    extern STL::Point CursorPos;
 
-    extern ARGB Background;
-    extern ARGB Foreground;
+    extern STL::ARGB Background;
+    extern STL::ARGB Foreground;
 
     extern bool DrawMouse;
 
-    void Init(Framebuffer* framebuffer, PSF_FONT* PSF_Font);
+    void Init(STL::Framebuffer* framebuffer, STL::PSF_FONT * PSF_Font);
 
-    void PutPixel(Point Pixel, ARGB Color);
+    void PutPixel(STL::Point Pixel, STL::ARGB Color);
 
-    void PutPixelFront(Point Pixel, ARGB Color);
+    void PutPixelFront(STL::Point Pixel, STL::ARGB Color);
 
-    ARGB GetPixel(Point Pixel);
+    STL::ARGB GetPixel(STL::Point Pixel);
 
-    ARGB GetPixelFront(Point Pixel);
+    STL::ARGB GetPixelFront(STL::Point Pixel);
 
-    void PutChar(char chr, Point Pos, uint8_t Scale = 1);
+    void PutChar(char chr, STL::Point Pos, uint8_t Scale = 1);
 
     void Print(const char* str, uint8_t Scale = 1);
 
@@ -33,9 +33,9 @@ namespace Renderer
 
     void ScrollUp(uint64_t Amount);
 
-    void Clear(ARGB Color = ARGB(0));
+    void Clear(STL::ARGB Color = STL::ARGB(0));
 
     void SwapBuffers();
 
-    Point GetScreenSize();
+    STL::Point GetScreenSize();
 }

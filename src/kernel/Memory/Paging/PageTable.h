@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-#include "../../Renderer/Framebuffer.h"
+#include "STL/Graphics/Framebuffer.h"
 
 struct PageDirEntry
 {
@@ -27,7 +27,7 @@ struct PageTable
 
 namespace PageTableManager
 {
-    void Init(Framebuffer* ScreenBuffer);
+    void Init(STL::Framebuffer* ScreenBuffer);
 
     void MapAddress(void* VirtualAddress, void* PhysicalAddress);
 }

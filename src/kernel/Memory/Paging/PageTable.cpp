@@ -1,16 +1,17 @@
 #include "PageTable.h"
 #include "PageIndexer.h"
 #include "PageAllocator.h"
-#include "../Memory.h"
+
+#include "STL/Memory/Memory.h"
 
 namespace PageTableManager
 {
     PageTable* PML4;
     
-    void Init(Framebuffer* ScreenBuffer)
+    void Init(STL::Framebuffer* ScreenBuffer)
     {
         PML4 = (PageTable*)PageAllocator::RequestPage();
-        Memory::Set(PML4, 0, 4096);
+        STL::SetMemory(PML4, 0, 4096);
 
         for (uint64_t i = 0; i < ScreenBuffer->Size + 4096; i += 4096)
         {
@@ -35,7 +36,7 @@ namespace PageTableManager
         if (!PDE.Present)
         {
             PDP = (PageTable*)PageAllocator::RequestPage();
-            Memory::Set(PDP, 0, 0x1000);
+            STL::SetMemory(PDP, 0, 0x1000);
             PDE.Address = (uint64_t)PDP >> 12;
             PDE.Present = true;
             PDE.ReadWrite = true;
@@ -52,7 +53,7 @@ namespace PageTableManager
         if (!PDE.Present)
         {
             PD = (PageTable*)PageAllocator::RequestPage();
-            Memory::Set(PD, 0, 0x1000);
+            STL::SetMemory(PD, 0, 0x1000);
             PDE.Address = (uint64_t)PD >> 12;
             PDE.Present = true;
             PDE.ReadWrite = true;
@@ -68,7 +69,7 @@ namespace PageTableManager
         if (!PDE.Present)
         {
             PT = (PageTable*)PageAllocator::RequestPage();
-            Memory::Set(PT, 0, 0x1000);
+            STL::SetMemory(PT, 0, 0x1000);
             PDE.Address = (uint64_t)PT >> 12;
             PDE.Present = true;
             PDE.ReadWrite = true;

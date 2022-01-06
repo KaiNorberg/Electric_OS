@@ -1,6 +1,6 @@
-#pragma once
+/*#pragma once
 
 namespace tty
 {
     //void tty();
-}
+}*/

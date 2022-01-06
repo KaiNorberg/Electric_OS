@@ -7,7 +7,7 @@ CC = gcc
 ASMC = nasm
 LD = ld
 
-CFLAGS = -ffreestanding -fshort-wchar -mno-red-zone -Os
+CFLAGS = -ffreestanding -fshort-wchar -mno-red-zone -Os -Isrc/
 ASMFLAGS =
 LDFLAGS = -T $(LDS) -shared -Bsymbolic -nostdlib -fstack-protector
 
@@ -29,12 +29,7 @@ os: $(OBJS) link
 $(OBJDIR)/kernel/Interrupts/Handlers.o: $(SRCDIR)/kernel/Interrupts/Handlers.cpp
 	@echo !==== COMPILING $^
 	@mkdir -p $(@D)
-	$(CC) -mno-red-zone -mgeneral-regs-only -ffreestanding -c $^ -o $@
-
-$(OBJDIR)/kernel/Interrupts/SystemCalls.o: $(SRCDIR)/kernel/Interrupts/SystemCalls.cpp
-	@echo !==== COMPILING $^
-	@mkdir -p $(@D)
-	$(CC) -mno-red-zone -mgeneral-regs-only -ffreestanding -c $^ -o $@
+	$(CC) -mno-red-zone -mgeneral-regs-only -ffreestanding -Isrc/ -c $^ -o $@ 
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@echo !==== COMPILING $^

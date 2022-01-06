@@ -1,6 +1,6 @@
 #include "PIT.h"
 
-#include "../IO/IO.h"
+#include "kernel/IO/IO.h"
 
 namespace PIT
 {

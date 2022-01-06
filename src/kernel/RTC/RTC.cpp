@@ -1,6 +1,6 @@
 #include "RTC.h"
 
-#include "../IO/IO.h"
+#include "kernel/IO/IO.h"
 
 #define CMOS_ADDRESS 0x70
 #define CMOS_DATA 0x71

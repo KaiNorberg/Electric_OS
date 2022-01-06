@@ -1,23 +1,23 @@
-#include "../Renderer/Renderer.h"
-#include "../Interrupts/IDT.h"
-#include "../Memory/GDT/GDT.h"
-#include "../Memory/Memory.h"
-#include "../Memory/Heap.h"
-#include "../Memory/Paging/PageAllocator.h"
-#include "../Memory/Paging/PageTable.h"
-#include "../String/cstr.h"
-#include "../UserInput/KeyBoard.h"
-#include "../UserInput/Mouse.h"
-#include "../PIT/PIT.h"
-#include "../RTC/RTC.h"
-#include "../tty/tty.h"
-#include "../Debug/Debug.h"
-#include "../System/System.h"
+#include "STL/String/cstr.h"
+
+#include "kernel/Renderer/Renderer.h"
+#include "kernel/Interrupts/IDT.h"
+#include "kernel/Memory/GDT/GDT.h"
+#include "kernel/Memory/Heap.h"
+#include "kernel/Memory/Paging/PageAllocator.h"
+#include "kernel/Memory/Paging/PageTable.h"
+#include "kernel/Input/KeyBoard.h"
+#include "kernel/Input/Mouse.h"
+#include "kernel/PIT/PIT.h"
+#include "kernel/RTC/RTC.h"
+#include "kernel/tty/tty.h"
+#include "kernel/Debug/Debug.h"
+#include "kernel/System/System.h"
 
 struct BootLoaderInfo
 {
-	Framebuffer* ScreenBuffer;
-	PSF_FONT* PSFFont;
+	STL::Framebuffer* ScreenBuffer;
+	STL::PSF_FONT * PSFFont;
 	EFI_MEMORY_MAP* MemoryMap;
 };
 

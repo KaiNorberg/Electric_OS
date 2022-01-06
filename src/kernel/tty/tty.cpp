@@ -1,17 +1,17 @@
-#include "tty.h"
+/*#include "tty.h"
 
-#include "../Renderer/Renderer.h"
-#include "../UserInput/KeyBoard.h"
-#include "../PIT/PIT.h"
-#include "../String/cstr.h"
-#include "../System/System.h"
+#include "kernel/Renderer/Renderer.h"
+#include "kernel/Input/KeyBoard.h"
+#include "kernel/PIT/PIT.h"
+#include "kernel/String/cstr.h"
+#include "kernel/System/System.h"
 
 namespace tty
 {
     /*uint8_t Scale; 
 
-    ARGB Background;
-    ARGB Foreground;
+    STL::ARGB Background;
+    STL::ARGB Foreground;
 
     char Input[128];
 
@@ -22,9 +22,9 @@ namespace tty
 
     void RunCommand(const char* Command)
     {
-        if (cstr::HashWord(Command) == cstr::HashWord("clear"))
+        if (STL::HashWord(Command) == STL::HashWord("clear"))
         {
-            Renderer::Clear(ARGB(0));
+            Renderer::Clear(STL::ARGB(0));
         }
         else
         {
@@ -38,14 +38,14 @@ namespace tty
                     {
                     case 'F':
                     {
-                        Foreground = ARGB(255, (Output[1] - '0') * 100 + (Output[2] - '0') * 10 + (Output[3] - '0'), 
+                        Foreground = STL::ARGB(255, (Output[1] - '0') * 100 + (Output[2] - '0') * 10 + (Output[3] - '0'), 
                         (Output[4] - '0') * 100 + (Output[5] - '0') * 10 + (Output[6] - '0'), 
                         (Output[7] - '0') * 100 + (Output[8] - '0') * 10 + (Output[9] - '0'));
                     }
                     break;
                     case 'B':
                     {
-                        Background = ARGB(255, (Output[1] - '0') * 100 + (Output[2] - '0') * 10 + (Output[3] - '0'), 
+                        Background = STL::ARGB(255, (Output[1] - '0') * 100 + (Output[2] - '0') * 10 + (Output[3] - '0'), 
                         (Output[4] - '0') * 100 + (Output[5] - '0') * 10 + (Output[6] - '0'), 
                         (Output[7] - '0') * 100 + (Output[8] - '0') * 10 + (Output[9] - '0'));
                     }
@@ -65,8 +65,8 @@ namespace tty
     void tty()
     {
         Scale = 1;
-        Background = ARGB(0);
-        Foreground = ARGB(255);
+        Background = STL::ARGB(0);
+        Foreground = STL::ARGB(255);
 
         Renderer::Clear(Background);
 
@@ -87,7 +87,7 @@ namespace tty
         {
             Print("> ");
 
-            Point StartCursorPos = Renderer::CursorPos;
+            STL::Point StartCursorPos = Renderer::CursorPos;
             uint64_t PrevTick = PIT::Ticks;
             bool Alternate = false;
             int i = 0;
@@ -154,5 +154,5 @@ namespace tty
             Input[0] = 0;
             Print("\n\r");
         }   
-    }*/
-}
+    }
+}*/

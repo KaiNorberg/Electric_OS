@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../efiMemory.h"
-#include "../Memory.h"
-#include "../../Renderer/Framebuffer.h"
-#include "../../Renderer/Font.h"
+#include "STL/Graphics/Framebuffer.h"
+#include "STL/Graphics/Font.h"
 
+#include "kernel/Memory/efiMemory.h"
 
 #include <stdint.h>
 
@@ -12,7 +11,7 @@ namespace PageAllocator
 {    
     extern uint64_t PageAmount;
 
-    void Init(EFI_MEMORY_MAP* MemoryMap, Framebuffer* ScreenBuffer, PSF_FONT* PSFFont);
+    void Init(EFI_MEMORY_MAP* MemoryMap, STL::Framebuffer* ScreenBuffer, STL::PSF_FONT * PSFFont);
 
     void* RequestPage();
 
