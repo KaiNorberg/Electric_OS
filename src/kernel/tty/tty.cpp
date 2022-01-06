@@ -82,6 +82,7 @@ namespace tty
         Print("Type \"help\" for a list of all available commands.\n\n\r");
         RunCommand("sysfetch");
         Print("\n\r");
+        Renderer::SwapBuffers();
 
         while (true)
         {
@@ -145,6 +146,7 @@ namespace tty
                     }
                 }
 
+                Renderer::SwapBuffers();
                 asm("HLT");
             }
 

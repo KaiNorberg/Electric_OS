@@ -2,7 +2,7 @@
 #include "Handlers.h"
 #include "../IO/IO.h"
 #include "../UserInput/Mouse.h"
-#include "../Memory/Pageing/PageAllocator.h"
+#include "../Memory/Paging/PageAllocator.h"
 
 namespace IDT
 {

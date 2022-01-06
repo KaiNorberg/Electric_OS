@@ -3,7 +3,7 @@
 #include "../PIT/PIT.h"
 #include "../RTC/RTC.h"
 #include "../String/cstr.h"
-#include "../Memory/Pageing/PageAllocator.h"
+#include "../Memory/Paging/PageAllocator.h"
 #include "../System/System.h"
 
 namespace Debug
@@ -93,6 +93,8 @@ namespace Debug
 
         Renderer::CursorPos = Point(StartPoint.X, StartPoint.Y + 16 * 16 * Scale);
         Renderer::Print("Please manually reboot your machine.", ARGB(0), ARGB(255), Scale);
+
+        Renderer::SwapBuffers();
 
         while (true)
         {

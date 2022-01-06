@@ -3,28 +3,30 @@ ENTRY(KernelMain)
 
 SECTIONS
 {
+    . = 0x100000;
+
     _KernelStart = .;
     
-    .text : ALIGN(0x1000)
+    .text ALIGN(4K) :
     {
-        *(.text)
+        KEEP(*(.text*))
     }
 
-    .data : ALIGN(0x1000)
+    .rodata ALIGN(4K) :
     {
-        *(.data)
+        KEEP(*(.rodata*))
     }
 
-    .rodata : ALIGN(0x1000)
+    .data ALIGN(4K) :
     {
-        *(.rodata)
+        KEEP(*(.data*))
     }
 
-    .bss : ALIGN(0x1000)
+    .bss ALIGN(4K) :
     {
-        *(COMMON)
-        *(.bss)
+        KEEP(*(COMMON))
+        KEEP(*(.bss*))
     }
-    
+  
     _KernelEnd = .;
 }

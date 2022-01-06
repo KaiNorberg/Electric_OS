@@ -26,5 +26,7 @@ namespace Renderer
 
     void Clear(ARGB Color = ARGB(0));
 
+    void SwapBuffers();
+
     Point GetScreenSize();
 }
