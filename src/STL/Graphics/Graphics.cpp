@@ -2,7 +2,7 @@
 
 namespace STL
 {
-    PSF_FONT* CurrentFont = nullptr;
+    /*PSF_FONT* CurrentFont = nullptr;
 
     void SetFont(PSF_FONT* NewFont)
     {
@@ -31,5 +31,5 @@ namespace STL
                 Glyph++;
             }
         }
-    }
+    }*/
 }

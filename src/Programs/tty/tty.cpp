@@ -56,6 +56,8 @@ namespace tty
         break;
         case STL::PROM::KEYPRESS:
         {
+           /* uint8_t Key = *(uint8_t*)Input;
+
             if (Key == ENTER || STL::Length(Input) >= sizeof(Input)/sizeof(Input[0]) - 1)
             {   
                 
@@ -72,7 +74,7 @@ namespace tty
                 uint64_t Length = STL::Length(Input);
                 Input[Length] = Key;
                 Input[Length + 1] = 0;
-            }
+            }*/
 
             return STL::PROR::REDRAW;
         }
