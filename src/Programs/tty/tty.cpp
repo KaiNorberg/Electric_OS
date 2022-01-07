@@ -9,6 +9,8 @@ namespace tty
     bool Alternate = false;
     int i = 0;*/
 
+    int Y = 0;
+
     STL::PROR Procedure(STL::PROM Message, STL::PROI Input)
     {
         switch(Message)
@@ -50,13 +52,27 @@ namespace tty
         case STL::PROM::DRAW:
         {
             STL::Framebuffer* Buffer = (STL::Framebuffer*)Input;
-         
 
+            if (Y > Buffer->Height - 16)
+            {
+                Y = 0;
+                Buffer->Clear();
+            }
+
+            for (int i = 0; i < Buffer->Width; i++)
+            {
+                Buffer->PutPixel(STL::Point(i, Y), STL::ARGB(255, 255, 0, 0));
+            }
         }
         break;
         case STL::PROM::KEYPRESS:
         {
-           /* uint8_t Key = *(uint8_t*)Input;
+            if (*((uint8_t*)Input) == 'a')
+            {
+                Y += 10;
+            }
+
+            /*uint8_t Key = *(uint8_t*)Input;
 
             if (Key == ENTER || STL::Length(Input) >= sizeof(Input)/sizeof(Input[0]) - 1)
             {   
