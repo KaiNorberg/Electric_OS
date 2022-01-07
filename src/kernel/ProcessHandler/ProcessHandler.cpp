@@ -23,14 +23,6 @@ namespace ProcessHandler
     volatile bool KeyboardIntCalled = false;
     volatile bool PITIntCalled = false;
 
-    void SendMessage(STL::PROM Message, STL::PROI Input)
-    {
-        for (int i = 0; i < Processes.Length(); i++)
-        {
-            Processes[i].SendMessage(Message, Input);
-        }
-    }
-
     void KeyBoardInterupt()
     {
         KeyboardIntCalled = true;
@@ -44,6 +36,14 @@ namespace ProcessHandler
     void PITInterupt()
     {
         PITIntCalled = true;
+    }
+
+    void SendMessage(STL::PROM Message, STL::PROI Input)
+    {
+        for (int i = 0; i < Processes.Length(); i++)
+        {
+            Processes[i].SendMessage(Message, Input);
+        }
     }
 
     void StartProcess(STL::PROC Procedure)

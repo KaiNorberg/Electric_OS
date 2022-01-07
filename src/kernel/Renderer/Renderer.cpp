@@ -12,7 +12,7 @@ namespace Renderer
 {
     STL::Framebuffer* Screenbuffer;
 
-    STL::PSF_FONT * CurrentFont;
+    STL::PSF_FONT* CurrentFont;
 
     STL::Point CursorPos;
 
