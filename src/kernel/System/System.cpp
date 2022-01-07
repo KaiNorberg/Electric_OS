@@ -7,6 +7,7 @@
 #include "kernel/PIT/PIT.h"
 #include "kernel/Debug/Debug.h"
 #include "kernel/Memory/Paging/PageAllocator.h"
+#include "kernel/Memory/Heap.h"
 
 #include <cstdarg>
 
@@ -275,15 +276,29 @@ namespace System
         va_list Args;
         va_start(Args, Selector);
 
+        STL::SYSRV ReturnVal = 0;
+
         switch (Selector)
         {
         case 0:
         {
-            return (STL::SYSRV)System::System(va_arg(Args, const char*));
+            ReturnVal = (STL::SYSRV)System::System(va_arg(Args, const char*));
+        }
+        break;
+        case 1:
+        {
+            ReturnVal = (STL::SYSRV)Heap::Allocate(va_arg(Args, uint64_t));
+        }
+        break;
+        case 2:
+        {
+            Heap::Free(va_arg(Args, void*));
         }
         break;
         }
 
-        return 0;
+        va_end(Args);
+
+        return ReturnVal;
     }
 }

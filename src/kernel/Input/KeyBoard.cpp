@@ -116,6 +116,11 @@ namespace KeyBoard
         return Key;
     }
 
+    char GetKeyHeld()
+    {
+        return CurrentKey;
+    }
+
     bool IsPressed(char Key)
     {
         bool IsPressed = PressedTable[Key];

@@ -105,8 +105,6 @@ namespace Debug
         Renderer::CursorPos = STL::Point(StartPoint.X, StartPoint.Y + 16 * 16 * Scale);
         Renderer::Print("Please manually reboot your machine.", Scale);
 
-        Renderer::SwapBuffers();
-
         while (true)
         {
             asm("HLT");

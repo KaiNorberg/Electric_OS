@@ -7,7 +7,10 @@
 #include "STL/Memory/Memory.h"
 
 namespace Renderer
-{
+{    
+    extern STL::Framebuffer* Frontbuffer;
+    extern STL::Framebuffer Backbuffer;
+
     extern STL::Point CursorPos;
 
     extern STL::ARGB Background;

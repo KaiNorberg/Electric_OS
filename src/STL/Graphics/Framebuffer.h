@@ -14,5 +14,11 @@ namespace STL
 		uint32_t Width;
 		uint32_t Height;
 		uint32_t PixelsPerScanline;
+
+		void Clear();
+
+		ARGB GetPixel(Point Pixel);
+
+		void PutPixel(Point Pixel, ARGB Color);
 	};
-	}
+}

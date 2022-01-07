@@ -9,10 +9,10 @@ namespace STL
         
         for (int i = 0; i < Count / 8; i++)
         {
-            ((uint64_t*)Dest)[i] = Value64;
+            ((uint64_t*)Dest)[i] = Value;
         }
 
-        for (int i = Count; i < Count - Count % 8; i++)
+        for (int i = Count - Count % 8; i < Count; i++)
         {
             ((uint8_t*)Dest)[i] = Value;
         }
@@ -25,9 +25,9 @@ namespace STL
             ((uint64_t*)Dest)[i] = ((uint64_t*)Source)[i];
         }
 
-        for (int i = Count; i < Count - Count % 8; i++)
+        for (int i = Count - Count % 8; i < Count; i++)
         {
-            ((uint8_t*)Dest)[i] = ((uint64_t*)Source)[i];
+            ((uint8_t*)Dest)[i] = ((uint8_t*)Source)[i];
         }
     }
 }

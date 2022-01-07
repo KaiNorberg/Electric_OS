@@ -82,58 +82,29 @@ namespace Mouse
         MouseRead();
     }
     
-    void HandleMouseData(uint8_t Data)
+    void HandleMousePacket(uint8_t* MousePacket)
     {
-        static uint8_t MouseCycle = 0;
-        static uint8_t MousePacket[4];
-        
-        switch(MouseCycle)
+        if (MousePacket[0] & PS2XSign)
+        {      
+            MousePacket[1] = 256 - MousePacket[1];
+            Position.X -= MousePacket[1];
+        } 
+        else
         {
-        case 0:
-        {
-            if (((Data & 0b00001000) == 0))
-            {
-                break;
-            }
-            MousePacket[0] = Data;
-            MouseCycle++;
+            Position.X += MousePacket[1];
         }
-        break;
-        case 1:
-        {
-            MousePacket[1] = Data;
-            MouseCycle++;
-        }
-        break;
-        case 2:
-        {
-            MousePacket[2] = Data;
-            MouseCycle = 0;
 
-            if (MousePacket[0] & PS2XSign)
-            {      
-                MousePacket[1] = 256 - MousePacket[1];
-                Position.X -= MousePacket[1];
-            } 
-            else
-            {
-                Position.X += MousePacket[1];
-            }
-
-            if (MousePacket[0] & PS2YSign)
-            {
-                MousePacket[2] = 256 - MousePacket[2];
-                Position.Y += MousePacket[2];
-            }
-            else
-            {
-                Position.Y -= MousePacket[2];
-            }
-
-            Position.X = STL::Clamp(Position.X, 0, Renderer::GetScreenSize().X - 8);
-            Position.Y = STL::Clamp(Position.Y, 0, Renderer::GetScreenSize().Y - 16);
+        if (MousePacket[0] & PS2YSign)
+        {
+            MousePacket[2] = 256 - MousePacket[2];
+            Position.Y += MousePacket[2];
         }
-        break;
+        else
+        {
+            Position.Y -= MousePacket[2];
         }
+
+        Position.X = STL::Clamp(Position.X, 0, Renderer::GetScreenSize().X - 8);
+        Position.Y = STL::Clamp(Position.Y, 0, Renderer::GetScreenSize().Y - 16);
     }
 }

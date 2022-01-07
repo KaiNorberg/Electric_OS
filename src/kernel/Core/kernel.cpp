@@ -1,5 +1,7 @@
 #include "kernel.h"
 
+#include "STL/List/List.h"
+
 extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 {
 	InitGDT();
@@ -20,10 +22,7 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 	
 	KeyBoard::Clear();
 	
-	Renderer::Print((char*)System::Call(0, "sysfetch"));
-	Renderer::SwapBuffers();
-	
-	//tty::tty();
+	ProcessHandler::Loop();
 
 	while(true)
 	{

@@ -8,5 +8,5 @@ namespace Mouse
 
     void InitPS2();
 
-    void HandleMouseData(uint8_t Data);
+    void HandleMousePacket(uint8_t* MousePacket);
 }

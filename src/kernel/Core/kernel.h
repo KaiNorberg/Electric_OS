@@ -13,6 +13,7 @@
 #include "kernel/tty/tty.h"
 #include "kernel/Debug/Debug.h"
 #include "kernel/System/System.h"
+#include "kernel/ProcessHandler/ProcessHandler.h"
 
 struct BootLoaderInfo
 {

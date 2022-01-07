@@ -7,6 +7,7 @@
 #include "kernel/Input/KeyBoard.h"
 #include "kernel/Input/Mouse.h"
 #include "kernel/PIT/PIT.h"
+#include "kernel/ProcessHandler/ProcessHandler.h"
 
 namespace InteruptHandlers
 {    
@@ -93,7 +94,7 @@ namespace InteruptHandlers
 
     __attribute__((interrupt)) void FloatingPoint(InterruptFrame* frame)
     {
-        Debug::Error("Floating STL::Point Exception");
+        Debug::Error("Floating Point Exception");
         while(true)
         {
             asm("HLT");
@@ -108,6 +109,8 @@ namespace InteruptHandlers
             RTC::Update();
         }
 
+        ProcessHandler::PITInterupt();
+
         IO::OutByte(PIC1_COMMAND, PIC_EOI);
     }
 
@@ -117,14 +120,50 @@ namespace InteruptHandlers
 
         KeyBoard::HandleScanCode(ScanCode);
 
+        if (!(ScanCode & (0b10000000)))
+        {
+            ProcessHandler::KeyBoardInterupt();
+        }
+
         IO::OutByte(PIC1_COMMAND, PIC_EOI);
     }
 
     __attribute__((interrupt)) void Mouse(InterruptFrame* frame)
-    {
+    {        
+        static uint8_t MouseCycle = 0;
+        static uint8_t MousePacket[4];
+
         uint8_t MouseData = IO::InByte(0x60);
 
-        Mouse::HandleMouseData(MouseData);
+        switch(MouseCycle)
+        {
+        case 0:
+        {
+            if (((MouseData & 0b00001000) == 0))
+            {
+                break;
+            }
+            MousePacket[0] = MouseData;
+            MouseCycle++;
+        }
+        break;
+        case 1:
+        {
+            MousePacket[1] = MouseData;
+            MouseCycle++;
+        }
+        break;
+        case 2:
+        {
+            MousePacket[2] = MouseData;
+            MouseCycle = 0;
+
+            Mouse::HandleMousePacket(MousePacket);
+
+            ProcessHandler::MouseInterupt();
+        }
+        break;
+        }
 
         IO::OutByte(PIC2_COMMAND, PIC_EOI);
         IO::OutByte(PIC1_COMMAND, PIC_EOI);

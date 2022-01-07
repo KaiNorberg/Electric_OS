@@ -21,6 +21,8 @@ namespace KeyBoard
 
     char GetKeyPress();
 
+    char GetKeyHeld();
+
     bool IsPressed(char Key);
 
     bool IsHeld(char Key);
