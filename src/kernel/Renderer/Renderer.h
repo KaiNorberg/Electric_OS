@@ -8,8 +8,7 @@
 
 namespace Renderer
 {    
-    extern STL::Framebuffer* Frontbuffer;
-    extern STL::Framebuffer Backbuffer;
+    extern STL::Framebuffer* Screenbuffer;
 
     extern STL::Point CursorPos;
 
@@ -22,11 +21,7 @@ namespace Renderer
 
     void PutPixel(STL::Point Pixel, STL::ARGB Color);
 
-    void PutPixelFront(STL::Point Pixel, STL::ARGB Color);
-
     STL::ARGB GetPixel(STL::Point Pixel);
-
-    STL::ARGB GetPixelFront(STL::Point Pixel);
 
     void PutChar(char chr, STL::Point Pos, uint8_t Scale = 1);
 
@@ -38,7 +33,7 @@ namespace Renderer
 
     void Clear(STL::ARGB Color = STL::ARGB(0));
 
-    void SwapBuffers();
+    void RedrawMouse();
 
     STL::Point GetScreenSize();
 }

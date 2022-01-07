@@ -1,4 +1,5 @@
 #include "ProcessHandler.h"
+#include "Process.h"
 
 #include "STL/Math/Point.h"
 #include "STL/List/List.h"
@@ -15,63 +16,6 @@
 
 namespace ProcessHandler
 {    
-    struct Process
-    {
-        STL::PROT Type;
-        STL::PROC Procedure;
-        STL::Framebuffer FrameBuffer;
-
-        uint64_t Depth;
-
-        STL::Point Pos;
-
-        void Draw()
-        {
-            if (Type == STL::PROT::BACKGROUND)
-            {
-                return;
-            }
-
-            this->SendMessage(STL::PROM::DRAW, &FrameBuffer);
-
-            if (this->Type == STL::PROT::WINDOWED)
-            {
-                /*for (int y = 0; y < FrameBuffer.Height; y++)
-                {
-                    if (y + Pos.Y > FrameBuffer.Height || X + Pos.X > FrameBuffer.Width)
-                    {
-                        return;
-                    }
-
-                    STL::CopyMemory(
-                        FrameBuffer.Base + y * FrameBuffer.Width * 4,
-                        Renderer::Screenbuffer->Base + (Pos.Y + y) * Renderer::Screenbuffer->Width * 4,
-                        FrameBuffer.Width * 4
-                    );
-                }*/
-            }
-            else if (this->Type == STL::PROT::FULLSCREEN)
-            {   
-                Renderer::SwapBuffers();
-            }
-        }
-
-        void SendMessage(STL::PROM Message, STL::PROI Input = nullptr)
-        {
-            STL::PROR Return = this->Procedure(Message, Input);
-
-            if (Return == STL::PROR::REDRAW)
-            {
-                Draw();
-            }
-        }
-    
-        Process(STL::PROC Procedure)
-        {
-            this->Procedure = Procedure;
-        } 
-    };
-
     STL::List<Process> Processes;
     int8_t FocusedProcess = -1;
 
@@ -117,7 +61,8 @@ namespace ProcessHandler
         if (Info.Type == STL::PROT::FULLSCREEN)
         {        
             Processes.Last().Pos = STL::Point(0, 0);
-            Processes.Last().FrameBuffer = Renderer::Backbuffer;
+            Processes.Last().FrameBuffer = *Renderer::Screenbuffer;
+            Processes.Last().FrameBuffer.Base = (STL::ARGB*)Heap::Allocate(Renderer::Screenbuffer->Size);
             Processes.Last().FrameBuffer.Clear();
             Processes.Last().Draw();
             FocusedProcess = Processes.Length() - 1;
@@ -156,7 +101,7 @@ namespace ProcessHandler
             }
             else if (MouseIntCalled)
             {
-                Renderer::SwapBuffers();
+                Renderer::RedrawMouse();
                 MouseIntCalled = false;
             }
 
