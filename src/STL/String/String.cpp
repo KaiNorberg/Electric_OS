@@ -3,6 +3,7 @@
 
 #include "STL/System/System.h"
 #include "STL/Memory/Memory.h"
+#include "STL/Math/Math.h"
 
 namespace STL
 {        
@@ -23,6 +24,29 @@ namespace STL
         return this->Size;
     }
 
+    void String::Reserve(uint64_t MinSize)
+    {
+        if (MinSize <= this->ReservedSize)
+        {
+            return;
+        }
+
+        this->ReservedSize = MinSize * 2;    
+        char* NewData = (char*)Malloc(ReservedSize);
+
+        if (this->Data != nullptr)
+        {        
+            for (int i = 0; i < this->Size; i++)
+            {
+                NewData[i] = this->Data[i];
+            }
+
+            Free(this->Data);
+        }
+
+        this->Data = NewData;
+    }
+
     void String::operator=(String const& Other)
     {
         this->operator=(Other.cstr());
@@ -34,36 +58,39 @@ namespace STL
     }
 
     void String::operator=(const char* Other)
-    {
+    {       
         uint64_t OtherLength = STL::Length(Other);
-        char* NewData = (char*)Malloc(OtherLength + 1);
-        CopyString(NewData, Other);
-        NewData[OtherLength] = 0;
-        
-        if (this->Data != nullptr)
-        {
-            Free(this->Data);
-        }
+        this->Reserve(OtherLength + 1);
 
+        for (int i = 0; i < OtherLength; i++)
+        {
+            this->Data[i] = Other[i];
+        }
+        this->Data[OtherLength] = 0;
         this->Size = OtherLength;
-        this->Data = NewData;
     }
 
     void String::operator+=(const char* Other)
     {
         uint64_t OtherLength = STL::Length(Other);
-        char* NewData = (char*)Malloc(this->Size + OtherLength + 1);
-        CopyString(NewData, this->Data);
-        CopyString((char*)((uint64_t)NewData + this->Size), Other);
-        NewData[this->Size + OtherLength] = 0;
-        
-        if (this->Data != nullptr)
-        {
-            Free(this->Data);
-        }
+        this->Reserve(this->Size + OtherLength + 1);
 
-        this->Size = this->Size + OtherLength;
-        this->Data = NewData;
+        for (int i = 0; i < OtherLength; i++)
+        {
+            this->Data[this->Size + i] = Other[i];
+        }
+        this->Data[this->Size + OtherLength] = 0;
+        this->Size += OtherLength;
+    }
+
+    char& String::operator[](uint64_t Index)
+    {
+        return this->Data[Index];
+    }
+
+    const char& String::operator[](uint64_t Index) const
+    {
+        return this->Data[Index];
     }
 
     String::String(const char* Other)

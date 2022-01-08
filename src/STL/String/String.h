@@ -14,6 +14,8 @@ namespace STL
 
         uint64_t Length() const;
 
+        void Reserve(uint64_t MinSize);
+
         void operator=(String const& Other);
 
         void operator+=(String const& Other);
@@ -21,6 +23,10 @@ namespace STL
         void operator=(const char* Other);
 
         void operator+=(const char* Other);
+
+        char& operator[](uint64_t Index); 
+
+        const char& operator[](uint64_t Index) const; 
 
         String(const char* Other);
 
@@ -33,5 +39,7 @@ namespace STL
         char* Data = nullptr;
 
         uint64_t Size = 0;
+
+        uint64_t ReservedSize = 0;
     };
 }

@@ -48,7 +48,7 @@ namespace ProcessHandler
 
     void StartProcess(STL::PROC Procedure)
     {
-        Processes.Append(Process(Procedure));
+        Processes.Push(Process(Procedure));
 
         STL::PINFO Info;
         Processes.Last().SendMessage(STL::PROM::INIT, &Info);
