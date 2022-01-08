@@ -1,7 +1,5 @@
 #include "kernel.h"
 
-#include "STL/List/List.h"
-
 extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 {
 	InitGDT();
@@ -21,7 +19,7 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 	IDT::SetupInterrupts();
 	
 	KeyBoard::Clear();
-	
+
 	ProcessHandler::Loop();
 
 	while(true)
