@@ -12,6 +12,8 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 	Renderer::Init(BootInfo->ScreenBuffer, BootInfo->PSFFont);
 	Renderer::Clear(STL::ARGB(0));
 
+	STL::SetFont(BootInfo->PSFFont);
+
 	PIT::SetFrequency(100);
 
 	RTC::Update();

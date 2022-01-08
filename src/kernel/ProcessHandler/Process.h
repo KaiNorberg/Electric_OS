@@ -15,6 +15,8 @@ struct Process
 
     STL::Point Pos;
 
+    bool RedrawRequested = false;
+
     void Draw();
 
     void SendMessage(STL::PROM Message, STL::PROI Input = nullptr);

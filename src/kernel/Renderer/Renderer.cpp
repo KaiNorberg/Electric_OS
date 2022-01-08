@@ -35,7 +35,7 @@ namespace Renderer
         Background = STL::ARGB(0);
         Foreground = STL::ARGB(255);
 
-        DrawMouse = true;
+        DrawMouse = false;
     }
 
     void PutPixel(STL::Point Pixel, STL::ARGB Color)

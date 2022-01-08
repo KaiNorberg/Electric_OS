@@ -19,23 +19,35 @@ namespace ProcessHandler
     STL::List<Process> Processes;
     int8_t FocusedProcess = -1;
 
-    volatile bool MouseIntCalled = false;
-    volatile bool KeyboardIntCalled = false;
-    volatile bool PITIntCalled = false;
+    volatile bool RedrawMouse = false;
 
     void KeyBoardInterupt()
     {
-        KeyboardIntCalled = true;
+        for (int i = 0; i < Processes.Length(); i++)
+        {
+            if (i == FocusedProcess || Processes[i].Type == STL::PROT::BACKGROUND)
+            {
+                uint8_t Key = KeyBoard::GetKeyPress();
+                Processes[i].SendMessage(STL::PROM::KEYPRESS, &Key);
+            }
+        }
     }
 
     void MouseInterupt()
     {
-        MouseIntCalled = true;
+        RedrawMouse = true;
     }   
 
     void PITInterupt()
     {
-        PITIntCalled = true;
+        for (int i = 0; i < Processes.Length(); i++)
+        {
+            if (i == FocusedProcess || Processes[i].Type == STL::PROT::BACKGROUND)
+            {
+                uint64_t Tick = PIT::Ticks;
+                Processes[i].SendMessage(STL::PROM::TICK, &Tick);
+            }
+        }
     }
 
     void SendMessage(STL::PROM Message, STL::PROI Input)
@@ -75,34 +87,17 @@ namespace ProcessHandler
 
         while (true)
         {                
-            if (PITIntCalled)
-            {
-                for (int i = 0; i < Processes.Length(); i++)
-                {
-                    if (i == FocusedProcess || Processes[i].Type == STL::PROT::BACKGROUND)
-                    {
-                        uint64_t Tick = PIT::Ticks;
-                        Processes[i].SendMessage(STL::PROM::TICK, &Tick);
-                    }
-                }
-                PITIntCalled = false;
-            }
-            else if (KeyboardIntCalled)
-            {
-                for (int i = 0; i < Processes.Length(); i++)
-                {
-                    if (i == FocusedProcess || Processes[i].Type == STL::PROT::BACKGROUND)
-                    {
-                        uint8_t Key = KeyBoard::GetKeyPress();
-                        Processes[i].SendMessage(STL::PROM::KEYPRESS, &Key);
-                    }
-                }
-                KeyboardIntCalled = false;
-            }
-            else if (MouseIntCalled)
+            if (RedrawMouse)
             {
                 Renderer::RedrawMouse();
-                MouseIntCalled = false;
+            }
+
+            for (int i = 0; i < Processes.Length(); i++)
+            {
+                if (Processes[i].RedrawRequested)
+                {
+                    Processes[i].Draw();
+                }
             }
 
             asm("HLT");

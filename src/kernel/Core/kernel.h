@@ -1,4 +1,5 @@
 #include "STL/String/cstr.h"
+#include "STL/Graphics/Graphics.h"
 
 #include "kernel/Renderer/Renderer.h"
 #include "kernel/Interrupts/IDT.h"

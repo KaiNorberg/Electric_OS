@@ -38,7 +38,7 @@ void Process::SendMessage(STL::PROM Message, STL::PROI Input)
 
     if (Return == STL::PROR::REDRAW)
     {
-        Draw();
+        RedrawRequested = true;
     }
 }
 

@@ -14,7 +14,11 @@ namespace STL
 
         uint64_t Length() const;
 
+        void Erase(uint64_t Index, uint64_t Amount = 1);
+
         void Reserve(uint64_t MinSize);
+
+        void operator+=(char const& Other);
 
         void operator=(String const& Other);
 

@@ -9,19 +9,30 @@ namespace STL
 {        
     char String::Pop()
     {
-        char Temp = this->Data[this->Size - 1];
-        this->Data[this->Size - 1] = 0;
+        this->Size--;
+        char Temp = this->Data[this->Size];
         return Temp;
     }
 
     char* String::cstr() const
     {
+        this->Data[this->Size] = 0;
         return this->Data;
     }
 
     uint64_t String::Length() const
     {
         return this->Size;
+    }
+
+    void String::Erase(uint64_t Index, uint64_t Amount)
+    {
+        for (int i = Index + Amount; i < this->Size; i++)
+        {
+            this->Data[i - Amount] = this->Data[i];
+        }
+
+        this->Size--;
     }
 
     void String::Reserve(uint64_t MinSize)
@@ -40,11 +51,18 @@ namespace STL
             {
                 NewData[i] = this->Data[i];
             }
-
             Free(this->Data);
         }
 
         this->Data = NewData;
+    }
+
+    void String::operator+=(char const& Other)
+    {
+        this->Size++;
+        this->Reserve(this->Size);
+
+        this->Data[this->Size - 1] = Other;
     }
 
     void String::operator=(String const& Other)
@@ -66,7 +84,6 @@ namespace STL
         {
             this->Data[i] = Other[i];
         }
-        this->Data[OtherLength] = 0;
         this->Size = OtherLength;
     }
 
@@ -79,7 +96,6 @@ namespace STL
         {
             this->Data[this->Size + i] = Other[i];
         }
-        this->Data[this->Size + OtherLength] = 0;
         this->Size += OtherLength;
     }
 
