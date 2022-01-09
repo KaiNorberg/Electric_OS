@@ -51,7 +51,7 @@ namespace tty
         {   
             uint64_t CurrentTick = *(uint64_t*)Input;
 
-            if (PrevTick + 100 < CurrentTick)
+            if (PrevTick + 50 < CurrentTick)
             {
                 DrawUnderline = !DrawUnderline;
                 PrevTick = CurrentTick;

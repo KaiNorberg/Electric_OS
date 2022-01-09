@@ -7,7 +7,7 @@
 namespace ProcessHandler    
 {   
     extern uint64_t LastMessagedProcess;
-    extern bool RedrawMouse;
+    extern bool SwapBuffersRequest;
 
     Process* GetProcess(uint64_t ID);
 

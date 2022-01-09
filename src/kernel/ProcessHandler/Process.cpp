@@ -56,9 +56,10 @@ void Process::Draw()
 
     if (this->Type == STL::PROT::FULLSCREEN)
     {   
-        STL::CopyMemory(this->FrameBuffer.Base, Renderer::Screenbuffer->Base, this->FrameBuffer.Size);
-        Renderer::RedrawMouse();
+        STL::CopyMemory(this->FrameBuffer.Base, Renderer::Backbuffer.Base, this->FrameBuffer.Size);
     }
+
+    ProcessHandler::SwapBuffersRequest = true;
 }
 
 void Process::SendMessage(STL::PROM Message, STL::PROI Input)
@@ -93,8 +94,8 @@ Process::Process(STL::PROC Procedure)
     if (Info.Type == STL::PROT::FULLSCREEN)
     {        
         this->Pos = STL::Point(0, 0);
-        this->FrameBuffer = *Renderer::Screenbuffer;
-        this->FrameBuffer.Base = (STL::ARGB*)Heap::Allocate(Renderer::Screenbuffer->Size);
+        this->FrameBuffer = Renderer::Backbuffer;
+        this->FrameBuffer.Base = (STL::ARGB*)Heap::Allocate(Renderer::Backbuffer.Size);
         this->FrameBuffer.Clear();
         this->Draw();
     }

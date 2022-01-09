@@ -8,7 +8,7 @@
 
 namespace Renderer
 {    
-    extern STL::Framebuffer* Screenbuffer;
+    extern STL::Framebuffer Backbuffer;
 
     extern STL::Point CursorPos;
 
@@ -33,7 +33,7 @@ namespace Renderer
 
     void Clear();
 
-    void RedrawMouse();
+    void SwapBuffers();
 
     STL::Point GetScreenSize();
 }

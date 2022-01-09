@@ -10,8 +10,8 @@
 
 namespace Renderer
 {
-    STL::Framebuffer* Screenbuffer;
-    STL::Framebuffer* Screenbuffer;
+    STL::Framebuffer* Frontbuffer;
+    STL::Framebuffer Backbuffer;
 
     STL::PSF_FONT* CurrentFont;
 
@@ -26,7 +26,9 @@ namespace Renderer
 
     void Init(STL::Framebuffer* framebuffer, STL::PSF_FONT * PSF_Font)
     {
-        Screenbuffer = framebuffer;
+        Frontbuffer = framebuffer;
+        Backbuffer = *Frontbuffer;
+        Backbuffer.Base = (STL::ARGB*)Heap::Allocate(Backbuffer.Size);
 
         CurrentFont = PSF_Font;
 
@@ -41,22 +43,22 @@ namespace Renderer
 
     void PutPixel(STL::Point Pixel, STL::ARGB Color)
     {
-        if (Pixel.X > Screenbuffer->Width || Pixel.X < 0 || Pixel.Y > Screenbuffer->Height || Pixel.Y < 0)
+        if (Pixel.X > Backbuffer.Width || Pixel.X < 0 || Pixel.Y > Backbuffer.Height || Pixel.Y < 0)
         {
             return;
         }
 
-        *(STL::ARGB*)((uint64_t)Screenbuffer->Base + Pixel.X * 4 + Pixel.Y * Screenbuffer->PixelsPerScanline * 4) = Color;
+        *(STL::ARGB*)((uint64_t)Backbuffer.Base + Pixel.X * 4 + Pixel.Y * Backbuffer.PixelsPerScanline * 4) = Color;
     }
 
     STL::ARGB GetPixel(STL::Point Pixel)
     {        
-        if (Pixel.X > Screenbuffer->Width || Pixel.X < 0 || Pixel.Y > Screenbuffer->Height || Pixel.Y < 0)
+        if (Pixel.X > Backbuffer.Width || Pixel.X < 0 || Pixel.Y > Backbuffer.Height || Pixel.Y < 0)
         {
             return STL::ARGB(0);
         }
 
-        return *(STL::ARGB*)((uint64_t)Screenbuffer->Base + Pixel.X * 4 + Pixel.Y * Screenbuffer->PixelsPerScanline * 4);
+        return *(STL::ARGB*)((uint64_t)Backbuffer.Base + Pixel.X * 4 + Pixel.Y * Backbuffer.PixelsPerScanline * 4);
     }
 
     void PutChar(char chr, STL::Point Pos, uint8_t Scale)
@@ -69,11 +71,11 @@ namespace Renderer
             {
                 if ((*Glyph & (0b10000000 >> x / Scale)) > 0)
                 {
-                    *(STL::ARGB*)((uint64_t)Screenbuffer->Base + (x + Pos.X) * 4 + (y + Pos.Y) * Screenbuffer->PixelsPerScanline * 4) = Foreground;
+                    *(STL::ARGB*)((uint64_t)Backbuffer.Base + (x + Pos.X) * 4 + (y + Pos.Y) * Backbuffer.PixelsPerScanline * 4) = Foreground;
                 }
                 else
                 {
-                    *(STL::ARGB*)((uint64_t)Screenbuffer->Base + (x + Pos.X) * 4 + (y + Pos.Y) * Screenbuffer->PixelsPerScanline * 4) = Background;
+                    *(STL::ARGB*)((uint64_t)Backbuffer.Base + (x + Pos.X) * 4 + (y + Pos.Y) * Backbuffer.PixelsPerScanline * 4) = Background;
                 }
             }
             if (y % Scale == 0)
@@ -131,12 +133,12 @@ namespace Renderer
         }
         else
         {        
-            if (CursorPos.X + 16 * Scale > Screenbuffer->Width)
+            if (CursorPos.X + 16 * Scale > Backbuffer.Width)
             {
                 CursorPos.X = 0;
                 CursorPos.Y += 16 * Scale;
             }
-            if (CursorPos.Y + 16 > Screenbuffer->Height)
+            if (CursorPos.Y + 16 > Backbuffer.Height)
             {
                 ScrollUp(32);
                 CursorPos.Y -= 32;
@@ -149,12 +151,12 @@ namespace Renderer
 
     void ScrollUp(uint64_t Amount)
     {
-        uint64_t Offset = Screenbuffer->PixelsPerScanline * Amount;
-        STL::CopyMemory(Screenbuffer->Base + Offset, Screenbuffer->Base, Screenbuffer->Size - Offset * 4);
-        STL::SetMemory(Screenbuffer->Base + Screenbuffer->PixelsPerScanline * (Screenbuffer->Height - Amount), 0, Offset * 4);
+        uint64_t Offset = Backbuffer.PixelsPerScanline * Amount;
+        STL::CopyMemory(Backbuffer.Base + Offset, Backbuffer.Base, Backbuffer.Size - Offset * 4);
+        STL::SetMemory(Backbuffer.Base + Backbuffer.PixelsPerScanline * (Backbuffer.Height - Amount), 0, Offset * 4);
     }
 
-    void RedrawMouse()
+    void SwapBuffers()
     {
         if (DrawMouse)
         {            
@@ -182,18 +184,20 @@ namespace Renderer
             }
             OldMousePos = Mouse::Position;
         }
-    }
 
+        STL::CopyMemory(Backbuffer.Base, Frontbuffer->Base, Backbuffer.Size);
+    }
+    
     void Clear()
     {
         CursorPos.X = 0;
         CursorPos.Y = 0;
 
-        STL::SetMemory(Screenbuffer->Base, 0, Screenbuffer->Size);
+        STL::SetMemory(Backbuffer.Base, 0, Backbuffer.Size);
     }
 
     STL::Point GetScreenSize()
     {
-        return STL::Point(Screenbuffer->Width, Screenbuffer->Height);
+        return STL::Point(Backbuffer.Width, Backbuffer.Height);
     }
 }

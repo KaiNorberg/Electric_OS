@@ -20,7 +20,7 @@ namespace ProcessHandler
     uint64_t FocusedProcess = 0;
     uint64_t LastMessagedProcess = 0;
 
-    bool RedrawMouse = false;
+    bool SwapBuffersRequest = false;
 
     Process* GetProcess(uint64_t ID)
     {
@@ -49,7 +49,7 @@ namespace ProcessHandler
 
     void MouseInterupt()
     {
-        RedrawMouse = true;
+        SwapBuffersRequest = true;
     }   
 
     void PITInterupt()
@@ -99,12 +99,6 @@ namespace ProcessHandler
 
         while (true)
         {       
-            if (RedrawMouse)
-            {
-                Renderer::RedrawMouse();
-                RedrawMouse = false;
-            }
-
             for (int i = 0; i < Processes.Length(); i++)
             {
                 STL::PROR Request = Processes[i].GetRequest();
@@ -125,6 +119,12 @@ namespace ProcessHandler
                     break;
                     }
                 }
+            }
+
+            if (SwapBuffersRequest)
+            {
+                Renderer::SwapBuffers();
+                SwapBuffersRequest = false;
             }
 
             if (Processes.Length() == 0)
