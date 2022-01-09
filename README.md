@@ -1,8 +1,19 @@
-# Electric_OS
-
-A simple operating system inspired by both dos and unix systems.
+# Electric_OS  
+  
+A simple operating system inspired by both dos and unix systems.  
 
 Boot Loader:  
-GNU
+GNU  
+  
+Main Goal:  
+To create a simple and completly useless operating system, because i can.  
+  
+//////////////////////Future improvments//////////////////////   
+  
+Implement the rest of the exception interupts.  
+Optimize the heap.   
+Optimize the list and string classes.  
 
-Main Goal:
+Implement a GUI.
+
+Implement Tetris.
