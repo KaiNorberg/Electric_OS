@@ -6,7 +6,7 @@ Boot Loader:
 GNU  
   
 Main Goal:  
-To create a simple and completly useless operating system, because i can.  
+To create a simple and completely useless operating system, because i can.  
   
 //////////////////////Future improvments//////////////////////   
   
