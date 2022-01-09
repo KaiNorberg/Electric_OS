@@ -5,17 +5,21 @@
 
 #include "kernel/Renderer/Renderer.h"
 
-struct Process
+class Process
 {
+public:
+    uint64_t ID;
+
     STL::PROT Type;
     STL::PROC Procedure;
     STL::Framebuffer FrameBuffer;
 
     uint64_t Depth;
-
     STL::Point Pos;
 
-    bool RedrawRequested = false;
+    STL::PROR Request = STL::PROR::SUCCESS; 
+
+    void Kill();
 
     void Draw();
 

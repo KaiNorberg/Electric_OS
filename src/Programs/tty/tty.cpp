@@ -67,11 +67,27 @@ namespace tty
             STL::Framebuffer* Buffer = (STL::Framebuffer*)Input;
 
             if (RedrawText)
-            {
+            {                
+                for (int i = 0; i < STL::Length(Command) + 2; i++)
+                {
+                    STL::PutChar(Buffer, ' ', STL::Point(CursorPos.X + 8 * i, CursorPos.Y), 1, STL::ARGB(255), STL::ARGB(0));
+                }
+
                 //TODO: Implement scrolling
+                if (CursorPos.Y + STL::LineAmount(Text.cstr()) * 16 > Buffer->Height)
+                {
+                    uint64_t Amount = (CursorPos.Y + STL::LineAmount(Text.cstr()) * 16) - Buffer->Height;
+                    Buffer->ScrollUp(Amount);
+                    CursorPos.Y -= Amount; 
+                    if (CursorPos.Y < 0)
+                    {
+                        CursorPos.Y = 0;
+                    }
+                }
 
                 STL::Print(Buffer, Text.cstr(), CursorPos, 1, STL::ARGB(255), STL::ARGB(0));
                 Text = "";
+                Command[0] = 0;
                 RedrawText = false;
             }
 
@@ -107,7 +123,6 @@ namespace tty
                 Text += "\n\r";
                 Text += STL::System(Command);
                 Text += "\n\r> ";
-                Command[0] = 0;
                 RedrawText = true;
             }
             else if (Key == BACKSPACE)

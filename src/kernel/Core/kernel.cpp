@@ -10,7 +10,7 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 	Heap::Init();
 
 	Renderer::Init(BootInfo->ScreenBuffer, BootInfo->PSFFont);
-	Renderer::Clear(STL::ARGB(0));
+	Renderer::Clear();
 
 	STL::SetFont(BootInfo->PSFFont);
 

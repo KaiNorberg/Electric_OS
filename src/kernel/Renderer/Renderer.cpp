@@ -183,7 +183,7 @@ namespace Renderer
         }
     }
 
-    void Clear(STL::ARGB Color)
+    void Clear()
     {
         CursorPos.X = 0;
         CursorPos.Y = 0;

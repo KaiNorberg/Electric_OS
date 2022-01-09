@@ -10,6 +10,8 @@ namespace ProcessHandler
 
     void PITInterupt();
 
+    bool KillProcess(uint64_t ProcessID);
+
     void StartProcess(STL::PROC Procedure);
 
     void Loop();   

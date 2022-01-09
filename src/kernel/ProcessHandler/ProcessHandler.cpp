@@ -5,6 +5,7 @@
 #include "STL/List/List.h"
 #include "STL/Graphics/Framebuffer.h"
 #include "STL/Memory/Memory.h"
+#include "kernel/Debug/Debug.h"
 
 #include "Programs/tty/tty.h"
 
@@ -25,7 +26,7 @@ namespace ProcessHandler
     {
         for (int i = 0; i < Processes.Length(); i++)
         {
-            if (i == FocusedProcess || Processes[i].Type == STL::PROT::BACKGROUND)
+            if (Processes[i].ID == FocusedProcess || Processes[i].Type == STL::PROT::BACKGROUND)
             {
                 uint8_t Key = KeyBoard::GetKeyPress();
                 Processes[i].SendMessage(STL::PROM::KEYPRESS, &Key);
@@ -42,7 +43,7 @@ namespace ProcessHandler
     {
         for (int i = 0; i < Processes.Length(); i++)
         {
-            if (i == FocusedProcess || Processes[i].Type == STL::PROT::BACKGROUND)
+            if (Processes[i].ID == FocusedProcess || Processes[i].Type == STL::PROT::BACKGROUND)
             {
                 uint64_t Tick = PIT::Ticks;
                 Processes[i].SendMessage(STL::PROM::TICK, &Tick);
@@ -58,27 +59,25 @@ namespace ProcessHandler
         }
     }
 
+    bool KillProcess(uint64_t ProcessID)
+    {
+        for (int i = 0; i < Processes.Length(); i++)
+        {
+            if (ProcessID == Processes[i].ID)
+            {
+                Processes[i].Kill();
+                Processes.Erase(i);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     void StartProcess(STL::PROC Procedure)
     {
         Processes.Push(Process(Procedure));
-
-        STL::PINFO Info;
-        Processes.Last().SendMessage(STL::PROM::INIT, &Info);
-
-        Processes.Last().Depth = Info.Depth;
-        Processes.Last().Type = Info.Type;
-
-        Processes.Last().Pos = STL::Point(Info.Left, Info.Top);
-
-        if (Info.Type == STL::PROT::FULLSCREEN)
-        {        
-            Processes.Last().Pos = STL::Point(0, 0);
-            Processes.Last().FrameBuffer = *Renderer::Screenbuffer;
-            Processes.Last().FrameBuffer.Base = (STL::ARGB*)Heap::Allocate(Renderer::Screenbuffer->Size);
-            Processes.Last().FrameBuffer.Clear();
-            Processes.Last().Draw();
-            FocusedProcess = Processes.Length() - 1;
-        }
+        FocusedProcess = Processes.Last().ID;
     }
 
     void Loop()
@@ -86,7 +85,7 @@ namespace ProcessHandler
         StartProcess(tty::Procedure);
 
         while (true)
-        {                
+        {       
             if (RedrawMouse)
             {
                 Renderer::RedrawMouse();
@@ -94,10 +93,28 @@ namespace ProcessHandler
 
             for (int i = 0; i < Processes.Length(); i++)
             {
-                if (Processes[i].RedrawRequested)
+                if (Processes[i].Request != STL::PROR::SUCCESS)
                 {
-                    Processes[i].Draw();
+                    switch (Processes[i].Request)
+                    {
+                    case STL::PROR::REDRAW:
+                    {
+                        Processes[i].Draw();
+                    }
+                    break;
+                    case STL::PROR::KILL:
+                    {
+                        Processes[i].Kill();
+                        Processes.Erase(i);
+                    }
+                    break;
+                    }
                 }
+            }
+
+            if (Processes.Length() == 0)
+            {
+                Debug::Error("All processes killed");
             }
 
             asm("HLT");

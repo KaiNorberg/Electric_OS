@@ -17,6 +17,8 @@ namespace STL
 
 		void Clear();
 
+    	void ScrollUp(uint64_t Amount);
+
 		ARGB GetPixel(Point Pixel);
 
 		void PutPixel(Point Pixel, ARGB Color);

@@ -31,7 +31,7 @@ namespace Renderer
 
     void ScrollUp(uint64_t Amount);
 
-    void Clear(STL::ARGB Color = STL::ARGB(0));
+    void Clear();
 
     void RedrawMouse();
 
