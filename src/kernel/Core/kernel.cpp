@@ -10,7 +10,6 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 	Heap::Init();
 
 	Renderer::Init(BootInfo->ScreenBuffer, BootInfo->PSFFont);
-	Renderer::Clear();
 
 	STL::SetFont(BootInfo->PSFFont);
 
@@ -21,7 +20,7 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 	IDT::SetupInterrupts();
 	
 	KeyBoard::Clear();
-
+	
 	ProcessHandler::Loop();
 
 	while(true)

@@ -18,33 +18,21 @@ namespace Heap
         return (void*)((uint64_t)this + sizeof(Segment) + this->Size);
     }
 
-    Segment* Segment::Split(uint64_t NewSize)
+    void Segment::Split(uint64_t NewSize)
     {
-        if (Size < 64)
+        //TODO: MAKE THIS WORK
+
+        /*if (this->Size < 64)
         {
-            return nullptr; 
+            return; 
         }
 
-        int64_t SplitSize = this->Size - NewSize - sizeof(Segment);
-        if (SplitSize < 64)
-        {
-            return nullptr;
-        }
+        LastSegment->Next = (Segment*)((uint64_t)this->GetStart() + NewSize);
+        LastSegment->Next->Size = (uint64_t)this->GetEnd() - ((uint64_t)this->GetStart() + NewSize + sizeof(Segment));
+        LastSegment->Next->Free = true;
+        LastSegment = LastSegment->Next;
 
-        Segment* NewSegment = (Segment*)((uint64_t)this->GetStart() + NewSize);
-        NewSegment->Next = this->Next;
-        NewSegment->Size = SplitSize;
-        NewSegment->Free = true;
-
-        this->Next = NewSegment;
-        this->Size = NewSize;
-
-        if (this == LastSegment)
-        {
-            LastSegment = NewSegment;
-        }
-
-        return NewSegment;
+        this->Size = NewSize;*/
     }
 
     void Init()
@@ -108,6 +96,25 @@ namespace Heap
         return FreeSize;
     }
 
+    uint64_t GetSegmentAmount()
+    {
+        uint64_t SegmentAmount = 0;
+
+        Segment* CurrentSegment = FirstSegment;
+        while (true)
+        {
+            SegmentAmount++;
+
+            if (CurrentSegment->Next == nullptr)
+            {
+                break;
+            }
+            CurrentSegment = CurrentSegment->Next;
+        }
+
+        return SegmentAmount;
+    }
+
     void* Allocate(uint64_t Size)
     {
         if (Size == 0)
@@ -117,7 +124,7 @@ namespace Heap
 
         Size = Size + (64 - (Size % 64));
 
-        Segment* CurrentSegment = (Segment*)HEAP_START;
+        Segment* CurrentSegment = FirstSegment;
         while (true)
         {
             if (CurrentSegment->Free)
@@ -143,7 +150,8 @@ namespace Heap
         }
 
         Reserve(Size);
-        return Allocate(Size);
+        LastSegment->Free = false;
+        return LastSegment->GetStart();
     }
 
     void Free(void* Address)

@@ -108,13 +108,13 @@ Framebuffer GetFramebuffer()
 	NewBuffer.Height = GOP->Mode->Info->VerticalResolution;
 	NewBuffer.PixelsPerScanline = GOP->Mode->Info->PixelsPerScanLine;
 
-	Print(L"BUFFER INFO\n\r");
+	Print(L"GOP BUFFER INFO\n\r");
 	Print(L"Base: 0x%x\n\r", NewBuffer.Base);
 	Print(L"Size: 0x%x\n\r", NewBuffer.Size);
 	Print(L"Width: %d\n\r", NewBuffer.Width);
 	Print(L"Height: %d\n\r", NewBuffer.Height);
 	Print(L"PixelsPerScanline: %d\n\r", NewBuffer.PixelsPerScanline);
-	Print(L"BUFFER INFO END\n\r");
+	Print(L"GOP BUFFER INFO END\n\r");
 
 	return NewBuffer;
 }
@@ -167,7 +167,8 @@ PSF_FONT LoadPSFFont(EFI_FILE* Directory, CHAR16* Path)
 	newFont.glyphBuffer = (char*)GlyphBuffer;
 
 	Print(L"FONT INFO\n\r");
-	Print(L"Char size: %d\n\r", newFont.PSF_Header->charsize);
+	Print(L"Char Size: %d\n\r", newFont.PSF_Header->charsize);
+	Print(L"Mode: 0x%x\n\r", newFont.PSF_Header->mode);
 	Print(L"FONT INFO END\n\r");
 
 	return newFont;
@@ -175,6 +176,8 @@ PSF_FONT LoadPSFFont(EFI_FILE* Directory, CHAR16* Path)
 
 EFI_MEMORY_MAP GetMemoryMap()
 {
+	Print(L"Retrieving EFI Memory Map...\n\r");
+
 	EFI_MEMORY_DESCRIPTOR* Base = NULL;
 	UINTN MapSize, MapKey;
 	UINTN DescriptorSize;
@@ -195,7 +198,7 @@ EFI_MEMORY_MAP GetMemoryMap()
 	return NewMap;
 }
 
-Elf64_Ehdr LoadEFIHeader(CHAR16* Path)
+Elf64_Ehdr LoadELFFile(CHAR16* Path)
 {
 	EFI_FILE* File = LoadFile(NULL, Path);
 	if (File == NULL)
@@ -207,6 +210,8 @@ Elf64_Ehdr LoadEFIHeader(CHAR16* Path)
 			__asm__("HLT");
 		}
 	}
+
+	Print(L"Reading ELF File...\n\r");
 
 	Elf64_Ehdr Header;
 	UINTN FileInfoSize;
@@ -261,8 +266,9 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 	SystemTable = In_SystemTable;
 
 	InitializeLib(ImageHandle, SystemTable);
+	Print(L"Bootloader loaded!\n\r");
 
-	Elf64_Ehdr Header = LoadEFIHeader(L"Electric_OS.elf");
+	Elf64_Ehdr Header = LoadELFFile(L"Electric_OS.elf");
 	PSF_FONT newFont = LoadPSFFont(NULL, L"zap-vga16.psf");
 	Framebuffer newBuffer = GetFramebuffer();
 	EFI_MEMORY_MAP newMap = GetMemoryMap();
@@ -277,6 +283,7 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 	Print(L"Exiting boot services...\n\r");
 	SystemTable->BootServices->ExitBootServices(ImageHandle, newMap.Key);
 
+	Print(L"Entering Kernel...\n\r");
 	KernelMain(&bootInfo);
 
 	return EFI_SUCCESS; // Exit the UEFI application

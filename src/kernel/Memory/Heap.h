@@ -17,7 +17,7 @@ namespace Heap
 
         void* GetEnd();
 
-        Segment* Split(uint64_t SplitSize);
+        void Split(uint64_t NewSize);
     };
 
     void Init();
@@ -25,6 +25,8 @@ namespace Heap
     uint64_t GetUsedSize();
 
     uint64_t GetFreeSize();
+
+    uint64_t GetSegmentAmount();
 
     void* Allocate(uint64_t Size);
 

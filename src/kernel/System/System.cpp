@@ -224,8 +224,9 @@ namespace System
         Write(4, "Uptime: ", STL::ToString(PIT::Ticks / PIT::GetFrequency()), " s   ");
         Write(5, "Free Heap: ", STL::ToString(Heap::GetFreeSize() / 1000), " KB   ");
         Write(6, "Used Heap: ", STL::ToString(Heap::GetUsedSize() / 1000), " KB   ");
-        Write(7, "Free Pages: ", STL::ToString(PageAllocator::GetFreeMemory() / 4096));
-        Write(8, "Locked Pages: ", STL::ToString(PageAllocator::GetLockedMemory() / 4096));
+        Write(7, "Heap Segments: ", STL::ToString(Heap::GetSegmentAmount()));
+        Write(8, "Free Pages: ", STL::ToString(PageAllocator::GetFreeMemory() / 4096));
+        Write(9, "Locked Pages: ", STL::ToString(PageAllocator::GetLockedMemory() / 4096));
 
         Write(14, "\033B040044052   \033B224108117   \033B229192123   \033B152195121   \033B097175239   \033B198120221   \033B000000000");
         Write(15, "\033B040044052   \033B224108117   \033B229192123   \033B152195121   \033B097175239   \033B198120221   \033B000000000");
