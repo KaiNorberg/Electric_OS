@@ -1,19 +1,16 @@
 #include "tty.h"
 
-#include "STL/Graphics/Graphics.h"
+#include "STL/Graphics/Framebuffer.h"
 #include "STL/String/String.h"
 #include "STL/String/cstr.h"
 #include "STL/System/System.h"
 
 namespace tty
 {
-    /*STL::Point StartCursorPos = Renderer::CursorPos;
-    int i = 0;*/
-
     uint64_t PrevTick = 0;
 
-    STL::String Text;
     char Command[64];
+    STL::String Text;
     STL::Point CursorPos = STL::Point(0, 16);
 
     bool RedrawText = false;
@@ -70,10 +67,9 @@ namespace tty
             {                
                 for (int i = 0; i < STL::Length(Command) + 2; i++)
                 {
-                    STL::PutChar(Buffer, ' ', STL::Point(CursorPos.X + 8 * i, CursorPos.Y), 1, STL::ARGB(255), STL::ARGB(0));
+                    Buffer->PutChar(' ', STL::Point(CursorPos.X + 8 * i, CursorPos.Y), 1, STL::ARGB(255), STL::ARGB(0));
                 }
 
-                //TODO: Implement scrolling
                 if (CursorPos.Y + STL::LineAmount(Text.cstr()) * 16 > Buffer->Height)
                 {
                     uint64_t Amount = (CursorPos.Y + STL::LineAmount(Text.cstr()) * 16) - Buffer->Height;
@@ -85,7 +81,7 @@ namespace tty
                     }
                 }
 
-                STL::Print(Buffer, Text.cstr(), CursorPos, 1, STL::ARGB(255), STL::ARGB(0));
+                Buffer->Print(Text.cstr(), CursorPos, 1, STL::ARGB(255), STL::ARGB(0));
                 Text = "";
                 Command[0] = 0;
                 RedrawText = false;
@@ -95,21 +91,21 @@ namespace tty
             {
                 for (int i = 0; i < STL::Length(Command) + 2; i++)
                 {
-                    STL::PutChar(Buffer, ' ', STL::Point(CursorPos.X + 8 * i, CursorPos.Y), 1, STL::ARGB(255), STL::ARGB(0));
+                    Buffer->PutChar(' ', STL::Point(CursorPos.X + 8 * i, CursorPos.Y), 1, STL::ARGB(255), STL::ARGB(0));
                 }
                 ClearCommand = false;
             }
             
             STL::Point Temp = CursorPos;
-            STL::Print(Buffer, Command, Temp, 1, STL::ARGB(255), STL::ARGB(0));
+            Buffer->Print(Command, Temp, 1, STL::ARGB(255), STL::ARGB(0));
 
             if (DrawUnderline)
             {
-                STL::PutChar(Buffer, '_', Temp, 1, STL::ARGB(255), STL::ARGB(0));
+                Buffer->PutChar('_', Temp, 1, STL::ARGB(255), STL::ARGB(0));
             }
             else
             {
-                STL::PutChar(Buffer, ' ', Temp, 1, STL::ARGB(255), STL::ARGB(0));
+                Buffer->PutChar(' ', Temp, 1, STL::ARGB(255), STL::ARGB(0));
             }
         }
         break;

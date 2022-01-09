@@ -26,7 +26,7 @@ namespace ProcessHandler
     {
         for (int i = 0; i < Processes.Length(); i++)
         {
-            if (Processes[i].ID == FocusedProcess || Processes[i].Type == STL::PROT::BACKGROUND)
+            if (Processes[i].GetID() == FocusedProcess || Processes[i].GetType() == STL::PROT::BACKGROUND)
             {
                 uint8_t Key = KeyBoard::GetKeyPress();
                 Processes[i].SendMessage(STL::PROM::KEYPRESS, &Key);
@@ -43,7 +43,7 @@ namespace ProcessHandler
     {
         for (int i = 0; i < Processes.Length(); i++)
         {
-            if (Processes[i].ID == FocusedProcess || Processes[i].Type == STL::PROT::BACKGROUND)
+            if (Processes[i].GetID() == FocusedProcess || Processes[i].GetType() == STL::PROT::BACKGROUND)
             {
                 uint64_t Tick = PIT::Ticks;
                 Processes[i].SendMessage(STL::PROM::TICK, &Tick);
@@ -63,7 +63,7 @@ namespace ProcessHandler
     {
         for (int i = 0; i < Processes.Length(); i++)
         {
-            if (ProcessID == Processes[i].ID)
+            if (ProcessID == Processes[i].GetID())
             {
                 Processes[i].Kill();
                 Processes.Erase(i);
@@ -77,7 +77,7 @@ namespace ProcessHandler
     void StartProcess(STL::PROC Procedure)
     {
         Processes.Push(Process(Procedure));
-        FocusedProcess = Processes.Last().ID;
+        FocusedProcess = Processes.Last().GetID();
     }
 
     void Loop()
@@ -93,9 +93,9 @@ namespace ProcessHandler
 
             for (int i = 0; i < Processes.Length(); i++)
             {
-                if (Processes[i].Request != STL::PROR::SUCCESS)
+                if (Processes[i].GetRequest() != STL::PROR::SUCCESS)
                 {
-                    switch (Processes[i].Request)
+                    switch (Processes[i].GetRequest())
                     {
                     case STL::PROR::REDRAW:
                     {

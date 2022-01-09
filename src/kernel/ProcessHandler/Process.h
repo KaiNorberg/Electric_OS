@@ -8,6 +8,25 @@
 class Process
 {
 public:
+
+    uint64_t GetID();
+
+    STL::Point GetPos();
+
+    STL::PROT GetType();
+
+    STL::PROR GetRequest();
+
+    void Kill();
+
+    void Draw();
+
+    void SendMessage(STL::PROM Message, STL::PROI Input = nullptr);
+
+    Process(STL::PROC Procedure);
+
+private:
+
     uint64_t ID;
 
     STL::PROT Type;
@@ -18,12 +37,4 @@ public:
     STL::Point Pos;
 
     STL::PROR Request = STL::PROR::SUCCESS; 
-
-    void Kill();
-
-    void Draw();
-
-    void SendMessage(STL::PROM Message, STL::PROI Input = nullptr);
-
-    Process(STL::PROC Procedure);
 };

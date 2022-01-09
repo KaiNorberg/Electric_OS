@@ -2,10 +2,29 @@
     
 #include "kernel/Memory/Heap.h"
 
+uint64_t Process::GetID()
+{
+    return this->ID;
+}
+
+STL::Point Process::GetPos()
+{
+    return this->Pos;
+}
+
+STL::PROT Process::GetType()
+{
+    return this->Type;
+}
+
+STL::PROR Process::GetRequest()
+{
+    return this->Request;
+}
+
 void Process::Kill()
 {
     this->SendMessage(STL::PROM::EXIT, nullptr);
-
 
     if (this->Type == STL::PROT::FULLSCREEN)
     {

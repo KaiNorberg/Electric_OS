@@ -22,5 +22,9 @@ namespace STL
 		ARGB GetPixel(Point Pixel);
 
 		void PutPixel(Point Pixel, ARGB Color);
+
+		void PutChar(char chr, STL::Point Pos, uint8_t Scale, ARGB Foreground, ARGB Background);
+
+    	void Print(const char* cstr, STL::Point& Pos, uint8_t Scale, ARGB Foreground, ARGB Background);
 	};
 }
