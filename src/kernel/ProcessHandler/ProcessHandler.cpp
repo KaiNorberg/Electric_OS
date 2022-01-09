@@ -94,7 +94,7 @@ namespace ProcessHandler
     }
 
     void Loop()
-    {
+    {                
         StartProcess(tty::Procedure);
 
         while (true)

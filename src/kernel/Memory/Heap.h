@@ -2,6 +2,9 @@
 
 #include <stdint.h>
 
+#define HEAP_START 0x100000000000
+#define HEAP_STARTSIZE 0x10 * 4096
+
 namespace Heap
 {
     struct Segment
@@ -9,6 +12,10 @@ namespace Heap
         Segment* Next;
         uint64_t Size;
         bool Free;
+
+        void* GetStart();
+
+        void* GetEnd();
 
         Segment* Split(uint64_t SplitSize);
     };

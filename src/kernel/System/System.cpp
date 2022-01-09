@@ -222,8 +222,8 @@ namespace System
         Write(2, "Time: ", CommandTime(nullptr));
         Write(3, "Date: ", CommandDate(nullptr));
         Write(4, "Uptime: ", STL::ToString(PIT::Ticks / PIT::GetFrequency()), " s   ");
-        Write(5, "Free Heap: ", STL::ToString(Heap::GetFreeSize() / 0x1000), " KB   ");
-        Write(6, "Used Heap: ", STL::ToString(Heap::GetUsedSize() / 0x1000), " KB   ");
+        Write(5, "Free Heap: ", STL::ToString(Heap::GetFreeSize() / 1000), " KB   ");
+        Write(6, "Used Heap: ", STL::ToString(Heap::GetUsedSize() / 1000), " KB   ");
         Write(7, "Free Pages: ", STL::ToString(PageAllocator::GetFreeMemory() / 4096));
         Write(8, "Locked Pages: ", STL::ToString(PageAllocator::GetLockedMemory() / 4096));
 

@@ -6,6 +6,7 @@
 #include "kernel/PIT/PIT.h"
 #include "kernel/RTC/RTC.h"
 #include "kernel/Memory/Paging/PageAllocator.h"
+#include "kernel/Memory/Heap.h"
 #include "kernel/System/System.h"
 
 namespace Debug
@@ -41,7 +42,7 @@ namespace Debug
         asm("CLI");
 
         uint8_t Scale = 3;
-        STL::Point StartPoint = STL::Point(100, 100);
+        STL::Point StartPoint = STL::Point(100, 50);
 
         Renderer::Clear();
 
@@ -72,7 +73,7 @@ namespace Debug
         Renderer::Print(OS_VERSION, Scale);
 
         Renderer::CursorPos = STL::Point(StartPoint.X, StartPoint.Y + 16 * 7 * Scale);
-        Renderer::Print("Diagnostics: ", Scale);
+        Renderer::Print("Time: ", Scale);
 
         Renderer::CursorPos = STL::Point(StartPoint.X, StartPoint.Y + 16 * 8 * Scale);
         Renderer::Print("Ticks = ", Scale);
@@ -90,20 +91,30 @@ namespace Debug
         Renderer::Print("Memory: ", Scale);
 
         Renderer::CursorPos = STL::Point(StartPoint.X, StartPoint.Y + 16 * 12 * Scale);
-        Renderer::Print("Locked Memory = ", Scale);
-        Renderer::Print(STL::ToString(PageAllocator::GetLockedMemory() / 1048576), Scale);
-        Renderer::Print(" MB", Scale);
+        Renderer::Print("Used Heap = ", Scale);
+        Renderer::Print(STL::ToString(Heap::GetUsedSize() / 1000), Scale);
+        Renderer::Print(" KB", Scale);
 
         Renderer::CursorPos = STL::Point(StartPoint.X, StartPoint.Y + 16 * 13 * Scale);
-        Renderer::Print("Free Memory = ", Scale);
-        Renderer::Print(STL::ToString(PageAllocator::GetFreeMemory() / 1048576), Scale);
-        Renderer::Print(" MB", Scale);
+        Renderer::Print("Free Heap = ", Scale);
+        Renderer::Print(STL::ToString(Heap::GetFreeSize() / 1000), Scale);
+        Renderer::Print(" KB", Scale);
+
+        Renderer::CursorPos = STL::Point(StartPoint.X, StartPoint.Y + 16 * 14 * Scale);
+        Renderer::Print("Locked Pages = ", Scale);
+        Renderer::Print(STL::ToString(PageAllocator::GetLockedMemory() / 4096), Scale);
 
         Renderer::CursorPos = STL::Point(StartPoint.X, StartPoint.Y + 16 * 15 * Scale);
+        Renderer::Print("Free Pages = ", Scale);
+        Renderer::Print(STL::ToString(PageAllocator::GetFreeMemory() / 4096), Scale);
+
+        Renderer::CursorPos = STL::Point(StartPoint.X, StartPoint.Y + 16 * 17 * Scale);
         Renderer::Print("System Halted!", Scale);
 
-        Renderer::CursorPos = STL::Point(StartPoint.X, StartPoint.Y + 16 * 16 * Scale);
+        Renderer::CursorPos = STL::Point(StartPoint.X, StartPoint.Y + 16 * 18 * Scale);
         Renderer::Print("Please manually reboot your machine.", Scale);
+
+	    Renderer::SwapBuffers();
 
         while (true)
         {

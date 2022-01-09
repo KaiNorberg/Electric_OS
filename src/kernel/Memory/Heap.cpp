@@ -3,49 +3,72 @@
 #include "kernel/Memory/Paging/PageAllocator.h"
 #include "kernel/Memory/Paging/PageTable.h"
 
-#define HEAP_START 0x100000000000
-#define HEAP_STARTSIZE 0x10 * 4096
-
 namespace Heap
 {
-    void* End = nullptr;
+    Segment* FirstSegment = nullptr;
     Segment* LastSegment = nullptr;
 
-    Segment* Segment::Split(uint64_t SplitSize)
+    void* Segment::GetStart()
+    {
+        return (void*)((uint64_t)this + sizeof(Segment));
+    }
+
+    void* Segment::GetEnd()
+    {
+        return (void*)((uint64_t)this + sizeof(Segment) + this->Size);
+    }
+
+    Segment* Segment::Split(uint64_t NewSize)
     {
         if (Size < 64)
         {
             return nullptr; 
         }
 
-        int64_t NewSize = this->Size - SplitSize - sizeof(Segment);
-        if (NewSize < 64)
+        int64_t SplitSize = this->Size - NewSize - sizeof(Segment);
+        if (SplitSize < 64)
         {
             return nullptr;
         }
 
-        Segment* NewSegment = (Segment*)((uint64_t)this + sizeof(Segment) + SplitSize);
+        Segment* NewSegment = (Segment*)((uint64_t)this->GetStart() + NewSize);
+        NewSegment->Next = this->Next;
+        NewSegment->Size = SplitSize;
+        NewSegment->Free = true;
+
         this->Next = NewSegment;
-        this->Size = SplitSize;
-        NewSegment->Next = nullptr;
-        NewSegment->Size = NewSize;
-        NewSegment->Free = this->Free;
-        LastSegment = NewSegment;
+        this->Size = NewSize;
+
+        if (this == LastSegment)
+        {
+            LastSegment = NewSegment;
+        }
 
         return NewSegment;
     }
 
     void Init()
     {
-        End = (void*)HEAP_START;
-        Reserve(HEAP_STARTSIZE);
+        FirstSegment = (Segment*)HEAP_START;
+        void* Address = FirstSegment;
+        for (uint64_t i = 0; i < (HEAP_STARTSIZE + sizeof(Segment)) / 4096 + 1; i++)
+        {
+            PageTableManager::MapAddress(Address, PageAllocator::RequestPage());
+            Address = (void*)((uint64_t)Address + 4096);
+        }
+
+        FirstSegment->Size = HEAP_STARTSIZE;
+        FirstSegment->Next = nullptr;
+        FirstSegment->Free = true;
+        
+        LastSegment = FirstSegment;
     }
 
     uint64_t GetUsedSize()
     {
         uint64_t UsedSize = 0;
 
-        Segment* CurrentSegment = (Segment*)HEAP_START;
+        Segment* CurrentSegment = FirstSegment;
         while (true)
         {
             if (!CurrentSegment->Free)
@@ -67,7 +90,7 @@ namespace Heap
     {
         uint64_t FreeSize = 0;
 
-        Segment* CurrentSegment = (Segment*)HEAP_START;
+        Segment* CurrentSegment = FirstSegment;
         while (true)
         {
             if (CurrentSegment->Free)
@@ -102,13 +125,13 @@ namespace Heap
                 if (CurrentSegment->Size == Size)
                 {
                     CurrentSegment->Free = false;
-                    return (void*)((uint64_t)CurrentSegment + sizeof(Segment));
+                    return CurrentSegment->GetStart();
                 }
                 else if (CurrentSegment->Size > Size)
                 {
                     CurrentSegment->Split(Size);
                     CurrentSegment->Free = false;
-                    return (void*)((uint64_t)CurrentSegment + sizeof(Segment));
+                    return CurrentSegment->GetStart();
                 }
             }
 
@@ -125,29 +148,27 @@ namespace Heap
 
     void Free(void* Address)
     {
-        Segment* segment = (Segment*)Address - 1;
+        Segment* segment = (Segment*)((uint64_t)Address - sizeof(Segment));
         segment->Free = true;
     }
 
     void Reserve(uint64_t Size)
     {   
         Size = Size + (4096 - (Size % 4096));
-        Segment* NewSegment = (Segment*)End;
+        Segment* NewSegment = (Segment*)LastSegment->GetEnd();
 
-        for (uint64_t i = 0; i < Size / 4096; i++)
+        void* Address = NewSegment;
+        for (uint64_t i = 0; i < (Size + sizeof(Segment)) / 4096 + 1; i++)
         {
-            PageTableManager::MapAddress(End, PageAllocator::RequestPage());
-            End = (void*)((uint64_t)End + 4096);
+            PageTableManager::MapAddress(Address, PageAllocator::RequestPage());
+            Address = (void*)((uint64_t)Address + 4096);
         }
 
-        NewSegment->Size = Size - sizeof(Segment);
+        NewSegment->Size = Size;
         NewSegment->Next = nullptr;
         NewSegment->Free = true;
 
-        if (LastSegment != nullptr)
-        {
-            LastSegment->Next = NewSegment;
-        }
+        LastSegment->Next = NewSegment;
         
         LastSegment = NewSegment;
     }
