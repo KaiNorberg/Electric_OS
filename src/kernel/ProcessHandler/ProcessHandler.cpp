@@ -1,5 +1,4 @@
 #include "ProcessHandler.h"
-#include "Process.h"
 
 #include "STL/Math/Point.h"
 #include "STL/List/List.h"
@@ -18,9 +17,23 @@
 namespace ProcessHandler
 {    
     STL::List<Process> Processes;
-    int8_t FocusedProcess = -1;
+    uint64_t FocusedProcess = 0;
+    uint64_t LastMessagedProcess = 0;
 
-    volatile bool RedrawMouse = false;
+    bool RedrawMouse = false;
+
+    Process* GetProcess(uint64_t ID)
+    {
+        for (int i = 0; i < Processes.Length(); i++)
+        {
+            if (Processes[i].GetID() == ID)
+            {
+                return &Processes[i];
+            }
+        }
+        
+        return nullptr;
+    }
 
     void KeyBoardInterupt()
     {
@@ -50,7 +63,7 @@ namespace ProcessHandler
             }
         }
     }
-
+    
     void SendMessage(STL::PROM Message, STL::PROI Input)
     {
         for (int i = 0; i < Processes.Length(); i++)
@@ -89,15 +102,17 @@ namespace ProcessHandler
             if (RedrawMouse)
             {
                 Renderer::RedrawMouse();
+                RedrawMouse = false;
             }
 
             for (int i = 0; i < Processes.Length(); i++)
             {
-                if (Processes[i].GetRequest() != STL::PROR::SUCCESS)
+                STL::PROR Request = Processes[i].GetRequest();
+                if (Request != STL::PROR::SUCCESS)
                 {
-                    switch (Processes[i].GetRequest())
+                    switch (Request)
                     {
-                    case STL::PROR::REDRAW:
+                    case STL::PROR::DRAW:
                     {
                         Processes[i].Draw();
                     }

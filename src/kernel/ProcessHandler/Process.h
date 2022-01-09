@@ -17,6 +17,8 @@ public:
 
     STL::PROR GetRequest();
 
+    void Clear();
+
     void Kill();
 
     void Draw();

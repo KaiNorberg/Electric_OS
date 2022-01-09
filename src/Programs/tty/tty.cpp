@@ -11,7 +11,7 @@ namespace tty
 
     char Command[64];
     STL::String Text;
-    STL::Point CursorPos = STL::Point(0, 16);
+    STL::Point CursorPos = STL::Point(0, 0);
 
     bool RedrawText = false;
     bool DrawUnderline = false;
@@ -33,8 +33,9 @@ namespace tty
             
             Text = "";
             Command[0] = 0;
-            CursorPos = STL::Point(0, 16);
-
+            CursorPos = STL::Point(0, 0);
+            
+            Write("\n\r");
             Write("Welcome to the tty of ");
             Write(OS_VERSION);
             Write("!\n\r");
@@ -50,12 +51,12 @@ namespace tty
         {   
             uint64_t CurrentTick = *(uint64_t*)Input;
 
-            if (PrevTick + 50 < CurrentTick)
+            if (PrevTick + 100 < CurrentTick)
             {
                 DrawUnderline = !DrawUnderline;
                 PrevTick = CurrentTick;
 
-                return STL::PROR::REDRAW;
+                return STL::PROR::DRAW;
             }
         }
         break;
@@ -139,7 +140,20 @@ namespace tty
                 Command[CommandLength + 1] = 0;
             }
 
-            return STL::PROR::REDRAW;
+            return STL::PROR::DRAW;
+        }
+        break;
+        case STL::PROM::CLEAR:
+        {
+            Text = "";
+            Command[0] = 0;
+            CursorPos = STL::Point(0, 0);
+        }
+        break;
+        case STL::PROM::KILL:
+        {
+            Text = "";
+            Command[0] = 0;
         }
         break;
         }

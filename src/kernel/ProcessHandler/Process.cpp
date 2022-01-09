@@ -1,5 +1,6 @@
 #include "Process.h"
-    
+#include "ProcessHandler.h"
+
 #include "kernel/Memory/Heap.h"
 
 uint64_t Process::GetID()
@@ -19,12 +20,23 @@ STL::PROT Process::GetType()
 
 STL::PROR Process::GetRequest()
 {
-    return this->Request;
+    STL::PROR Temp = this->Request;
+    this->Request = STL::PROR::SUCCESS;
+    return Temp;
+}
+
+void Process::Clear()
+{
+    if (this->Type == STL::PROT::FULLSCREEN)
+    {  
+        this->FrameBuffer.Clear();
+        this->SendMessage(STL::PROM::CLEAR, &this->FrameBuffer);
+    } 
 }
 
 void Process::Kill()
 {
-    this->SendMessage(STL::PROM::EXIT, nullptr);
+    this->SendMessage(STL::PROM::KILL, nullptr);
 
     if (this->Type == STL::PROT::FULLSCREEN)
     {
@@ -40,17 +52,19 @@ void Process::Draw()
         return;
     }
 
-    this->SendMessage(STL::PROM::DRAW, &FrameBuffer);
+    this->SendMessage(STL::PROM::DRAW, &this->FrameBuffer);
 
     if (this->Type == STL::PROT::FULLSCREEN)
     {   
-        STL::CopyMemory(FrameBuffer.Base, Renderer::Screenbuffer->Base, FrameBuffer.Size);
+        STL::CopyMemory(this->FrameBuffer.Base, Renderer::Screenbuffer->Base, this->FrameBuffer.Size);
         Renderer::RedrawMouse();
     }
 }
 
 void Process::SendMessage(STL::PROM Message, STL::PROI Input)
 {
+    ProcessHandler::LastMessagedProcess = this->ID;
+
     STL::PROR NewRequest = this->Procedure(Message, Input);
 
     if (this->Request != STL::PROR::SUCCESS && NewRequest == STL::PROR::SUCCESS)

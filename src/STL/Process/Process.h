@@ -4,24 +4,25 @@
 
 namespace STL
 {
-    enum PROR //Process request
+    enum class PROR //Process request
     {
         SUCCESS,
-        REDRAW,
+        DRAW,
         KILL
     };
 
-    enum PROM //Process Message
+    enum class PROM //Process Message
     {
         INIT,
         DRAW,
         TICK,
+        CLEAR,
         //MOUSE,
         KEYPRESS,
-        EXIT
+        KILL
     };
 
-    enum PROT //Process Type
+    enum class PROT //Process Type
     {
         BACKGROUND,
         FULLSCREEN,

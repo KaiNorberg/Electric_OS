@@ -41,6 +41,50 @@ namespace Heap
         Reserve(HEAP_STARTSIZE);
     }
 
+    uint64_t GetUsedSize()
+    {
+        uint64_t UsedSize = 0;
+
+        Segment* CurrentSegment = (Segment*)HEAP_START;
+        while (true)
+        {
+            if (!CurrentSegment->Free)
+            {
+                UsedSize += CurrentSegment->Size;
+            }
+
+            if (CurrentSegment->Next == nullptr)
+            {
+                break;
+            }
+            CurrentSegment = CurrentSegment->Next;
+        }
+
+        return UsedSize;
+    }
+
+    uint64_t GetFreeSize()
+    {
+        uint64_t FreeSize = 0;
+
+        Segment* CurrentSegment = (Segment*)HEAP_START;
+        while (true)
+        {
+            if (CurrentSegment->Free)
+            {
+                FreeSize += CurrentSegment->Size;
+            }
+
+            if (CurrentSegment->Next == nullptr)
+            {
+                break;
+            }
+            CurrentSegment = CurrentSegment->Next;
+        }
+
+        return FreeSize;
+    }
+
     void* Allocate(uint64_t Size)
     {
         if (Size == 0)

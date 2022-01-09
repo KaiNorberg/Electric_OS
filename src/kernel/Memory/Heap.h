@@ -15,6 +15,10 @@ namespace Heap
 
     void Init();
 
+    uint64_t GetUsedSize();
+
+    uint64_t GetFreeSize();
+
     void* Allocate(uint64_t Size);
 
     void Free(void* Address);

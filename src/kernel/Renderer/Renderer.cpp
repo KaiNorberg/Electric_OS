@@ -11,6 +11,7 @@
 namespace Renderer
 {
     STL::Framebuffer* Screenbuffer;
+    STL::Framebuffer* Screenbuffer;
 
     STL::PSF_FONT* CurrentFont;
 

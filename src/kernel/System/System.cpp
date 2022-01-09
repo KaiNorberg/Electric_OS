@@ -8,6 +8,7 @@
 #include "kernel/Debug/Debug.h"
 #include "kernel/Memory/Paging/PageAllocator.h"
 #include "kernel/Memory/Heap.h"
+#include "kernel/ProcessHandler/ProcessHandler.h"
 
 #include <cstdarg>
 
@@ -117,6 +118,12 @@ namespace System
         FOREGROUND_COLOR(086, 182, 194)"panic\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        Causes a kernel panic\n\r"
+        FOREGROUND_COLOR(086, 182, 194)"clear\n\r"
+        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
+        FOREGROUND_COLOR(255, 255, 255)"        Clears the framebuffer of the process that performed the system call\n\r"
+        FOREGROUND_COLOR(086, 182, 194)"suicide\n\r"
+        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
+        FOREGROUND_COLOR(255, 255, 255)"        Kills the process that performed the system call\n\r"
         FOREGROUND_COLOR(086, 182, 194)"sysfetch\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        A neofetch lookalike to give system information\n\r";
@@ -155,96 +162,75 @@ namespace System
         return nullptr;
     }
 
-    char CommandSysfetchOutput[1100];
+    const char* CommandSuicide(const char* Command)
+    {
+        if (ProcessHandler::LastMessagedProcess != 0)
+        {
+            ProcessHandler::KillProcess(ProcessHandler::LastMessagedProcess);
+        }
+        return "";
+    }
+
+    const char* CommandClear(const char* Command)
+    {
+        if (ProcessHandler::LastMessagedProcess != 0)
+        {
+            ProcessHandler::GetProcess(ProcessHandler::LastMessagedProcess)->Clear();
+        }
+        return "";
+    }
+
     const char* CommandSysfetch(const char* Command)
     {                
-        char* Temp = CommandSysfetchOutput;          
-     
-        auto WriteLine = [&](const char* Part1, const char* Part2 = nullptr) 
+        const char* Sysfetch =                                                   
+        FOREGROUND_COLOR(086, 182, 194)"         /ooooooooooo/                                                                                                      \n\r" 
+        FOREGROUND_COLOR(086, 182, 194)"        /ooooooooooo/                                                                                                       \n\r"
+        FOREGROUND_COLOR(086, 182, 194)"       /ooooooooooo/                                                                                                        \n\r"
+        FOREGROUND_COLOR(086, 182, 194)"      /oooooooooo/                                                                                                          \n\r"
+        FOREGROUND_COLOR(086, 182, 194)"     /oooooooooo/                                                                                                           \n\r"
+        FOREGROUND_COLOR(086, 182, 194)"    /oooooooooo/                                                                                                            \n\r"
+        FOREGROUND_COLOR(086, 182, 194)"   /oooooooooo/                                                                                                             \n\r"
+        FOREGROUND_COLOR(086, 182, 194)"  /ooooooooooooooooooooo/                                                                                                   \n\r"
+        FOREGROUND_COLOR(086, 182, 194)" /ooooooooooooooooooooo/                                                                                                    \n\r"
+        FOREGROUND_COLOR(086, 182, 194)" /oooooooooooooooooooo/                                                                                                     \n\r"
+        FOREGROUND_COLOR(086, 182, 194)"/ooooooooooooooooooo/                                                                                                       \n\r"
+        FOREGROUND_COLOR(086, 182, 194)"           /ooooooo/                                                                                                        \n\r"
+        FOREGROUND_COLOR(086, 182, 194)"          /oooooo/                                                                                                          \n\r"
+        FOREGROUND_COLOR(086, 182, 194)"         /oooooo/                                                                                                           \n\r"
+        FOREGROUND_COLOR(086, 182, 194)"         /oooo/                                                                                                             \n\r"
+        FOREGROUND_COLOR(086, 182, 194)"        /oooo/                                                                                                              \n\r"
+        FOREGROUND_COLOR(086, 182, 194)"       /oooo/                                                                                                               \n\r"
+        FOREGROUND_COLOR(086, 182, 194)"      /ooo/                                                                                                                 \n\r"
+        FOREGROUND_COLOR(255, 255, 255);
+
+        auto Write = [&](uint64_t Line, const char* Part1, const char* Part2 = nullptr, const char* Part3 = nullptr) 
         { 
-            Temp = STL::CopyString(Temp, FOREGROUND_COLOR(086, 182, 194)) + 1;
+            char* Temp = (char*)((uint64_t)Sysfetch + Line * (11 + 126) + 11 + 27);
             Temp = STL::CopyString(Temp, Part1) + 1;
-            Temp = STL::CopyString(Temp, FOREGROUND_COLOR(255, 255, 255)) + 1;
             if (Part2 != nullptr)
-            {
+            {            
+                Temp = STL::CopyString(Temp, FOREGROUND_COLOR(255, 255, 255)) + 1;
                 Temp = STL::CopyString(Temp, Part2) + 1;
             }
-        };  
+            if (Part3 != nullptr)
+            {            
+                Temp = STL::CopyString(Temp, Part3) + 1;
+            }
+        }; 
 
-        auto Write = [&](const char* String)
-        {
-            Temp = STL::CopyString(Temp, String) + 1;
-        };
+        Write(1, "OS: ", OS_VERSION);
+        Write(2, "Time: ", CommandTime(nullptr));
+        Write(3, "Date: ", CommandDate(nullptr));
+        Write(4, "Uptime: ", STL::ToString(PIT::Ticks / PIT::GetFrequency()), " s   ");
+        Write(5, "Free Heap: ", STL::ToString(Heap::GetFreeSize() / 0x1000), " KB   ");
+        Write(6, "Used Heap: ", STL::ToString(Heap::GetUsedSize() / 0x1000), " KB   ");
+        Write(7, "Free Pages: ", STL::ToString(PageAllocator::GetFreeMemory() / 4096));
+        Write(8, "Locked Pages: ", STL::ToString(PageAllocator::GetLockedMemory() / 4096));
 
-        WriteLine("        /ooooooooooo/   ", nullptr);
-        Write("\n\r");
-
-        WriteLine("       /ooooooooooo/     OS", ": ");
-        Write(OS_VERSION);
-        Write("\n\r");  
-
-        WriteLine("      /ooooooooooo/      Uptime", ": ");
-        Write(STL::ToString(PIT::Ticks / PIT::GetFrequency()));
-        Write(" s");
-        Write("\n\r"); 
-
-        WriteLine("     /oooooooooo/        Time", ": ");
-        Write(CommandTime(nullptr));  
-        Write("\n\r"); 
-
-        WriteLine("    /oooooooooo/         Date", ": ");  
-        Write(CommandDate(nullptr));  
-        Write("\n\r");    
-
-        WriteLine("   /oooooooooo/          Memory", ": ");  
-        Write(STL::ToString(PageAllocator::GetLockedMemory() / 1048576));
-        Write(" / ");
-        Write(STL::ToString((PageAllocator::GetFreeMemory() + PageAllocator::GetLockedMemory()) / 1048576));
-        Write(" MB"); 
-        Write("\n\r");  
-
-        WriteLine("  /oooooooooo/          ", nullptr); 
-        Write("\n\r");   
-
-        WriteLine(" /ooooooooooooooooooooo/", nullptr);   
-        Write("\n\r");    
-
-        WriteLine("/ooooooooooooooooooooo/ ", nullptr); 
-        Write("\n\r");    
-
-        WriteLine("/oooooooooooooooooooo/  ", nullptr); 
-        Write("\n\r");   
-
-        WriteLine("oooooooooooooooooooo/    ", nullptr); 
-        Write("\n\r");   
-
-        WriteLine("          /ooooooo/     ", nullptr);  
-        Write("\n\r");   
-
-        WriteLine("         /oooooo/       ", nullptr);  
-        Write("\n\r"); 
-
-        WriteLine("        /oooooo/        ", nullptr);  
-        Write("\n\r");  
-
-        WriteLine("        /oooo/          ", nullptr);  
-        Write(" \033B040044052   \033B224108117   \033B229192123   \033B152195121   \033B097175239   \033B198120221   \033B086182194   \033B220223228   ");  
-        Write("\033B000000000"); 
-        Write("\n\r");   
-
-        WriteLine("       /oooo/           ", nullptr);   
-        Write(" \033B040044052   \033B224108117   \033B229192123   \033B152195121   \033B097175239   \033B198120221   \033B086182194   \033B220223228   ");   
-        Write("\033B000000000"); 
-        Write("\n\r");
-
-        WriteLine("      /oooo/            ", nullptr);   
-        Write("\n\r");
-
-        WriteLine("     /ooo/              ", nullptr);
-        Write("\n\r");
-
-        *Temp = 0;                   
-        return CommandSysfetchOutput;
+        Write(14, "\033B040044052   \033B224108117   \033B229192123   \033B152195121   \033B097175239   \033B198120221   \033B000000000");
+        Write(15, "\033B040044052   \033B224108117   \033B229192123   \033B152195121   \033B097175239   \033B198120221   \033B000000000");
+         
+        return Sysfetch;
     }                                                                                                                                                            
 
     const char* System(const char* Input)
@@ -256,6 +242,8 @@ namespace System
             Command("time", CommandTime),
             Command("date", CommandDate),
             Command("panic", CommandPanic),
+            Command("clear", CommandClear),
+            Command("suicide", CommandSuicide),
             Command("sysfetch", CommandSysfetch)
         };
 
