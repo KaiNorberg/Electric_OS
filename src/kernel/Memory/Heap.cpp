@@ -20,19 +20,20 @@ namespace Heap
 
     void Segment::Split(uint64_t NewSize)
     {
-        //TODO: MAKE THIS WORK
+        uint64_t SplitSize = this->Size - NewSize - sizeof(Segment);
 
-        /*if (this->Size < 64)
+        if (this->Size < 512 || SplitSize < 512)
         {
             return; 
         }
 
-        LastSegment->Next = (Segment*)((uint64_t)this->GetStart() + NewSize);
-        LastSegment->Next->Size = (uint64_t)this->GetEnd() - ((uint64_t)this->GetStart() + NewSize + sizeof(Segment));
-        LastSegment->Next->Free = true;
-        LastSegment = LastSegment->Next;
+        Segment* NewSegment = (Segment*)((uint64_t)this->GetStart() + NewSize);
+        NewSegment->Next = this->Next;
+        NewSegment->Size = SplitSize;
+        NewSegment->Free = true;
 
-        this->Size = NewSize;*/
+        this->Next = NewSegment;
+        this->Size = NewSize  - sizeof(Segment);
     }
 
     void Init()
