@@ -4,7 +4,7 @@
 
 #define SYSCALL_SYSTEM 0
 
-#define OS_VERSION "Electric_OS 09/01/2022"
+#define OS_VERSION "Electric_OS 10/01/2022"
 
 #define ENTER 0x1C
 #define BACKSPACE 0x0E

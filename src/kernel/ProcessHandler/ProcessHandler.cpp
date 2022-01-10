@@ -56,11 +56,8 @@ namespace ProcessHandler
     {
         for (int i = 0; i < Processes.Length(); i++)
         {
-            if (Processes[i].GetID() == FocusedProcess || Processes[i].GetType() == STL::PROT::BACKGROUND)
-            {
-                uint64_t Tick = PIT::Ticks;
-                Processes[i].SendMessage(STL::PROM::TICK, &Tick);
-            }
+            uint64_t Tick = PIT::Ticks;
+            Processes[i].SendMessage(STL::PROM::TICK, &Tick);
         }
     }
     
@@ -99,7 +96,7 @@ namespace ProcessHandler
 
         while (true)
         {       
-            for (int i = 0; i < Processes.Length(); i++)
+            for (uint64_t i = 0; i < Processes.Length(); i++)
             {
                 STL::PROR Request = Processes[i].GetRequest();
                 if (Request != STL::PROR::SUCCESS)

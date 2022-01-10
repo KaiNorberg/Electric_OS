@@ -22,7 +22,7 @@ namespace Heap
     {
         uint64_t SplitSize = this->Size - NewSize - sizeof(Segment);
 
-        if (this->Size < 512 || SplitSize < 512)
+        if (this->Size < 64 || SplitSize < 4096)
         {
             return; 
         }
@@ -33,7 +33,7 @@ namespace Heap
         NewSegment->Free = true;
 
         this->Next = NewSegment;
-        this->Size = NewSize  - sizeof(Segment);
+        this->Size = NewSize - sizeof(Segment);
     }
 
     void Init()
@@ -151,14 +151,30 @@ namespace Heap
         }
 
         Reserve(Size);
-        LastSegment->Free = false;
-        return LastSegment->GetStart();
+        return Allocate(Size);
     }
 
     void Free(void* Address)
     {
         Segment* segment = (Segment*)((uint64_t)Address - sizeof(Segment));
         segment->Free = true;
+
+        Segment* CurrentSegment = FirstSegment;
+        while (true)
+        {
+            if (CurrentSegment == nullptr || CurrentSegment->Next == nullptr)
+            {
+                break;
+            }
+
+            if (CurrentSegment->Free && CurrentSegment->Next->Free)
+            {
+                CurrentSegment->Size += CurrentSegment->Next->Size + sizeof(Segment);
+                CurrentSegment->Next = CurrentSegment->Next->Next;
+            }
+
+            CurrentSegment = CurrentSegment->Next;
+        }
     }
 
     void Reserve(uint64_t Size)

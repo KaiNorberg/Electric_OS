@@ -44,6 +44,7 @@ namespace Debug
         uint8_t Scale = 3;
         STL::Point StartPoint = STL::Point(100, 50);
 
+        Renderer::DrawMouse = false;
         Renderer::Clear();
 
         Renderer::Background = STL::ARGB(0);
