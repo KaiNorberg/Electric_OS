@@ -40,7 +40,6 @@ void Process::Kill()
 
     if (this->Type == STL::PROT::FULLSCREEN)
     {
-        FrameBuffer.Clear();
         Heap::Free(FrameBuffer.Base);
     }
 }

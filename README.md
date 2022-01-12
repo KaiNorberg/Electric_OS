@@ -10,7 +10,6 @@ To create a simple and completely useless operating system, because i can.
   
 //////////////////////Future improvments//////////////////////   
   
-Implement the rest of the exception interupts.  
 Optimize the heap.   
 Optimize the list and string classes.  
 

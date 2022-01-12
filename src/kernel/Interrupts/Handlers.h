@@ -4,6 +4,14 @@ namespace InteruptHandlers
 {
     struct InterruptFrame;
 
+    __attribute__((interrupt)) void DivideByZero(InterruptFrame* frame);
+
+    __attribute__((interrupt)) void NoneMaskableInterrupt(InterruptFrame* frame);
+
+    __attribute__((interrupt)) void Breakpoint(InterruptFrame* frame);
+
+    __attribute__((interrupt)) void Overflow(InterruptFrame* frame);
+
     __attribute__((interrupt)) void BoundRange(InterruptFrame* frame);
 
     __attribute__((interrupt)) void InvalidOP(InterruptFrame* frame);

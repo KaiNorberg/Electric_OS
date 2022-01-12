@@ -7,6 +7,7 @@ namespace STL
     enum class PROR //Process request
     {
         SUCCESS,
+        CLEAR,
         DRAW,
         KILL
     };
@@ -14,12 +15,12 @@ namespace STL
     enum class PROM //Process Message
     {
         INIT,
-        DRAW,
-        TICK,
         CLEAR,
+        DRAW,
+        KILL,
+        TICK,
         //MOUSE,
-        KEYPRESS,
-        KILL
+        KEYPRESS
     };
 
     enum class PROT //Process Type

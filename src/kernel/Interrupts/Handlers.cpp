@@ -10,7 +10,43 @@
 #include "kernel/ProcessHandler/ProcessHandler.h"
 
 namespace InteruptHandlers
-{    
+{        
+    __attribute__((interrupt)) void DivideByZero(InterruptFrame* frame)
+    {
+        Debug::Error("Division By Zero Detected");
+        while(true)
+        {
+            asm("HLT");
+        }
+    }
+
+    __attribute__((interrupt)) void NoneMaskableInterrupt(InterruptFrame* frame)
+    {
+        Debug::Error("None Maskable Interrupt");
+        while(true)
+        {
+            asm("HLT");
+        }
+    }
+
+    __attribute__((interrupt)) void Breakpoint(InterruptFrame* frame)
+    {
+        Debug::Error("Breakpoint reached");
+        while(true)
+        {
+            asm("HLT");
+        }
+    }
+
+    __attribute__((interrupt)) void Overflow(InterruptFrame* frame)
+    {
+        Debug::Error("Overflow detected");
+        while(true)
+        {
+            asm("HLT");
+        }
+    }
+
     __attribute__((interrupt)) void BoundRange(InterruptFrame* frame)
     {
         Debug::Error("Bound Range Exceeded");

@@ -38,6 +38,10 @@ namespace IDT
         idtr.Limit = 0x0FFF;
         idtr.Offset = (uint64_t)_IDT;
 
+        idtr.SetHandler(0x0, (uint64_t)InteruptHandlers::DivideByZero);
+        idtr.SetHandler(0x2, (uint64_t)InteruptHandlers::NoneMaskableInterrupt);
+        idtr.SetHandler(0x3, (uint64_t)InteruptHandlers::Breakpoint);
+        idtr.SetHandler(0x4, (uint64_t)InteruptHandlers::Overflow);
         idtr.SetHandler(0x5, (uint64_t)InteruptHandlers::BoundRange);
         idtr.SetHandler(0x6, (uint64_t)InteruptHandlers::InvalidOP);
         idtr.SetHandler(0x7, (uint64_t)InteruptHandlers::DeviceNotDetected);

@@ -17,7 +17,6 @@
 namespace ProcessHandler
 {    
     STL::List<Process> Processes;
-    uint64_t FocusedProcess = 0;
     uint64_t LastMessagedProcess = 0;
 
     bool SwapBuffersRequest = false;
@@ -39,11 +38,8 @@ namespace ProcessHandler
     {
         for (int i = 0; i < Processes.Length(); i++)
         {
-            if (Processes[i].GetID() == FocusedProcess || Processes[i].GetType() == STL::PROT::BACKGROUND)
-            {
-                uint8_t Key = KeyBoard::GetKeyPress();
-                Processes[i].SendMessage(STL::PROM::KEYPRESS, &Key);
-            }
+            uint8_t Key = KeyBoard::GetKeyPress();
+            Processes[i].SendMessage(STL::PROM::KEYPRESS, &Key);
         }
     }
 
@@ -58,14 +54,6 @@ namespace ProcessHandler
         {
             uint64_t Tick = PIT::Ticks;
             Processes[i].SendMessage(STL::PROM::TICK, &Tick);
-        }
-    }
-    
-    void SendMessage(STL::PROM Message, STL::PROI Input)
-    {
-        for (int i = 0; i < Processes.Length(); i++)
-        {
-            Processes[i].SendMessage(Message, Input);
         }
     }
 
@@ -87,7 +75,6 @@ namespace ProcessHandler
     void StartProcess(STL::PROC Procedure)
     {
         Processes.Push(Process(Procedure));
-        FocusedProcess = Processes.Last().GetID();
     }
 
     void Loop()
@@ -98,23 +85,30 @@ namespace ProcessHandler
         {       
             for (uint64_t i = 0; i < Processes.Length(); i++)
             {
-                STL::PROR Request = Processes[i].GetRequest();
-                if (Request != STL::PROR::SUCCESS)
+                switch (Processes[i].GetRequest())
                 {
-                    switch (Request)
-                    {
-                    case STL::PROR::DRAW:
-                    {
-                        Processes[i].Draw();
-                    }
-                    break;
-                    case STL::PROR::KILL:
-                    {
-                        Processes[i].Kill();
-                        Processes.Erase(i);
-                    }
-                    break;
-                    }
+                case STL::PROR::CLEAR:
+                {
+                    Processes[i].Clear();
+                }
+                break;
+                case STL::PROR::DRAW:
+                {
+                    Processes[i].Draw();
+                }
+                break;
+                case STL::PROR::KILL:
+                {
+                    Processes[i].Kill();
+                    Processes.Erase(i);
+                    i--;
+                }
+                break;
+                default:
+                {
+
+                }
+                break;
                 }
             }
 
