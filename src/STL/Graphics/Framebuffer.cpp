@@ -67,15 +67,19 @@ namespace STL
     {
         for (int i = 0; i < Length(cstr); i++)
         {
-            if (cstr[i] == '\n')
+            switch (cstr[i])
+            {
+            case '\n':
             {
                 Pos.Y += 16 * Scale;
             }
-            else if (cstr[i] == '\r')
+            break;
+            case '\r':
             {
                 Pos.X = 0;
             }
-            else if (cstr[i] == '\033')
+            break;
+            case '\033':
             {
                 if (i + 10 > STL::Length(cstr))
                 {
@@ -102,8 +106,9 @@ namespace STL
                 }
                 i += 9;
             }
-            else
-            {        
+            break;
+            default:
+            {
                 if (Pos.X + 16 * Scale > this->Width)
                 {
                     Pos.X = 0;
@@ -112,7 +117,9 @@ namespace STL
 
                 PutChar(cstr[i], Pos, Scale, Foreground, Background);
                 Pos.X += 8 * Scale;
-            }     
+            }
+            break;
+            }  
         }
     }
 }
