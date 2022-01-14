@@ -12,6 +12,7 @@ To create a simple and completely useless operating system, because i can.
   
 Optimize the heap.   
 Optimize the list and string classes.  
+Add heap visualization command.
 
 Implement a GUI.
 

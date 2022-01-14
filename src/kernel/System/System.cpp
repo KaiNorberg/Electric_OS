@@ -124,6 +124,9 @@ namespace System
         FOREGROUND_COLOR(086, 182, 194)"suicide\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        Kills the process that performed the system call\n\r"
+        FOREGROUND_COLOR(086, 182, 194)"heapvis\n\r"
+        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
+        FOREGROUND_COLOR(255, 255, 255)"        Prints a visualization of all the segments of the heap\n\r"
         FOREGROUND_COLOR(086, 182, 194)"sysfetch\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        A neofetch lookalike to give system information\n\r";
@@ -180,6 +183,60 @@ namespace System
         return "";
     }
 
+    char CommandHeapvisOutput[128];
+    const char* CommandHeapvis(const char* Command)
+    {
+        char* Index = CommandHeapvisOutput;
+        auto Write = [&](const char* String)
+        {
+            Index = STL::CopyString(Index, String) + 1;
+            Index[0] = 0;
+        };
+
+        Write(FOREGROUND_COLOR(000, 000, 000));
+
+        Heap::Segment* CurrentSegment = Heap::GetFirstSegment();
+        while (true)
+        {
+            if (CurrentSegment->Free)
+            {
+                Write(BACKGROUND_COLOR(152, 195, 121));
+            }
+            else
+            {
+                Write(BACKGROUND_COLOR(224, 108, 117));
+            }
+
+            Write(" ");
+
+            if (CurrentSegment->Size >= 1000)
+            {
+                Write(STL::ToString(CurrentSegment->Size / 1000));
+                Write(" KB");  
+            }
+            else
+            {
+                Write(STL::ToString(CurrentSegment->Size));
+                Write(" B");
+            }
+
+            Write(" ");
+            Write(BACKGROUND_COLOR(000, 000, 000));
+            Write(" ");
+
+            if (CurrentSegment->Next == nullptr)
+            {
+                break;
+            }
+            CurrentSegment = CurrentSegment->Next;
+        }
+
+        Write(FOREGROUND_COLOR(255, 255, 255));
+        Write(BACKGROUND_COLOR(000, 000, 000));
+
+        return CommandHeapvisOutput;
+    }
+
     const char* CommandSysfetch(const char* Command)
     {                
         const char* Sysfetch =                                                   
@@ -232,7 +289,7 @@ namespace System
         Write(15, "\033B040044052   \033B224108117   \033B229192123   \033B152195121   \033B097175239   \033B198120221   \033B000000000");
          
         return Sysfetch;
-    }                                                                                                                                                            
+    }   
 
     const char* System(const char* Input)
     {    
@@ -245,6 +302,7 @@ namespace System
             Command("panic", CommandPanic),
             Command("clear", CommandClear),
             Command("suicide", CommandSuicide),
+            Command("heapvis", CommandHeapvis),
             Command("sysfetch", CommandSysfetch)
         };
 

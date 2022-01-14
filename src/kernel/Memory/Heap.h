@@ -20,6 +20,8 @@ namespace Heap
         void Split(uint64_t NewSize);
     };
 
+    Segment* GetFirstSegment();
+
     void Init();
 
     uint64_t GetUsedSize();

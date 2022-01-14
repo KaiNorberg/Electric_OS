@@ -36,6 +36,11 @@ namespace Heap
         this->Size = NewSize - sizeof(Segment);
     }
 
+    Segment* GetFirstSegment()
+    {
+        return FirstSegment;
+    }
+
     void Init()
     {
         FirstSegment = (Segment*)HEAP_START;
