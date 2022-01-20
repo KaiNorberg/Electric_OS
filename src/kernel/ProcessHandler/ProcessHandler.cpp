@@ -75,6 +75,18 @@ namespace ProcessHandler
     void StartProcess(STL::PROC Procedure)
     {
         Processes.Push(Process(Procedure));
+
+        if (Processes.Last().GetType() == STL::PROT::FULLSCREEN)
+        {
+            for (int i = 0; i < Processes.Length() - 1; i++)
+            {
+                if (Processes[i].GetType() == STL::PROT::FULLSCREEN)
+                {
+                    KillProcess(Processes[i].GetID());
+                    return;
+                }
+            }
+        }
     }
 
     void Loop()

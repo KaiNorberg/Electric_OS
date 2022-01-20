@@ -1,6 +1,9 @@
 #include "System.h"
 
 #include "STL/String/cstr.h"
+#include "STL/Process/Process.h"
+
+#include "Programs/tty/tty.h"
 
 #include "kernel/Renderer/Renderer.h"
 #include "kernel/RTC/RTC.h"
@@ -72,6 +75,21 @@ namespace System
         }
     };
 
+    struct StartableProcess
+    {
+        const char* Name;
+        uint64_t Hash;
+        STL::PROC Procedure;
+
+        StartableProcess(const char* Name, STL::PROC Procedure)
+        {
+            this->Procedure = Procedure;
+            this->Name = Name;
+            this->Hash = STL::HashWord(Name);
+        }
+    };
+
+
     const char* CommandSet(const char* Command)
     {
         SettableInt SettableInts[] =
@@ -102,10 +120,6 @@ namespace System
         FOREGROUND_COLOR(086, 182, 194)"set [VARIABLE] [VALUE]\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        Sets the specified kernel variable to the specified value\n\r"
-        FOREGROUND_COLOR(224, 108, 117)"    VARIABLE:\n\r"
-        FOREGROUND_COLOR(255, 255, 255)"        mousedraw\n\r"
-        FOREGROUND_COLOR(224, 108, 117)"    VALUE:\n\r"
-        FOREGROUND_COLOR(255, 255, 255)"        Any positive integer\n\r"
         FOREGROUND_COLOR(086, 182, 194)"help\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        Prints this menu\n\r"
@@ -121,6 +135,9 @@ namespace System
         FOREGROUND_COLOR(086, 182, 194)"clear\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        Clears the framebuffer of the process that performed the system call\n\r"
+        FOREGROUND_COLOR(086, 182, 194)"start\n\r"
+        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
+        FOREGROUND_COLOR(255, 255, 255)"        Starts the process with the given name\n\r";
         FOREGROUND_COLOR(086, 182, 194)"suicide\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        Kills the process that performed the system call\n\r"
@@ -181,6 +198,26 @@ namespace System
             ProcessHandler::GetProcess(ProcessHandler::LastMessagedProcess)->Clear();
         }
         return "";
+    }    
+    
+    const char* CommandStart(const char* Command)
+    {
+        StartableProcess StartableProcesses[] =
+        {
+            StartableProcess("tty", tty::Procedure)
+        };
+
+        uint64_t Hash = STL::HashWord(STL::NextWord(Command));
+        for (int i = 0; i < sizeof(StartableProcesses)/sizeof(StartableProcesses[0]); i++)
+        {
+            if (Hash == StartableProcesses[i].Hash)
+            {
+                ProcessHandler::StartProcess(StartableProcesses[i].Procedure);
+                return "Process started";
+            }
+        }
+
+        return "ERROR: Process not found";
     }
 
     char CommandHeapvisOutput[128];
@@ -301,6 +338,7 @@ namespace System
             Command("date", CommandDate),
             Command("panic", CommandPanic),
             Command("clear", CommandClear),
+            Command("start", CommandStart),
             Command("suicide", CommandSuicide),
             Command("heapvis", CommandHeapvis),
             Command("sysfetch", CommandSysfetch)
