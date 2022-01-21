@@ -32,87 +32,26 @@ namespace System
         }
     };
 
-    struct SettableInt
-    {
-        const char* Name;
-        uint64_t Hash;
-
-        void* Variable;
-        uint8_t VariableSize;
-
-        void SetVariable(uint64_t Value)
-        {
-            switch(VariableSize)
-            {
-            case 1:
-            {
-                *((uint8_t*)Variable) = Value;
-            }
-            break;
-            case 2:
-            {
-                *((uint16_t*)Variable) = Value;
-            }
-            break;
-            case 4:
-            {
-                *((uint32_t*)Variable) = Value;
-            }
-            break;
-            case 8:
-            {
-                *((uint64_t*)Variable) = Value;
-            }
-            break;
-            }
-        }
-
-        SettableInt(const char* Name, void* Variable, uint8_t VariableSize)
-        {
-            this->Name = Name;
-            this->Hash = STL::HashWord(Name);
-            this->Variable = Variable;
-            this->VariableSize = VariableSize;
-        }
-    };
-
-    struct StartableProcess
-    {
-        const char* Name;
-        uint64_t Hash;
-        STL::PROC Procedure;
-
-        StartableProcess(const char* Name, STL::PROC Procedure)
-        {
-            this->Procedure = Procedure;
-            this->Name = Name;
-            this->Hash = STL::HashWord(Name);
-        }
-    };
-
-
     const char* CommandSet(const char* Command)
-    {
-        SettableInt SettableInts[] =
+    {        
+        const char* Variable = STL::NextWord(Command);
+        const char* Value = STL::NextWord(Variable);
+
+        switch (STL::HashWord(Variable))
         {
-            SettableInt("drawmouse", &Renderer::DrawMouse, sizeof(Renderer::DrawMouse))
-        };
-
-        char* Variable = STL::NextWord(Command);
-        char* Value = STL::NextWord(Variable);
-
-        uint64_t VariableHash = STL::HashWord(Variable);
-
-        for (int i = 0; i < sizeof(SettableInts)/sizeof(SettableInts[0]); i++)
+        case STL::ConstHashWord("drawmouse"):
         {
-            if (VariableHash == SettableInts[i].Hash)
-            {
-                SettableInts[i].SetVariable(STL::ToInt(Value));
-                return "Variable set";
-            }
+            Renderer::DrawMouse = STL::ToInt(Value);
+        }
+        break;
+        default:
+        {
+            return "ERROR: Variable not found";
+        }
+        break;
         }
 
-        return "ERROR: Variable not found";
+        return "Variable set";
     }
     
     const char* CommandHelp(const char* Command)
@@ -203,23 +142,26 @@ namespace System
     
     const char* CommandStart(const char* Command)
     {
-        StartableProcess StartableProcesses[] =
+        switch (STL::HashWord(STL::NextWord(Command)))
         {
-            //StartableProcess("tty", tty::Procedure),
-            StartableProcess("desktop", Desktop::Procedure)
-        };
-
-        uint64_t Hash = STL::HashWord(STL::NextWord(Command));
-        for (int i = 0; i < sizeof(StartableProcesses)/sizeof(StartableProcesses[0]); i++)
+        case STL::ConstHashWord("tty"):
         {
-            if (Hash == StartableProcesses[i].Hash)
-            {
-                ProcessHandler::StartProcess(StartableProcesses[i].Procedure);
-                return "Process started";
-            }
+            ProcessHandler::StartProcess(tty::Procedure);
+        }
+        break;
+        case STL::ConstHashWord("desktop"):
+        {
+            ProcessHandler::StartProcess(Desktop::Procedure);
+        }
+        break;
+        default:
+        {
+            return "ERROR: Process not found";
+        }
+        break;
         }
 
-        return "ERROR: Process not found";
+        return "Process started";
     }
 
     char CommandHeapvisOutput[128];
