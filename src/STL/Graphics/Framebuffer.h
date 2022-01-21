@@ -23,6 +23,8 @@ namespace STL
 
 		void PutPixel(Point Pixel, ARGB Color);
 
+		void DrawRect(STL::Point TopLeft, STL::Point BottomRight, ARGB Color);
+
 		void PutChar(char chr, STL::Point Pos, uint8_t Scale, ARGB Foreground, ARGB Background);
 
     	void Print(const char* cstr, STL::Point& Pos, uint8_t Scale, ARGB Foreground, ARGB Background);

@@ -17,11 +17,15 @@ public:
 
     STL::PROR GetRequest();
 
+    uint64_t GetDepth();
+
     void Clear();
 
     void Kill();
 
     void Draw();
+
+    void Render();
 
     void SendMessage(STL::PROM Message, STL::PROI Input = nullptr);
 
@@ -37,6 +41,7 @@ private:
 
     uint64_t Depth;
     STL::Point Pos;
+    STL::Point Size;
 
     STL::PROR Request = STL::PROR::SUCCESS; 
 };

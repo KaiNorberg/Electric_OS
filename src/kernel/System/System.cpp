@@ -4,6 +4,7 @@
 #include "STL/Process/Process.h"
 
 #include "Programs/tty/tty.h"
+#include "Programs/Desktop/Desktop.h"
 
 #include "kernel/Renderer/Renderer.h"
 #include "kernel/RTC/RTC.h"
@@ -204,7 +205,8 @@ namespace System
     {
         StartableProcess StartableProcesses[] =
         {
-            StartableProcess("tty", tty::Procedure)
+            //StartableProcess("tty", tty::Procedure),
+            StartableProcess("desktop", Desktop::Procedure)
         };
 
         uint64_t Hash = STL::HashWord(STL::NextWord(Command));

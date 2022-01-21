@@ -93,7 +93,7 @@ namespace ProcessHandler
     {                
         StartProcess(tty::Procedure);
 
-        while (true)
+        while (true) 
         {       
             for (uint64_t i = 0; i < Processes.Length(); i++)
             {
@@ -107,6 +107,19 @@ namespace ProcessHandler
                 case STL::PROR::DRAW:
                 {
                     Processes[i].Draw();
+
+                    for (int j = 0; j < Processes.Length(); j++)
+                    {
+                        if (j == i)
+                        {
+                            continue;
+                        }
+
+                        if (Processes[j].GetDepth() > Processes[i].GetDepth())
+                        {
+                            Processes[j].Render();
+                        }
+                    }
                 }
                 break;
                 case STL::PROR::KILL:

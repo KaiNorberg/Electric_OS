@@ -39,6 +39,27 @@ namespace STL
         *(ARGB*)((uint64_t)this->Base + Pixel.X * 4 + Pixel.Y * this->PixelsPerScanline * 4) = Color;
     }
 
+    void Framebuffer::DrawRect(STL::Point TopLeft, STL::Point BottomRight, ARGB Color)
+    {
+        if (TopLeft.X > this->Width || TopLeft.X < 0 || TopLeft.Y > this->Height || TopLeft.Y < 0)
+        {
+            return;
+        }
+
+        if (BottomRight.X > this->Width || BottomRight.X < 0 || BottomRight.Y > this->Height || BottomRight.Y < 0)
+        {
+            return;
+        }
+
+        for (int y = TopLeft.Y; y < BottomRight.Y; y++)
+        {
+            for (int x = TopLeft.X; x < BottomRight.X; x++)
+            {
+                *(ARGB*)((uint64_t)this->Base + x * 4 + y * this->PixelsPerScanline * 4) = Color;
+            }
+        }
+    }
+
     void Framebuffer::PutChar(char chr, STL::Point Pos, uint8_t Scale, ARGB Foreground, ARGB Background)
     {
         char* Glyph = GetFont()->glyphBuffer + (chr * GetFont()->PSF_header->charsize);
