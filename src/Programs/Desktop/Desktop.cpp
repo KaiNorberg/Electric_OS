@@ -3,13 +3,42 @@
 #include "STL/System/System.h"
 #include "STL/Graphics/Framebuffer.h"
 
+#define TOPBAR_PADDING 4
+
 namespace Desktop
 {
-    uint64_t Frame = 0;
+    void(*CurrentAnimation)(STL::Framebuffer*);
+    uint64_t AnimationCounter = 0;
 
-    bool StartAnimationPlayed = false;
+    inline void StartAnimation(void(*Animation)(STL::Framebuffer*))
+    {
+        AnimationCounter = 0;
+        CurrentAnimation = Animation;
+    }
 
-    STL::ARGB BackgroundColor = STL::ARGB(255, 59, 110, 165);
+    namespace Background
+    {
+        STL::ARGB Color = STL::ARGB(255, 59, 110, 165);
+
+        void OpenAnimation(STL::Framebuffer* Buffer)
+        {
+            uint64_t Step = (Buffer->Width / 75);
+            uint64_t Width = AnimationCounter * Step;
+
+            if (Width > Buffer->Width)
+            {
+                STL::System("set drawmouse 1");
+                StartAnimation(nullptr);
+
+                Buffer->DrawRect(STL::Point(0, 16 + TOPBAR_PADDING), STL::Point(Buffer->Width, Buffer->Height), Color);
+            }
+            else
+            {
+                Buffer->DrawRect(STL::Point(Buffer->Width / 2 + Width / 2 - Step, 16 + TOPBAR_PADDING), STL::Point(Buffer->Width / 2 + Width / 2, Buffer->Height), Color);
+                Buffer->DrawRect(STL::Point(Buffer->Width / 2 - Width / 2 - Step, 16 + TOPBAR_PADDING), STL::Point(Buffer->Width / 2 - Width / 2, Buffer->Height), Color);
+            }
+        }
+    }
 
     STL::PROR Procedure(STL::PROM Message, STL::PROI Input)
     {
@@ -20,41 +49,24 @@ namespace Desktop
             STL::PINFO* Info = (STL::PINFO*)Input;
             Info->Type = STL::PROT::FULLSCREEN;
 
-            Frame = 0;
-            StartAnimationPlayed = false;
-            BackgroundColor = STL::ARGB(255, 0, 0, 255);
+            Background::Color = STL::ARGB(255, 59, 110, 165);
+
+            StartAnimation(Background::OpenAnimation);
         }
         break;
         case STL::PROM::DRAW:
         {
             STL::Framebuffer* Buffer = (STL::Framebuffer*)Input;
-        
-            Frame++;
-
-            if (!StartAnimationPlayed)
-            {            
-                uint64_t Step = (Buffer->Width / 75);
-                uint64_t Width = Frame * Step;
-
-                if (Width > Buffer->Width)
-                {
-                    Buffer->DrawRect(STL::Point(0, 0), STL::Point(Buffer->Width, Buffer->Height), BackgroundColor);
-                    StartAnimationPlayed = true;
-
-                    STL::System("set drawmouse 1");
-                    STL::System("start topbar");
-                }
-                else
-                {
-                    Buffer->DrawRect(STL::Point(Buffer->Width / 2 + Width / 2 - Step, 0), STL::Point(Buffer->Width / 2 + Width / 2, Buffer->Height), BackgroundColor);
-                    Buffer->DrawRect(STL::Point(Buffer->Width / 2 - Width / 2 - Step, 0), STL::Point(Buffer->Width / 2 - Width / 2, Buffer->Height), BackgroundColor);
-                }
-            }        
+            if (CurrentAnimation != nullptr)
+            {
+                CurrentAnimation(Buffer);
+                AnimationCounter++;
+            }   
         }
         break;
         case STL::PROM::TICK:
         {
-            if (!StartAnimationPlayed)
+            if (CurrentAnimation != nullptr)
             {
                 return STL::PROR::DRAW;
             }
