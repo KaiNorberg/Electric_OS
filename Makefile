@@ -7,9 +7,9 @@ CC = gcc
 ASMC = nasm
 LD = ld
 
-CFLAGS = -ffreestanding -fshort-wchar -mno-red-zone -fno-use-cxa-atexit -Os -Isrc/ 
+CFLAGS = -ffreestanding -fshort-wchar -mno-red-zone -fno-exceptions -Isrc/ -Os -lstdc++ 
 ASMFLAGS =
-LDFLAGS = -T $(LDS) -shared -Bsymbolic -nostdlib -fstack-protector
+LDFLAGS = -T $(LDS) -static -Bsymbolic -nostdlib
 
 SRCDIR := src
 OBJDIR := build

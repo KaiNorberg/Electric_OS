@@ -2,8 +2,9 @@
 
 #include "STL/System/System.h"
 #include "STL/Graphics/Framebuffer.h"
+#include "STL/String/cstr.h"
 
-#define TOPBAR_PADDING 4
+#include "Programs/Topbar/Topbar.h"
 
 namespace Desktop
 {
@@ -16,27 +17,25 @@ namespace Desktop
         CurrentAnimation = Animation;
     }
 
-    namespace Background
+    STL::ARGB BackgroundColor = STL::ARGB(255, 59, 110, 165);
+
+    void OpenAnimation(STL::Framebuffer* Buffer)
     {
-        STL::ARGB Color = STL::ARGB(255, 59, 110, 165);
+        uint64_t Step = (Buffer->Width / 75);
+        uint64_t Width = AnimationCounter * Step;
 
-        void OpenAnimation(STL::Framebuffer* Buffer)
+        if (Width > Buffer->Width)
         {
-            uint64_t Step = (Buffer->Width / 75);
-            uint64_t Width = AnimationCounter * Step;
+            STL::System("set drawmouse 1");
+            STL::System("start topbar");
+            StartAnimation(nullptr);
 
-            if (Width > Buffer->Width)
-            {
-                STL::System("set drawmouse 1");
-                StartAnimation(nullptr);
-
-                Buffer->DrawRect(STL::Point(0, 16 + TOPBAR_PADDING), STL::Point(Buffer->Width, Buffer->Height), Color);
-            }
-            else
-            {
-                Buffer->DrawRect(STL::Point(Buffer->Width / 2 + Width / 2 - Step, 16 + TOPBAR_PADDING), STL::Point(Buffer->Width / 2 + Width / 2, Buffer->Height), Color);
-                Buffer->DrawRect(STL::Point(Buffer->Width / 2 - Width / 2 - Step, 16 + TOPBAR_PADDING), STL::Point(Buffer->Width / 2 - Width / 2, Buffer->Height), Color);
-            }
+            Buffer->DrawRect(STL::Point(0, 0), STL::Point(Buffer->Width, Buffer->Height), BackgroundColor);
+        }
+        else
+        {
+            Buffer->DrawRect(STL::Point(Buffer->Width / 2 + Width / 2 - Step, 0), STL::Point(Buffer->Width / 2 + Width / 2, Buffer->Height), BackgroundColor);
+            Buffer->DrawRect(STL::Point(Buffer->Width / 2 - Width / 2 - Step, 0), STL::Point(Buffer->Width / 2 - Width / 2, Buffer->Height), BackgroundColor);
         }
     }
 
@@ -49,9 +48,9 @@ namespace Desktop
             STL::PINFO* Info = (STL::PINFO*)Input;
             Info->Type = STL::PROT::FULLSCREEN;
 
-            Background::Color = STL::ARGB(255, 59, 110, 165);
+            BackgroundColor = STL::ARGB(255, 59, 110, 165);
 
-            StartAnimation(Background::OpenAnimation);
+            StartAnimation(OpenAnimation);
         }
         break;
         case STL::PROM::DRAW:
@@ -61,11 +60,16 @@ namespace Desktop
             {
                 CurrentAnimation(Buffer);
                 AnimationCounter++;
+
+                if (CurrentAnimation == nullptr)
+                {
+                    return STL::PROR::DRAW;
+                }
             }   
         }
         break;
         case STL::PROM::TICK:
-        {
+        {            
             if (CurrentAnimation != nullptr)
             {
                 return STL::PROR::DRAW;

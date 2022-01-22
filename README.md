@@ -10,9 +10,7 @@ To create a simple and completely useless operating system, because i can.
   
 //////////////////////Future improvments//////////////////////   
   
-Optimize the heap.   
-Optimize the list and string classes.  
-Add heap visualization command.
+Fix sysfetch crash.
 
 Implement a GUI.
 

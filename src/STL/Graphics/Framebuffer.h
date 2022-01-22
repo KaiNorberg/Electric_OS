@@ -27,6 +27,6 @@ namespace STL
 
 		void PutChar(char chr, STL::Point Pos, uint8_t Scale, ARGB Foreground, ARGB Background);
 
-    	void Print(const char* cstr, STL::Point& Pos, uint8_t Scale, ARGB Foreground, ARGB Background);
+    	void Print(const char* cstr, STL::Point& Pos, uint8_t Scale = 1, ARGB Foreground = ARGB(255), ARGB Background = ARGB(0));
 	};
 }

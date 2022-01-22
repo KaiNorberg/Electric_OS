@@ -1,5 +1,12 @@
 #include "kernel.h"
 
+extern "C" void __stack_chk_fail(void)
+{
+
+}
+extern "C" void* __dso_handle = (void*) &__dso_handle;
+extern "C" void* __cxa_atexit = (void*) &__cxa_atexit;
+
 extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 {
 	InitGDT();

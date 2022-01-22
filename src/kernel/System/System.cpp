@@ -5,6 +5,7 @@
 
 #include "Programs/tty/tty.h"
 #include "Programs/Desktop/Desktop.h"
+#include "Programs/Topbar/Topbar.h"
 
 #include "kernel/Renderer/Renderer.h"
 #include "kernel/RTC/RTC.h"
@@ -152,6 +153,11 @@ namespace System
         case STL::ConstHashWord("desktop"):
         {
             ProcessHandler::StartProcess(Desktop::Procedure);
+        }
+        break;
+        case STL::ConstHashWord("topbar"):
+        {
+            ProcessHandler::StartProcess(Topbar::Procedure);
         }
         break;
         default:
