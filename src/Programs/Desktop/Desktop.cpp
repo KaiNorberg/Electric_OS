@@ -17,14 +17,11 @@ namespace Desktop
         CurrentAnimation = Animation;
     }
 
-    STL::ARGB BackgroundColor = STL::ARGB(255, 59, 110, 165);
+    STL::ARGB BackgroundColor = STL::ARGB(255, 60, 120, 180);
 
     void OpenAnimation(STL::Framebuffer* Buffer)
     {
-        uint64_t Step = (Buffer->Width / 75);
-        uint64_t Width = AnimationCounter * Step;
-
-        if (Width > Buffer->Width)
+        if (AnimationCounter > 60)
         {
             STL::System("set drawmouse 1");
             STL::System("start topbar");
@@ -34,8 +31,7 @@ namespace Desktop
         }
         else
         {
-            Buffer->DrawRect(STL::Point(Buffer->Width / 2 + Width / 2 - Step, 0), STL::Point(Buffer->Width / 2 + Width / 2, Buffer->Height), BackgroundColor);
-            Buffer->DrawRect(STL::Point(Buffer->Width / 2 - Width / 2 - Step, 0), STL::Point(Buffer->Width / 2 - Width / 2, Buffer->Height), BackgroundColor);
+            Buffer->DrawRect(STL::Point(0, 0), STL::Point(Buffer->Width, Buffer->Height), (BackgroundColor / 60) * AnimationCounter);
         }
     }
 
@@ -48,7 +44,7 @@ namespace Desktop
             STL::PINFO* Info = (STL::PINFO*)Input;
             Info->Type = STL::PROT::FULLSCREEN;
 
-            BackgroundColor = STL::ARGB(255, 59, 110, 165);
+            BackgroundColor = STL::ARGB(255, 60, 120, 180);
 
             StartAnimation(OpenAnimation);
         }

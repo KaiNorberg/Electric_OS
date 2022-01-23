@@ -14,7 +14,7 @@ namespace Topbar
     STL::Point TimePos;
     STL::Point DatePos;
 
-    STL::ARGB BackgroundColor;;
+    STL::ARGB BackgroundColor;
 
     void(*CurrentAnimation)(STL::Framebuffer*);
     uint64_t AnimationCounter = 0;
