@@ -71,40 +71,29 @@ namespace PageAllocator
         LockPage(PSFFont);
     }
 
-    uint64_t GetFreeMemory()
+    uint64_t GetFreePages()
     {
         uint64_t FreeMemory = 0;
         for (int i = 0; i < PageAmount; i++)
         {
-            if (GetPageStatus(i) == 0)
-            {
-                FreeMemory += 4096;
-            }
+            FreeMemory += !GetPageStatus(i);
         }
         return FreeMemory;
     }
 
-    uint64_t GetLockedMemory()
+    uint64_t GetLockedPages()
     {
         uint64_t LockedMemory = 0;
         for (int i = 0; i < PageAmount; i++)
         {
-            if (GetPageStatus(i) == 1)
-            {
-                LockedMemory += 4096;
-            }
+            LockedMemory += GetPageStatus(i);
         }
         return LockedMemory;
     }
 
-    uint64_t GetTotalMemory()
+    uint64_t GetTotalPages()
     {
-        uint64_t TotalMemory = 0;
-        for (int i = 0; i < PageAmount; i++)
-        {
-            TotalMemory += 4096;
-        }
-        return TotalMemory;
+        return PageAmount;
     }
 
     void* RequestPage()

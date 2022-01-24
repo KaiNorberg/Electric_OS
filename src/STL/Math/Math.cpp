@@ -12,24 +12,10 @@ namespace STL
 
     uint32_t GetDigitAmount(uint32_t Number)
     {
-        int Digits = 1;
-        if (Number >= 100000000)
+        uint32_t Digits = 0;
+        while (Number != 0)
         {
-            Digits += 8;
-            Number /= 100000000;
-        }
-        if (Number >= 10000)
-        {
-            Digits += 4;
-            Number /= 10000;
-        }
-        if (Number >= 100)
-        {
-            Digits += 2;
-            Number /= 100;
-        }
-        if (Number >= 10)
-        {
+            Number /= 10;
             Digits++;
         }
 

@@ -15,11 +15,11 @@ namespace PageAllocator
 
     void* RequestPage();
 
-    uint64_t GetFreeMemory();
+    uint64_t GetFreePages();
 
-    uint64_t GetLockedMemory();
+    uint64_t GetLockedPages();
 
-    uint64_t GetTotalMemory();
+    uint64_t GetTotalPages();
 
     void* LockPage(void* Address);
 

@@ -10,8 +10,6 @@ To create a simple and completely useless operating system, because i can.
   
 //////////////////////Future improvments//////////////////////   
   
-Fix sysfetch crash.
-
 Implement a GUI.
 
 Implement Tetris.

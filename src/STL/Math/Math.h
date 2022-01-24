@@ -18,9 +18,15 @@ namespace STL
         return n + ((n < lower) * (lower - n)) + ((n > upper) * (upper - n));
     }
 
-    template <class T> 
+    template <typename T> 
     T Min (const T& A, const T& B) 
     {
         return !(B < A) ? A : B;
+    }
+
+    template <typename T> 
+    T Max (const T& A, const T& B) 
+    {
+        return !(B > A) ? A : B;
     }
 }

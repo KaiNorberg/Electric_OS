@@ -20,7 +20,6 @@ namespace Debug
         "Uh... Did I do that?",
         "Oops.",
         "DON'T PANIC!",
-        "kernel.",
         "Greenpeace free'd the mallocs \\o/",
         "Typo in the code.",
         "System consumed all the paper for paging!",
@@ -34,7 +33,7 @@ namespace Debug
         "It's not a good surprise...",
         "Don't do that.",
         "Layer 8 problem detected."
-        "PEBCAC detected."        
+        "PEBCAK detected."        
     };
 
     void Error(const char* Message)
@@ -103,11 +102,11 @@ namespace Debug
 
         Renderer::CursorPos = STL::Point(StartPoint.X, StartPoint.Y + 16 * 14 * Scale);
         Renderer::Print("Locked Pages = ", Scale);
-        Renderer::Print(STL::ToString(PageAllocator::GetLockedMemory() / 4096), Scale);
+        Renderer::Print(STL::ToString(PageAllocator::GetLockedPages()), Scale);
 
         Renderer::CursorPos = STL::Point(StartPoint.X, StartPoint.Y + 16 * 15 * Scale);
         Renderer::Print("Free Pages = ", Scale);
-        Renderer::Print(STL::ToString(PageAllocator::GetFreeMemory() / 4096), Scale);
+        Renderer::Print(STL::ToString(PageAllocator::GetFreePages()), Scale);
 
         Renderer::CursorPos = STL::Point(StartPoint.X, StartPoint.Y + 16 * 17 * Scale);
         Renderer::Print("System Halted!", Scale);
