@@ -17,6 +17,12 @@ namespace Mouse
 { 
     STL::Point Position;
 
+    bool LeftPressed;
+    
+    bool MiddlePressed;
+    
+    bool RightPressed;
+
     void MouseWait()
     {   
         uint64_t TimeOut = 100000;
@@ -103,6 +109,12 @@ namespace Mouse
         {
             Position.Y -= MousePacket[2];
         }
+
+        LeftPressed = MousePacket[0] & PS2Leftbutton;
+
+        MiddlePressed = MousePacket[0] & PS2Middlebutton;
+        
+        RightPressed = MousePacket[0] & PS2Rightbutton;
 
         Position.X = STL::Clamp(Position.X, 0, Renderer::GetScreenSize().X - 8);
         Position.Y = STL::Clamp(Position.Y, 0, Renderer::GetScreenSize().Y - 16);

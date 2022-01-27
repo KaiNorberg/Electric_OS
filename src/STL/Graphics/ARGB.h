@@ -44,7 +44,7 @@ namespace STL
 		ARGB operator*(uint8_t const& Other);
 
 		ARGB operator/(uint8_t const& Other);
-
+		
 		ARGB() = default;
 
 		ARGB(uint8_t A, uint8_t R, uint8_t G, uint8_t B);

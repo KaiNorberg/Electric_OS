@@ -78,7 +78,7 @@ namespace System
         FOREGROUND_COLOR(255, 255, 255)"        Clears the framebuffer of the process that performed the system call\n\r"
         FOREGROUND_COLOR(086, 182, 194)"start\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
-        FOREGROUND_COLOR(255, 255, 255)"        Starts the process with the given name\n\r";
+        FOREGROUND_COLOR(255, 255, 255)"        Starts the process with the given name\n\r"
         FOREGROUND_COLOR(086, 182, 194)"suicide\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        Kills the process that performed the system call\n\r"
@@ -265,10 +265,13 @@ namespace System
         Write(1, "OS: ", OS_VERSION);
         Write(2, "Time: ", CommandTime(nullptr));
         Write(3, "Date: ", CommandDate(nullptr));
-        Write(4, "Uptime: ", STL::ToString(PIT::Ticks / PIT::GetFrequency()), " s   ");
-        Write(5, "Free Heap: ", STL::ToString(Heap::GetFreeSize() / 1000), " KB   ");
-        Write(6, "Used Heap: ", STL::ToString(Heap::GetUsedSize() / 1000), " KB   ");
-        Write(7, "Heap Segments: ", STL::ToString(Heap::GetSegmentAmount()));
+        Write(4, "Ticks: ", STL::ToString(PIT::Ticks));
+        Write(5, "Uptime: ", STL::ToString(PIT::Ticks / PIT::GetFrequency()), " s   ");
+        Write(6, "Free Heap: ", STL::ToString(Heap::GetFreeSize() / 1000), " KB   ");
+        Write(7, "Used Heap: ", STL::ToString(Heap::GetUsedSize() / 1000), " KB   ");
+        Write(8, "Total Heap: ", STL::ToString((Heap::GetUsedSize() + Heap::GetFreeSize()) / 1000), " KB   ");
+        Write(9, "Heap Segments: ", STL::ToString(Heap::GetSegmentAmount()));
+        Write(10, "Process Amount: ", STL::ToString(ProcessHandler::Processes.Length()));
 
         Write(14, "\033B040044052   \033B224108117   \033B229192123   \033B152195121   \033B097175239   \033B198120221   \033B000000000");
         Write(15, "\033B040044052   \033B224108117   \033B229192123   \033B152195121   \033B097175239   \033B198120221   \033B000000000");

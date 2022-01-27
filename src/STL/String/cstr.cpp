@@ -8,6 +8,11 @@ namespace STL
     {
         uint32_t DigitAmount = STL::GetDigitAmount(Number);
 
+        if (DigitAmount == 0)
+        {
+            return "0";
+        }
+
         for (uint32_t i = DigitAmount; i-- > 0;)
         {
             IntToStringOutput[DigitAmount - i - 1] = '0' + STL::GetDigit(Number, i);

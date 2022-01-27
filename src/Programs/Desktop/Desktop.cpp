@@ -31,7 +31,7 @@ namespace Desktop
         }
         else
         {
-            Buffer->DrawRect(STL::Point(0, 0), STL::Point(Buffer->Width, Buffer->Height), (BackgroundColor / 60) * AnimationCounter);
+            Buffer->DrawRect(STL::Point(0, 0), STL::Point(Buffer->Width, Buffer->Height), (BackgroundColor / (uint8_t)60) * (uint8_t)AnimationCounter);
         }
     }
 
@@ -52,6 +52,7 @@ namespace Desktop
         case STL::PROM::DRAW:
         {
             STL::Framebuffer* Buffer = (STL::Framebuffer*)Input;
+
             if (CurrentAnimation != nullptr)
             {
                 CurrentAnimation(Buffer);

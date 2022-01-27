@@ -5,6 +5,10 @@
 #include "ARGB.h"
 #include "STL/Math/Point.h"
 
+#define RAISEDWIDTH 4
+#define RAISEDHIGHCOLOR STL::ARGB(255)
+#define RAISEDLOWCOLOR STL::ARGB(0)
+
 namespace STL
 {
 	struct Framebuffer
@@ -22,6 +26,10 @@ namespace STL
 		ARGB GetPixel(Point Pixel);
 
 		void PutPixel(Point Pixel, ARGB Color);
+
+		void DrawRaisedRect(Point TopLeft, Point BottomRight, ARGB Color);
+
+		void DrawSunkenRect(Point TopLeft, Point BottomRight, ARGB Color);
 
 		void DrawRect(Point TopLeft, Point BottomRight, ARGB Color);
 

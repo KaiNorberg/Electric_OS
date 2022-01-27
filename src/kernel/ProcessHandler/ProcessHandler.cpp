@@ -1,7 +1,6 @@
 #include "ProcessHandler.h"
 
 #include "STL/Math/Point.h"
-#include "STL/List/List.h"
 #include "STL/Graphics/Framebuffer.h"
 #include "STL/Memory/Memory.h"
 #include "kernel/Debug/Debug.h"
@@ -44,7 +43,18 @@ namespace ProcessHandler
     }
 
     void MouseInterupt()
-    {
+    {        
+        for (int i = 0; i < Processes.Length(); i++)
+        {
+            STL::MINFO MouseInfo;
+            MouseInfo.Pos = Mouse::Position;
+            MouseInfo.LeftPressed = Mouse::LeftPressed;
+            MouseInfo.MiddlePressed = Mouse::MiddlePressed;
+            MouseInfo.RightPressed = Mouse::RightPressed;
+
+            Processes[i].SendMessage(STL::PROM::MOUSE, &MouseInfo);
+        }
+
         SwapBuffersRequest = true;
     }   
 

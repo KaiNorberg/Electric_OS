@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+#include "STL/Math/Point.h"
+
 namespace STL
 {
     enum class PROR //Process request
@@ -19,7 +21,7 @@ namespace STL
         DRAW,
         KILL,
         TICK,
-        //MOUSE,
+        MOUSE,
         KEYPRESS
     };
 
@@ -48,5 +50,16 @@ namespace STL
         uint64_t Left;
 
         uint64_t Top;
+    };
+
+    struct MINFO //Mouse Info
+    {       
+        Point Pos;
+
+        bool LeftPressed;
+        
+        bool MiddlePressed;
+        
+        bool RightPressed;
     };
 }   

@@ -7,7 +7,7 @@
 
 #include "Programs/Desktop/Desktop.h"
 
-#define TOPBAR_PADDING 10 
+#define TOPBAR_PADDING 8 + RAISEDWIDTH * 4 
 
 namespace Topbar
 {                    
@@ -26,14 +26,14 @@ namespace Topbar
     }
 
     void TextAnimation(STL::Framebuffer* Buffer)
-    {
+    {            
         if (AnimationCounter / 5 < 10)
         {
             char* Time = (char*)STL::System("time");
 
             Time[AnimationCounter / 5] = 0;
             STL::Point Temp = TimePos;
-            Buffer->Print(Time, Temp, 1, STL::ARGB(212), STL::ARGB(0));
+            Buffer->Print(Time, Temp, 1, STL::ARGB(255, 60, 60, 60), BackgroundColor);
         }
         else if (AnimationCounter / 5 - 10 < 10)
         {
@@ -41,7 +41,7 @@ namespace Topbar
 
             Date[AnimationCounter / 5 - 10] = 0;
             STL::Point Temp = DatePos;
-            Buffer->Print(Date, Temp, 1, STL::ARGB(212), STL::ARGB(0));
+            Buffer->Print(Date, Temp, 1, STL::ARGB(255, 60, 60, 60), BackgroundColor);
         }
         else
         {
@@ -55,16 +55,16 @@ namespace Topbar
         {
             Buffer->DrawRect(STL::Point(0, 0), STL::Point(Buffer->Width, Buffer->Height), Desktop::BackgroundColor);
         }
-        else if (AnimationCounter - 1 > Buffer->Height - 2)
+        else if (AnimationCounter > Buffer->Height - RAISEDWIDTH)
         {
             StartAnimation(TextAnimation);
         }
         else
-        {
-            for (int i = 0; i < Buffer->Width - 1; i++)
-            {
-                Buffer->PutPixel(STL::Point(i, AnimationCounter - 1), BackgroundColor);
-            }
+        {            
+            Buffer->DrawRaisedRect(STL::Point(RAISEDWIDTH, RAISEDWIDTH), STL::Point(Buffer->Width - RAISEDWIDTH, AnimationCounter), BackgroundColor);
+            Buffer->DrawSunkenRect(
+            STL::Point(Buffer->Width / 2 - 100, 4 + RAISEDWIDTH * 2 - ((Buffer->Height - RAISEDWIDTH) - AnimationCounter)), 
+            STL::Point(Buffer->Width / 2 + 100, Buffer->Height - 4 - RAISEDWIDTH * 2 - ((Buffer->Height - RAISEDWIDTH) - AnimationCounter)), BackgroundColor);
         }    
     }
 
@@ -78,13 +78,13 @@ namespace Topbar
             Info->Type = STL::PROT::FRAMELESSWINDOW;
             Info->Left = 0;
             Info->Top = 0;
-            Info->Width = 1980;
-            Info->Height = 16 + TOPBAR_PADDING + 2;
+            Info->Width = 1920;
+            Info->Height = 16 + TOPBAR_PADDING + RAISEDWIDTH;
 
-            TimePos = STL::Point(1980 / 2 - 13 * 8, TOPBAR_PADDING / 2);
-            DatePos = STL::Point(1980 / 2 - 3 * 8, TOPBAR_PADDING / 2);
+            TimePos = STL::Point(1920 / 2 - 9 * 8, TOPBAR_PADDING / 2);
+            DatePos = STL::Point(1920 / 2 + 8, TOPBAR_PADDING / 2);
 
-            BackgroundColor = STL::ARGB(255, 0, 0, 0);
+            BackgroundColor = STL::ARGB(255, 200, 200, 200);
 
             StartAnimation(OpenAnimation);
         }
@@ -104,15 +104,15 @@ namespace Topbar
             }   
             else
             {
-                Buffer->DrawRect(STL::Point(TimePos.X, 0), STL::Point(DatePos.X + 10 * 8, DatePos.Y + 16), STL::ARGB(0));
+                Buffer->DrawSunkenRect(STL::Point(Buffer->Width / 2 - 100, 4 + RAISEDWIDTH * 2), STL::Point(Buffer->Width / 2 + 100, Buffer->Height - 4 - RAISEDWIDTH * 2), BackgroundColor);
 
                 char* Time = (char*)STL::System("time");
                 STL::Point Temp = TimePos;
-                Buffer->Print(Time, Temp, 1, STL::ARGB(212), STL::ARGB(0));
+                Buffer->Print(Time, Temp, 1, STL::ARGB(255, 60, 60, 60), BackgroundColor);
 
                 char* Date = (char*)STL::System("date");
                 Temp = DatePos;
-                Buffer->Print(Date, Temp, 1, STL::ARGB(212), STL::ARGB(0));
+                Buffer->Print(Date, Temp, 1, STL::ARGB(255, 60, 60, 60), BackgroundColor);
             }
         }
         break;
@@ -124,6 +124,14 @@ namespace Topbar
             {
                 return STL::PROR::DRAW;
             }
+        }
+        case STL::PROM::MOUSE:
+        {
+            STL::MINFO MouseInfo = *(STL::MINFO*)Input;
+
+
+
+            return STL::PROR::DRAW;
         }
         break;
         }

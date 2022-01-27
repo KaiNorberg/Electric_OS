@@ -3,11 +3,14 @@
 #include "Process.h"
 
 #include "STL/Process/Process.h"
+#include "STL/List/List.h"
 
 namespace ProcessHandler    
 {   
     extern uint64_t LastMessagedProcess;
     extern bool SwapBuffersRequest;
+
+    extern STL::List<Process> Processes;
 
     Process* GetProcess(uint64_t ID);
 
