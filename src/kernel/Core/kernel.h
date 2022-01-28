@@ -15,6 +15,9 @@
 #include "kernel/System/System.h"
 #include "kernel/ProcessHandler/ProcessHandler.h"
 
+/// <summary>
+/// The struct passed to the kernel from the bootloader.
+/// </summary>
 struct BootLoaderInfo
 {
 	STL::Framebuffer* ScreenBuffer;
@@ -22,5 +25,8 @@ struct BootLoaderInfo
 	EFI_MEMORY_MAP* MemoryMap;
 };
 
+/// <summary>
+/// The first and last address used by the kernel.
+/// </summary>
 extern uint64_t _KernelStart;
 extern uint64_t _KernelEnd;

@@ -14,5 +14,8 @@ namespace Mouse
 
     void InitPS2();
 
+    /// <summary>
+    /// Takes in a Mouse Packet which is defined as an array of size 4 containing unsigned bytes.
+    /// </summary>
     void HandleMousePacket(uint8_t* MousePacket);
 }

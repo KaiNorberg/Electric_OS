@@ -4,6 +4,10 @@ namespace InteruptHandlers
 {
     struct InterruptFrame;
 
+    /// <summary>
+    /// Exception interrupt handlers.
+    /// </summary>
+
     __attribute__((interrupt)) void DivideByZero(InterruptFrame* frame);
 
     __attribute__((interrupt)) void NoneMaskableInterrupt(InterruptFrame* frame);
@@ -31,6 +35,10 @@ namespace InteruptHandlers
     __attribute__((interrupt)) void PageFault(InterruptFrame* frame);
 
     __attribute__((interrupt)) void FloatingPoint(InterruptFrame* frame);
+
+    /// <summary>
+    /// IRQ interrupt handlers.
+    /// </summary>
 
     __attribute__((interrupt)) void PIT(InterruptFrame* frame);
 

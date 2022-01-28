@@ -4,6 +4,10 @@
 
 namespace KeyBoard
 {
+    /// <summary>
+    /// A table to convert from keyboard scancodes to ascii.
+    /// The index in the table is the scancode value and the given element the ascii value or if an ascii.
+    /// </summary>
     const char ScanCodeTable[] =
     {
         0,  0, '1', '2', '3', '4', '5', '6', '7', '8',	/* 9 */
@@ -44,8 +48,14 @@ namespace KeyBoard
         0,	/* All other keys are undefined */
     };
 
+    /// <summary>
+    /// A table of what keys are pressed.
+    /// </summary>
     volatile bool PressedTable[255];
 
+    /// <summary>
+    /// The last pressed key.
+    /// </summary>
     volatile uint8_t CurrentKey = 0;
 
     void Clear()

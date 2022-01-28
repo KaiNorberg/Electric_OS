@@ -15,15 +15,30 @@
 
 namespace KeyBoard
 {    
+    /// <summary>
+    /// Clears all pressed keys.
+    /// </summary>
     void Clear();
 
     void HandleScanCode(uint8_t ScanCode);
 
+    /// <summary>
+    /// Returns the key that was last pressed down and resets that key. 
+    /// </summary>
     char GetKeyPress();
 
+    /// <summary>
+    /// Returns the key that was last pressed down.
+    /// </summary>
     char GetKeyHeld();
 
+    /// <summary>
+    /// Returns the value for Key in the PressedTable and sets it to 0.
+    /// </summary>
     bool IsPressed(char Key);
 
+    /// <summary>
+    /// Returns the value for Key in the PressedTable.
+    /// </summary>
     bool IsHeld(char Key);
 }

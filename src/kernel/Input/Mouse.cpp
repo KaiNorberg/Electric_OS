@@ -68,7 +68,7 @@ namespace Mouse
         Position.X = 500;
         Position.Y = 500;
 
-        IO::OutByte(0x64, 0xA8);
+        IO::OutByte(0x64, 0xA8); //Enable mouse
         MouseWait();
 
         IO::OutByte(0x64, 0x20);
@@ -79,7 +79,7 @@ namespace Mouse
         MouseWait();
         IO::OutByte(0x64, 0x60);
         MouseWait();
-        IO::OutByte(0x60, Status);
+        IO::OutByte(0x60, Status); //Set the compaq status bit.
 
         MouseWrite(0xF6);
         MouseRead();

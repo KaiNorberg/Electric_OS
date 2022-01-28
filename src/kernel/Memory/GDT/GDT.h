@@ -30,6 +30,9 @@ struct GDT
 
 extern GDT DefaultGDT;
 
+/// <summary>
+/// Found in GDT.asm
+/// </summary>
 extern "C" void LoadGDT(GDTDesc* GDTDescriptor);
 
 void InitGDT();

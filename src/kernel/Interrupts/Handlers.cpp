@@ -156,7 +156,7 @@ namespace InteruptHandlers
 
         KeyBoard::HandleScanCode(ScanCode);
 
-        if (!(ScanCode & (0b10000000)))
+        if (!(ScanCode & (0b10000000))) //If key was pressed down
         {
             ProcessHandler::KeyBoardInterupt();
         }
