@@ -17,7 +17,7 @@ public:
 
     STL::PROR GetRequest();
 
-    uint64_t GetDepth();
+    void SetDepth(uint64_t Depth);
 
     void Clear();
 
@@ -39,7 +39,6 @@ private:
     STL::PROC Procedure;
     STL::Framebuffer FrameBuffer;
 
-    uint64_t Depth;
     STL::Point Pos;
     STL::Point Size;
 

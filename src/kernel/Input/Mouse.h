@@ -6,11 +6,11 @@ namespace Mouse
 {
     extern STL::Point Position;
 
-    extern bool LeftPressed;
+    extern bool LeftHeld;
     
-    extern bool MiddlePressed;
+    extern bool MiddleHeld;
     
-    extern bool RightPressed;
+    extern bool RightHeld;
 
     void InitPS2();
 

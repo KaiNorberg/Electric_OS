@@ -56,10 +56,10 @@ namespace STL
     {       
         Point Pos;
 
-        bool LeftPressed;
+        bool LeftHeld;
         
-        bool MiddlePressed;
+        bool MiddleHeld;
         
-        bool RightPressed;
+        bool RightHeld;
     };
 }   

@@ -24,10 +24,23 @@ STL::PROR Process::GetRequest()
     this->Request = STL::PROR::SUCCESS;
     return Temp;
 }
-
-uint64_t Process::GetDepth()
+    
+void Process::SetDepth(uint64_t Depth)
 {
-    return this->Depth;
+    if (Depth > ProcessHandler::Processes.Length())
+    {
+        return;
+    }
+
+    for (int i = 0; i < ProcessHandler::Processes.Length(); i++)
+    {
+        if (ProcessHandler::Processes[i] == this)
+        {
+            ProcessHandler::Processes[i] = ProcessHandler::Processes[Depth];
+            ProcessHandler::Processes[Depth] = this;
+            return;
+        }
+    }
 }
 
 void Process::Clear()
@@ -123,7 +136,7 @@ Process::Process(STL::PROC Procedure)
 
     if (Info.Type == STL::PROT::FULLSCREEN)
     {            
-        this->Depth = 0;
+        this->SetDepth(Info.Depth);
         this->Pos = STL::Point(0, 0);
         this->FrameBuffer = Renderer::Backbuffer;
         this->FrameBuffer.Base = (STL::ARGB*)Heap::Allocate(Renderer::Backbuffer.Size);
@@ -131,9 +144,8 @@ Process::Process(STL::PROC Procedure)
         this->Draw();
     }
     else if (Info.Type == STL::PROT::FRAMELESSWINDOW)
-    {        
-        this->Depth = 1;
-        
+    {           
+        this->SetDepth(Info.Depth);         
         this->FrameBuffer.Height = Info.Height;  
         this->FrameBuffer.Width = Info.Width;
         this->FrameBuffer.PixelsPerScanline = Info.Width + 1;

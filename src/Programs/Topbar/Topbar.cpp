@@ -76,6 +76,7 @@ namespace Topbar
         {
             STL::PINFO* Info = (STL::PINFO*)Input;
             Info->Type = STL::PROT::FRAMELESSWINDOW;
+            Info->Depth = 1;
             Info->Left = 0;
             Info->Top = 0;
             Info->Width = 1920;

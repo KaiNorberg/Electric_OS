@@ -10,7 +10,7 @@ namespace ProcessHandler
     extern uint64_t LastMessagedProcess;
     extern bool SwapBuffersRequest;
 
-    extern STL::List<Process> Processes;
+    extern STL::List<Process*> Processes;
 
     Process* GetProcess(uint64_t ID);
 

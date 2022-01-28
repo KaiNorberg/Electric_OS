@@ -17,11 +17,11 @@ namespace Mouse
 { 
     STL::Point Position;
 
-    bool LeftPressed;
+    bool LeftHeld;
     
-    bool MiddlePressed;
+    bool MiddleHeld;
     
-    bool RightPressed;
+    bool RightHeld;
 
     void MouseWait()
     {   
@@ -110,11 +110,11 @@ namespace Mouse
             Position.Y -= MousePacket[2];
         }
 
-        LeftPressed = MousePacket[0] & PS2Leftbutton;
+        LeftHeld = MousePacket[0] & PS2Leftbutton;
 
-        MiddlePressed = MousePacket[0] & PS2Middlebutton;
+        MiddleHeld = MousePacket[0] & PS2Middlebutton;
         
-        RightPressed = MousePacket[0] & PS2Rightbutton;
+        RightHeld = MousePacket[0] & PS2Rightbutton;
 
         Position.X = STL::Clamp(Position.X, 0, Renderer::GetScreenSize().X - 8);
         Position.Y = STL::Clamp(Position.Y, 0, Renderer::GetScreenSize().Y - 16);

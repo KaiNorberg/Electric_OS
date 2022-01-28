@@ -3,6 +3,8 @@
 #include "STL/Math/Point.h"
 #include "STL/Graphics/Framebuffer.h"
 #include "STL/Memory/Memory.h"
+#include "STL/String/cstr.h"
+
 #include "kernel/Debug/Debug.h"
 
 #include "Programs/tty/tty.h"
@@ -15,7 +17,7 @@
 
 namespace ProcessHandler
 {    
-    STL::List<Process> Processes;
+    STL::List<Process*> Processes;
     uint64_t LastMessagedProcess = 0;
 
     bool SwapBuffersRequest = false;
@@ -24,9 +26,9 @@ namespace ProcessHandler
     {
         for (int i = 0; i < Processes.Length(); i++)
         {
-            if (Processes[i].GetID() == ID)
+            if (Processes[i]->GetID() == ID)
             {
-                return &Processes[i];
+                return Processes[i];
             }
         }
         
@@ -38,7 +40,7 @@ namespace ProcessHandler
         for (int i = 0; i < Processes.Length(); i++)
         {
             uint8_t Key = KeyBoard::GetKeyPress();
-            Processes[i].SendMessage(STL::PROM::KEYPRESS, &Key);
+            Processes[i]->SendMessage(STL::PROM::KEYPRESS, &Key);
         }
     }
 
@@ -48,11 +50,11 @@ namespace ProcessHandler
         {
             STL::MINFO MouseInfo;
             MouseInfo.Pos = Mouse::Position;
-            MouseInfo.LeftPressed = Mouse::LeftPressed;
-            MouseInfo.MiddlePressed = Mouse::MiddlePressed;
-            MouseInfo.RightPressed = Mouse::RightPressed;
+            MouseInfo.LeftHeld = Mouse::LeftHeld;
+            MouseInfo.MiddleHeld = Mouse::MiddleHeld;
+            MouseInfo.RightHeld = Mouse::RightHeld;
 
-            Processes[i].SendMessage(STL::PROM::MOUSE, &MouseInfo);
+            Processes[i]->SendMessage(STL::PROM::MOUSE, &MouseInfo);
         }
 
         SwapBuffersRequest = true;
@@ -63,7 +65,7 @@ namespace ProcessHandler
         for (int i = 0; i < Processes.Length(); i++)
         {
             uint64_t Tick = PIT::Ticks;
-            Processes[i].SendMessage(STL::PROM::TICK, &Tick);
+            Processes[i]->SendMessage(STL::PROM::TICK, &Tick);
         }
     }
 
@@ -71,9 +73,10 @@ namespace ProcessHandler
     {
         for (int i = 0; i < Processes.Length(); i++)
         {
-            if (ProcessID == Processes[i].GetID())
+            if (ProcessID == Processes[i]->GetID())
             {
-                Processes[i].Kill();
+                Processes[i]->Kill();
+                delete Processes[i];
                 Processes.Erase(i);
                 return true;
             }
@@ -83,16 +86,16 @@ namespace ProcessHandler
     }
 
     void StartProcess(STL::PROC Procedure)
-    {
-        Processes.Push(Process(Procedure));
+    {        
+        Processes.Push(new Process(Procedure));
 
-        if (Processes.Last().GetType() == STL::PROT::FULLSCREEN)
+        if (Processes.Last()->GetType() == STL::PROT::FULLSCREEN)
         {
             for (int i = 0; i < Processes.Length() - 1; i++)
             {
-                if (Processes[i].GetType() == STL::PROT::FULLSCREEN)
+                if (Processes[i]->GetType() == STL::PROT::FULLSCREEN)
                 {
-                    KillProcess(Processes[i].GetID());
+                    KillProcess(Processes[i]->GetID());
                     return;
                 }
             }
@@ -102,40 +105,26 @@ namespace ProcessHandler
     void Loop()
     {                
         StartProcess(tty::Procedure);
-
+    
         while (true) 
         {       
             for (uint64_t i = 0; i < Processes.Length(); i++)
             {
-                switch (Processes[i].GetRequest())
+                switch (Processes[i]->GetRequest())
                 {
                 case STL::PROR::CLEAR:
                 {
-                    Processes[i].Clear();
+                    Processes[i]->Clear();
                 }
                 break;
                 case STL::PROR::DRAW:
                 {
-                    Processes[i].Draw();
-
-                    for (int j = 0; j < Processes.Length(); j++)
-                    {
-                        if (j == i)
-                        {
-                            continue;
-                        }
-
-                        if (Processes[j].GetDepth() > Processes[i].GetDepth())
-                        {
-                            Processes[j].Render();
-                        }
-                    }
+                    Processes[i]->Draw();
                 }
                 break;
                 case STL::PROR::KILL:
                 {
-                    Processes[i].Kill();
-                    Processes.Erase(i);
+                    KillProcess(Processes[i]->GetID());
                     i--;
                 }
                 break;
