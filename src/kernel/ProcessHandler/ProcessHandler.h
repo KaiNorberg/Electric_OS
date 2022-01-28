@@ -22,7 +22,7 @@ namespace ProcessHandler
 
     bool KillProcess(uint64_t ProcessID);
 
-    void StartProcess(STL::PROC Procedure);
+    uint64_t StartProcess(STL::PROC Procedure);
 
     void Loop();   
 }

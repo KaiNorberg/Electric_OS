@@ -110,11 +110,20 @@ namespace Mouse
             Position.Y -= MousePacket[2];
         }
 
-        LeftHeld = MousePacket[0] & PS2Leftbutton;
-
-        MiddleHeld = MousePacket[0] & PS2Middlebutton;
+        if ((MousePacket[0] & PS2Leftbutton))
+        {
+            LeftHeld = true;
+        }
         
-        RightHeld = MousePacket[0] & PS2Rightbutton;
+        if ((MousePacket[0] & PS2Middlebutton))
+        {
+            MiddleHeld = true;
+        }
+
+        if ((MousePacket[0] & PS2Rightbutton))
+        {
+            RightHeld = true;
+        }
 
         Position.X = STL::Clamp(Position.X, 0, Renderer::GetScreenSize().X - 8);
         Position.Y = STL::Clamp(Position.Y, 0, Renderer::GetScreenSize().Y - 16);

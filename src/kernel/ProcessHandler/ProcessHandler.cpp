@@ -57,6 +57,10 @@ namespace ProcessHandler
             Processes[i]->SendMessage(STL::PROM::MOUSE, &MouseInfo);
         }
 
+        Mouse::LeftHeld = false;
+        Mouse::MiddleHeld = false;
+        Mouse::RightHeld = false;
+
         SwapBuffersRequest = true;
     }   
 
@@ -85,7 +89,7 @@ namespace ProcessHandler
         return false;
     }
 
-    void StartProcess(STL::PROC Procedure)
+    uint64_t StartProcess(STL::PROC Procedure)
     {        
         Processes.Push(new Process(Procedure));
 
@@ -96,10 +100,12 @@ namespace ProcessHandler
                 if (Processes[i]->GetType() == STL::PROT::FULLSCREEN)
                 {
                     KillProcess(Processes[i]->GetID());
-                    return;
+                    break;
                 }
             }
         }
+
+        return Processes.Last()->GetID();
     }
 
     void Loop()

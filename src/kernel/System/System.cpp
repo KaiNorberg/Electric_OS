@@ -6,6 +6,7 @@
 #include "Programs/tty/tty.h"
 #include "Programs/Desktop/Desktop.h"
 #include "Programs/Topbar/Topbar.h"
+#include "Programs/SystemMenu/SystemMenu.h"
 
 #include "kernel/Renderer/Renderer.h"
 #include "kernel/RTC/RTC.h"
@@ -147,17 +148,22 @@ namespace System
         {
         case STL::ConstHashWord("tty"):
         {
-            ProcessHandler::StartProcess(tty::Procedure);
+            return STL::ToString(ProcessHandler::StartProcess(tty::Procedure));
         }
         break;
         case STL::ConstHashWord("desktop"):
         {
-            ProcessHandler::StartProcess(Desktop::Procedure);
+           return STL::ToString(ProcessHandler::StartProcess(Desktop::Procedure));
         }
         break;
         case STL::ConstHashWord("topbar"):
         {
-            ProcessHandler::StartProcess(Topbar::Procedure);
+            return STL::ToString(ProcessHandler::StartProcess(Topbar::Procedure));
+        }
+        break;
+        case STL::ConstHashWord("systemmenu"):
+        {
+            return STL::ToString(ProcessHandler::StartProcess(SystemMenu::Procedure));
         }
         break;
         default:

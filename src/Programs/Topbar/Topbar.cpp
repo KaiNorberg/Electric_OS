@@ -2,6 +2,7 @@
 
 #include "STL/Graphics/Framebuffer.h"
 #include "STL/System/System.h"
+#include "STL/GUI/Button.h"
 
 #include "STL/String/cstr.h"
 
@@ -15,6 +16,9 @@ namespace Topbar
     STL::Point DatePos;
 
     STL::ARGB BackgroundColor;
+
+    STL::Button SystemButton;
+    STL::Button StartButton;
 
     void(*CurrentAnimation)(STL::Framebuffer*);
     uint64_t AnimationCounter = 0;
@@ -58,14 +62,20 @@ namespace Topbar
         else if (AnimationCounter > Buffer->Height - RAISEDWIDTH)
         {
             StartAnimation(TextAnimation);
+            return;
         }
-        else
-        {            
-            Buffer->DrawRaisedRect(STL::Point(RAISEDWIDTH, RAISEDWIDTH), STL::Point(Buffer->Width - RAISEDWIDTH, AnimationCounter), BackgroundColor);
-            Buffer->DrawSunkenRect(
-            STL::Point(Buffer->Width / 2 - 100, 4 + RAISEDWIDTH * 2 - ((Buffer->Height - RAISEDWIDTH) - AnimationCounter)), 
-            STL::Point(Buffer->Width / 2 + 100, Buffer->Height - 4 - RAISEDWIDTH * 2 - ((Buffer->Height - RAISEDWIDTH) - AnimationCounter)), BackgroundColor);
-        }    
+
+        uint64_t Offset = ((Buffer->Height - RAISEDWIDTH) - AnimationCounter);
+
+        Buffer->DrawRaisedRect(STL::Point(RAISEDWIDTH, RAISEDWIDTH), STL::Point(Buffer->Width - RAISEDWIDTH, AnimationCounter), BackgroundColor);
+        Buffer->DrawSunkenRect(STL::Point(Buffer->Width / 2 - 100, 4 + RAISEDWIDTH * 2 - Offset), 
+        STL::Point(Buffer->Width / 2 + 100, Buffer->Height - 4 - RAISEDWIDTH * 2 - Offset), BackgroundColor);
+
+        SystemButton.TopLeft.Y = 4 + RAISEDWIDTH * 2 - Offset;
+        SystemButton.BottomRight.Y = Buffer->Height - 4 - RAISEDWIDTH * 2 - Offset;
+
+        StartButton.TopLeft.Y = 4 + RAISEDWIDTH * 2 - Offset;
+        StartButton.BottomRight.Y = Buffer->Height - 4 - RAISEDWIDTH * 2 - Offset;
     }
 
     STL::PROR Procedure(STL::PROM Message, STL::PROI Input)
@@ -86,6 +96,9 @@ namespace Topbar
             DatePos = STL::Point(1920 / 2 + 8, TOPBAR_PADDING / 2);
 
             BackgroundColor = STL::ARGB(255, 200, 200, 200);
+
+            SystemButton = STL::Button(BackgroundColor, "System", STL::Point(Info->Width - 25 - 100, 4 + RAISEDWIDTH * 2), STL::Point(Info->Width - 25, Info->Height - 4 - RAISEDWIDTH * 2));
+            StartButton = STL::Button(BackgroundColor, "Start", STL::Point(25, 4 + RAISEDWIDTH * 2), STL::Point(25 + 100, Info->Height - 4 - RAISEDWIDTH * 2));
 
             StartAnimation(OpenAnimation);
         }
@@ -113,8 +126,11 @@ namespace Topbar
 
                 char* Date = (char*)STL::System("date");
                 Temp = DatePos;
-                Buffer->Print(Date, Temp, 1, STL::ARGB(255, 60, 60, 60), BackgroundColor);
+                Buffer->Print(Date, Temp, 1, STL::ARGB(255, 60, 60, 60), BackgroundColor);                    
             }
+
+            SystemButton.Draw(Buffer);
+            StartButton.Draw(Buffer);
         }
         break;
         case STL::PROM::TICK:
@@ -130,7 +146,12 @@ namespace Topbar
         {
             STL::MINFO MouseInfo = *(STL::MINFO*)Input;
 
+            if (SystemButton.IsToggled(MouseInfo))
+            {
 
+            }
+            
+            StartButton.IsToggled(MouseInfo);
 
             return STL::PROR::DRAW;
         }
