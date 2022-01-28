@@ -6,7 +6,6 @@
 #include "Programs/tty/tty.h"
 #include "Programs/Desktop/Desktop.h"
 #include "Programs/Topbar/Topbar.h"
-#include "Programs/SystemMenu/SystemMenu.h"
 
 #include "kernel/Renderer/Renderer.h"
 #include "kernel/RTC/RTC.h"
@@ -159,11 +158,6 @@ namespace System
         case STL::ConstHashWord("topbar"):
         {
             return STL::ToString(ProcessHandler::StartProcess(Topbar::Procedure));
-        }
-        break;
-        case STL::ConstHashWord("systemmenu"):
-        {
-            return STL::ToString(ProcessHandler::StartProcess(SystemMenu::Procedure));
         }
         break;
         default:
