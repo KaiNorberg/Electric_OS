@@ -25,6 +25,8 @@ namespace STL
 
         bool IsPressed(MINFO MouseInfo);
 
+        bool IsDown();
+
         Button() = default;
 
         Button(ARGB Color, const char* Text, Point TopLeft, Point BottomRight);

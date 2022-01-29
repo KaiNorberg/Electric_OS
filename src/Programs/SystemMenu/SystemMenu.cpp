@@ -40,7 +40,7 @@ namespace SystemMenu
             STL::PINFO* Info = (STL::PINFO*)Input;
             Info->Type = STL::PROT::FRAMELESSWINDOW;
             Info->Depth = 1;
-            Info->Left = 1920 - 200 - 50;
+            Info->Left = 1920 - 200 - 25;
             Info->Top = 50;
             Info->Width = 200;
             Info->Height = RAISEDWIDTH * 9 + 2 * (RAISEDWIDTH * 2 + 25);

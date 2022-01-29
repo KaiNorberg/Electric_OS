@@ -9,6 +9,9 @@
 #include "Programs/Desktop/Desktop.h"
 
 #define TOPBAR_PADDING 8 + RAISEDWIDTH * 4 
+#define BUTTONGAP 125
+#define BUTTONWIDTH 100
+
 
 namespace Topbar
 {                    
@@ -94,15 +97,15 @@ namespace Topbar
             Info->Width = 1920;
             Info->Height = 16 + TOPBAR_PADDING + RAISEDWIDTH;
 
-            TimePos = STL::Point(1920 / 2 - 9 * 8, TOPBAR_PADDING / 2);
-            DatePos = STL::Point(1920 / 2 + 8, TOPBAR_PADDING / 2);
+            TimePos = STL::Point(1920 / 2 - 10 * 8, TOPBAR_PADDING / 2);
+            DatePos = STL::Point(1920 / 2, TOPBAR_PADDING / 2);
 
             BackgroundColor = STL::ARGB(255, 200, 200, 200);
 
             SystemMenuID = -1;
 
-            SystemButton = STL::Button(BackgroundColor, "System", STL::Point(Info->Width - 150 - 100 / 2, 4 + RAISEDWIDTH * 2), STL::Point(Info->Width - 150 + 100 / 2, Info->Height - 4 - RAISEDWIDTH * 2));
-            StartButton = STL::Button(BackgroundColor, "Start", STL::Point(150 - 100 / 2, 4 + RAISEDWIDTH * 2), STL::Point(150 + 100 / 2, Info->Height - 4 - RAISEDWIDTH * 2));
+            SystemButton = STL::Button(BackgroundColor, "System", STL::Point(Info->Width - BUTTONGAP - BUTTONWIDTH / 2, 4 + RAISEDWIDTH * 2), STL::Point(Info->Width - BUTTONGAP + BUTTONWIDTH / 2, Info->Height - 4 - RAISEDWIDTH * 2));
+            StartButton = STL::Button(BackgroundColor, "Start", STL::Point(BUTTONGAP - BUTTONWIDTH / 2, 4 + RAISEDWIDTH * 2), STL::Point(BUTTONGAP + BUTTONWIDTH / 2, Info->Height - 4 - RAISEDWIDTH * 2));
 
             StartAnimation(OpenAnimation);
         }

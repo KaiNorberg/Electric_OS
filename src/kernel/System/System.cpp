@@ -95,30 +95,45 @@ namespace System
         FOREGROUND_COLOR(255, 255, 255)"        A neofetch lookalike to give system information\n\r";
     }
 
-    char CommandTimeOutput[64];
+    char CommandTimeOutput[16];
     const char* CommandTime(const char* Command)
     {
-        char* Temp = CommandTimeOutput;
-        Temp = STL::CopyString(Temp, STL::ToString(RTC::GetHour())) + 1;
-        Temp = STL::CopyString(Temp, ":") + 1;
-        Temp = STL::CopyString(Temp, STL::ToString(RTC::GetMinute())) + 1;
-        Temp = STL::CopyString(Temp, ":") + 1;
-        Temp = STL::CopyString(Temp, STL::ToString(RTC::GetSecond())) + 1;
-        *Temp = 0;
+        uint64_t Hour = RTC::GetHour();
+        uint64_t Minute = RTC::GetMinute();
+        uint64_t Second = RTC::GetSecond();
+
+        CommandTimeOutput[0] = '0' + (Hour / 10); 
+        CommandTimeOutput[1] = '0' + (Hour % 10); 
+        CommandTimeOutput[2] = ':'; 
+        CommandTimeOutput[3] = '0' + (Minute / 10); 
+        CommandTimeOutput[4] = '0' + (Minute % 10); 
+        CommandTimeOutput[5] = ':'; 
+        CommandTimeOutput[6] = '0' + (Second / 10); 
+        CommandTimeOutput[7] = '0' + (Second % 10); 
+        CommandTimeOutput[8] = 0; 
+
         return CommandTimeOutput;
     }
 
     char CommandDateOutput[64];
     const char* CommandDate(const char* Command)
-    {
-        char* Temp = CommandDateOutput;
-        Temp = STL::CopyString(Temp, STL::ToString(RTC::GetDay())) + 1;
-        Temp = STL::CopyString(Temp, "/") + 1;
-        Temp = STL::CopyString(Temp, STL::ToString(RTC::GetMonth())) + 1;
-        Temp = STL::CopyString(Temp, "/") + 1;
-        Temp = STL::CopyString(Temp, "20") + 1;
-        Temp = STL::CopyString(Temp, STL::ToString(RTC::GetYear())) + 1;
-        *Temp = 0;
+    {        
+        uint64_t Day = RTC::GetDay();
+        uint64_t Month = RTC::GetMonth();
+        uint64_t Year = RTC::GetYear();
+
+        CommandDateOutput[0] = '0' + (Day / 10); 
+        CommandDateOutput[1] = '0' + (Day % 10); 
+        CommandDateOutput[2] = '/'; 
+        CommandDateOutput[3] = '0' + (Month / 10); 
+        CommandDateOutput[4] = '0' + (Month % 10); 
+        CommandDateOutput[5] = '/'; 
+        CommandDateOutput[6] = '2'; 
+        CommandDateOutput[7] = '0'; 
+        CommandDateOutput[8] = '0' + (Year / 10); 
+        CommandDateOutput[9] = '0' + (Year % 10); 
+        CommandDateOutput[10] = 0; 
+
         return CommandDateOutput;
     }
 

@@ -16,16 +16,16 @@ namespace STL
 {    
     const char* System(const char* Command)
     {
-        return (const char*)System::Call(0, Command);
+        return (const char*)System::Call(SYSCALL_SYSTEM, Command);
     }
 
     void* Malloc(uint64_t Size)
     {
-        return (void*)System::Call(1, Size);
+        return (void*)System::Call(SYSCALL_MALLOC, Size);
     }
 
     void Free(void* Memory)
     {
-        System::Call(2, Memory);
+        System::Call(SYSCALL_FREE, Memory);
     }
 }

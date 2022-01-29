@@ -19,11 +19,9 @@ namespace STL
 
     bool Button::IsToggled(MINFO MouseInfo)
     {
-        if (MouseInfo.LeftHeld && 
-           (MouseInfo.Pos.X > this->TopLeft.X && MouseInfo.Pos.Y > this->TopLeft.Y && MouseInfo.Pos.X < this->BottomRight.X && MouseInfo.Pos.Y < this->BottomRight.Y))
+        if (MouseInfo.LeftHeld && MouseInfo.Pos.X > this->TopLeft.X && MouseInfo.Pos.Y > this->TopLeft.Y && MouseInfo.Pos.X < this->BottomRight.X && MouseInfo.Pos.Y < this->BottomRight.Y)
         {
             this->Pressed = !this->Pressed;
-
             return true;
         }
         return false;
@@ -31,8 +29,12 @@ namespace STL
 
     bool Button::IsPressed(MINFO MouseInfo) 
     {
-        this->Pressed = MouseInfo.LeftHeld && 
-        (MouseInfo.Pos.X > this->TopLeft.X && MouseInfo.Pos.Y > this->TopLeft.Y && MouseInfo.Pos.X < this->BottomRight.X && MouseInfo.Pos.Y < this->BottomRight.Y);
+        this->Pressed = MouseInfo.LeftHeld && MouseInfo.Pos.X > this->TopLeft.X && MouseInfo.Pos.Y > this->TopLeft.Y && MouseInfo.Pos.X < this->BottomRight.X && MouseInfo.Pos.Y < this->BottomRight.Y;
+        return this->Pressed;
+    }
+
+    bool Button::IsDown()
+    {
         return this->Pressed;
     }
 
