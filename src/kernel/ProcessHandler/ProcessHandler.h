@@ -12,6 +12,8 @@ namespace ProcessHandler
 
     extern STL::List<Process*> Processes;
 
+    void KillAllProcesses();
+
     Process* GetProcess(uint64_t ID);
 
     void KeyBoardInterupt();

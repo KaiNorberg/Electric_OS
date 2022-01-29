@@ -27,11 +27,11 @@ namespace Desktop
             STL::System("start topbar");
             StartAnimation(nullptr);
 
-            Buffer->DrawRect(STL::Point(0, 0), STL::Point(Buffer->Width, Buffer->Height), BackgroundColor);
+            Buffer->Fill(BackgroundColor);
         }
         else
         {
-            Buffer->DrawRect(STL::Point(0, 0), STL::Point(Buffer->Width, Buffer->Height), (BackgroundColor / (uint8_t)60) * (uint8_t)AnimationCounter);
+            Buffer->Fill((BackgroundColor / (uint8_t)60) * (uint8_t)AnimationCounter);
         }
     }
 

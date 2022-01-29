@@ -11,9 +11,11 @@
 #include "kernel/RTC/RTC.h"
 #include "kernel/PIT/PIT.h"
 #include "kernel/Debug/Debug.h"
+#include "kernel/IO/IO.h"
 #include "kernel/Memory/Paging/PageAllocator.h"
 #include "kernel/Memory/Heap.h"
 #include "kernel/ProcessHandler/ProcessHandler.h"
+#include "kernel/Input/KeyBoard.h"
 
 #include <cstdarg>
 
@@ -70,9 +72,9 @@ namespace System
         FOREGROUND_COLOR(086, 182, 194)"date\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        Prints the current date\n\r"
-        FOREGROUND_COLOR(086, 182, 194)"panic\n\r"
+        FOREGROUND_COLOR(086, 182, 194)"kill\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
-        FOREGROUND_COLOR(255, 255, 255)"        Causes a kernel panic\n\r"
+        FOREGROUND_COLOR(255, 255, 255)"        Kills the process with the given ID\n\r"
         FOREGROUND_COLOR(086, 182, 194)"clear\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        Clears the framebuffer of the process that performed the system call\n\r"
@@ -82,6 +84,12 @@ namespace System
         FOREGROUND_COLOR(086, 182, 194)"suicide\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        Kills the process that performed the system call\n\r"
+        FOREGROUND_COLOR(086, 182, 194)"restart\n\r"
+        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
+        FOREGROUND_COLOR(255, 255, 255)"        Restarts the pc\n\r"
+        FOREGROUND_COLOR(086, 182, 194)"shutdown\n\r"
+        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
+        FOREGROUND_COLOR(255, 255, 255)"        Shuts down the pc\n\r"
         FOREGROUND_COLOR(086, 182, 194)"heapvis\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        Prints a visualization of all the segments of the heap\n\r"
@@ -117,10 +125,16 @@ namespace System
         return CommandDateOutput;
     }
 
-    const char* CommandPanic(const char* Command)
+    const char* CommandKill(const char* Command)
     {
-        Debug::Error("Test!");
-        return nullptr;
+        if (ProcessHandler::KillProcess(STL::ToInt(STL::NextWord(Command))))
+        {
+            return "Process killed";
+        }
+        else
+        {
+            return "ERROR: Could not kill process";
+        }
     }
 
     const char* CommandSuicide(const char* Command)
@@ -140,7 +154,33 @@ namespace System
         }
         return "";
     }    
-    
+
+    const char* CommandShutdown(const char* Command)
+    {
+
+        return "";
+    }  
+
+    const char* CommandRestart(const char* Command)
+    {
+        asm("cli");
+
+        ProcessHandler::KillAllProcesses();
+
+        uint8_t Good = 0x02;
+        while (Good & 0x02)
+        {
+            Good = IO::InByte(0x64);
+        }
+        IO::OutByte(0x64, 0xFE);
+
+        while (true)
+        {
+            asm("HLT");
+        }
+        return "";
+    }   
+
     const char* CommandStart(const char* Command)
     {
         switch (STL::HashWord(STL::NextWord(Command)))
@@ -287,9 +327,11 @@ namespace System
             Command("help", CommandHelp),
             Command("time", CommandTime),
             Command("date", CommandDate),
-            Command("panic", CommandPanic),
+            Command("kill", CommandKill),
             Command("clear", CommandClear),
             Command("start", CommandStart),
+            Command("restart", CommandRestart),
+            Command("shutdown", CommandShutdown),
             Command("suicide", CommandSuicide),
             Command("heapvis", CommandHeapvis),
             Command("sysfetch", CommandSysfetch)

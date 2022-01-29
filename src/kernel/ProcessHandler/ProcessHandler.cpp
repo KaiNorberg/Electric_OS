@@ -22,6 +22,14 @@ namespace ProcessHandler
 
     bool SwapBuffersRequest = false;
 
+    void KillAllProcesses()
+    {
+        for (int i = 0; i < Processes.Length(); i++)
+        {
+            KillProcess(Processes[i]->GetID());
+        }
+    }
+
     Process* GetProcess(uint64_t ID)
     {
         for (int i = 0; i < Processes.Length(); i++)

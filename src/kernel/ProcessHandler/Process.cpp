@@ -76,25 +76,20 @@ void Process::Draw()
 
 void Process::Render()
 {
-    if (this->Type == STL::PROT::FULLSCREEN)
-    {   
-        STL::CopyMemory(this->FrameBuffer.Base, Renderer::Backbuffer.Base, this->FrameBuffer.Size);
-    }
-    else if (this->Type == STL::PROT::FRAMELESSWINDOW)
+    if (this->Type == STL::PROT::FRAMELESSWINDOW || this->Type == STL::PROT::FULLSCREEN)
     {
-        /*if (this->TopLeft.X > this->Width || TopLeft.X < 0 || TopLeft.Y > this->Height || TopLeft.Y < 0)
+        if (this->Pos.X + this->FrameBuffer.Width > Renderer::Backbuffer.Width || this->Pos.X < 0)
+        {
+            return;
+        }
+        if (this->Pos.Y + this->FrameBuffer.Height > Renderer::Backbuffer.Height || this->Pos.Y < 0)
         {
             return;
         }
 
-        if (BottomRight.X > this->Width || BottomRight.X < 0 || BottomRight.Y > this->Height || BottomRight.Y < 0)
+        for (int y = 0; y < this->FrameBuffer.Height; y++)
         {
-            return;
-        }*/
-
-        for (int y = 0; y < this->Size.Y; y++)
-        {
-            for (int x = 0; x < this->Size.X; x++)
+            for (int x = 0; x < this->FrameBuffer.Width; x++)
             {
                 *(STL::ARGB*)((uint64_t)Renderer::Backbuffer.Base + (this->Pos.X + x) * 4 + (this->Pos.Y + y) * Renderer::Backbuffer.PixelsPerScanline * 4) = 
                 *(STL::ARGB*)((uint64_t)this->FrameBuffer.Base + x * 4 + y * this->FrameBuffer.PixelsPerScanline * 4);
@@ -132,16 +127,19 @@ Process::Process(STL::PROC Procedure)
     this->Type = Info.Type;
 
     this->Pos = STL::Point(Info.Left, Info.Top);
-    this->Size = STL::Point(Info.Width, Info.Height);
 
     if (Info.Type == STL::PROT::FULLSCREEN)
     {            
         this->SetDepth(Info.Depth);
         this->Pos = STL::Point(0, 0);
-        this->FrameBuffer = Renderer::Backbuffer;
-        this->FrameBuffer.Base = (STL::ARGB*)Heap::Allocate(Renderer::Backbuffer.Size);
+        this->FrameBuffer.Height = Renderer::Backbuffer.Height;  
+        this->FrameBuffer.Width = Renderer::Backbuffer.Width;
+        this->FrameBuffer.PixelsPerScanline = Renderer::Backbuffer.Width + 1;
+        this->FrameBuffer.Size = (this->FrameBuffer.Height + 1) * this->FrameBuffer.PixelsPerScanline * 4;
+        this->FrameBuffer.Base = (STL::ARGB*)Heap::Allocate(this->FrameBuffer.Size);
+
         this->FrameBuffer.Clear();
-        this->Draw();
+        this->Request = STL::PROR::DRAW;
     }
     else if (Info.Type == STL::PROT::FRAMELESSWINDOW)
     {           
@@ -153,6 +151,6 @@ Process::Process(STL::PROC Procedure)
         this->FrameBuffer.Base = (STL::ARGB*)Heap::Allocate(this->FrameBuffer.Size);
 
         this->FrameBuffer.Clear();
-        this->Draw();
+        this->Request = STL::PROR::DRAW;
     }
 } 

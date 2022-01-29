@@ -91,7 +91,7 @@ namespace STL
                     this->PutPixel(STL::Point(TopLeft.X - RAISEDWIDTH + x, BottomRight.Y + y), RAISEDLOWCOLOR);
                 }
             }
-        }
+        }  
     }
 
     void Framebuffer::DrawSunkenRect(Point TopLeft, Point BottomRight, ARGB Color)
@@ -167,6 +167,17 @@ namespace STL
                 *(ARGB*)((uint64_t)this->Base + x * 4 + y * this->PixelsPerScanline * 4) = Color;
             }
         }
+    }
+
+    void Framebuffer::Fill(ARGB Color)
+    {
+        for (int y = 0; y < this->Height; y++)
+        {
+            for (int x = 0; x < this->Width; x++)
+            {
+                *(ARGB*)((uint64_t)this->Base + x * 4 + y * this->PixelsPerScanline * 4) = Color;
+            }
+        }        
     }
 
     void Framebuffer::PutChar(char chr, STL::Point Pos, uint8_t Scale, ARGB Foreground, ARGB Background)

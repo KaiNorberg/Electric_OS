@@ -33,6 +33,8 @@ namespace STL
 
 		void DrawRect(Point TopLeft, Point BottomRight, ARGB Color);
 
+    	void Fill(ARGB Color);
+
 		void PutChar(char chr, Point Pos, uint8_t Scale, ARGB Foreground, ARGB Background);
 
     	void Print(const char* cstr, Point& Pos, uint8_t Scale = 1, ARGB Foreground = ARGB(255), ARGB Background = ARGB(0));

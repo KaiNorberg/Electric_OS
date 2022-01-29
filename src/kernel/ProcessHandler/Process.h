@@ -40,7 +40,6 @@ private:
     STL::Framebuffer FrameBuffer;
 
     STL::Point Pos;
-    STL::Point Size;
 
     STL::PROR Request = STL::PROR::SUCCESS; 
 };
