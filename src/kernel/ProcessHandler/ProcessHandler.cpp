@@ -20,6 +20,8 @@ namespace ProcessHandler
     STL::List<Process*> Processes;
     uint64_t LastMessagedProcess = 0;
 
+    uint64_t FocusedProcess = 0;
+
     bool SwapBuffersRequest = false;
 
     void KillAllProcesses()
@@ -45,24 +47,27 @@ namespace ProcessHandler
 
     void KeyBoardInterupt()
     {
-        for (int i = 0; i < Processes.Length(); i++)
-        {
-            uint8_t Key = KeyBoard::GetKeyPress();
-            Processes[i]->SendMessage(STL::PROM::KEYPRESS, &Key);
-        }
+        uint8_t Key = KeyBoard::GetKeyPress();
+        Processes[FocusedProcess]->SendMessage(STL::PROM::KEYPRESS, &Key);
     }
 
     void MouseInterupt()
     {        
-        for (int i = 0; i < Processes.Length(); i++)
+        for (int i = Processes.Length(); i --> 0; )
         {
-            STL::MINFO MouseInfo;
-            MouseInfo.Pos = Mouse::Position;
-            MouseInfo.LeftHeld = Mouse::LeftHeld;
-            MouseInfo.MiddleHeld = Mouse::MiddleHeld;
-            MouseInfo.RightHeld = Mouse::RightHeld;
+            if (Processes[i]->Contains(Mouse::Position))
+            {
+                FocusedProcess = i;
 
-            Processes[i]->SendMessage(STL::PROM::MOUSE, &MouseInfo);
+                STL::MINFO MouseInfo;
+                MouseInfo.Pos = Mouse::Position - Processes[i]->GetPos();
+                MouseInfo.LeftHeld = Mouse::LeftHeld;
+                MouseInfo.MiddleHeld = Mouse::MiddleHeld;
+                MouseInfo.RightHeld = Mouse::RightHeld;
+
+                Processes[i]->SendMessage(STL::PROM::MOUSE, &MouseInfo);
+                break;
+            }
         }
 
         Mouse::LeftHeld = false;
@@ -129,6 +134,11 @@ namespace ProcessHandler
                 case STL::PROR::CLEAR:
                 {
                     Processes[i]->Clear();
+                }
+                break;
+                case STL::PROR::RENDER:
+                {
+                    Processes[i]->Render();
                 }
                 break;
                 case STL::PROR::DRAW:

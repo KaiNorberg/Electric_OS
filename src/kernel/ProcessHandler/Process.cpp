@@ -24,7 +24,12 @@ STL::PROR Process::GetRequest()
     this->Request = STL::PROR::SUCCESS;
     return Temp;
 }
-    
+
+void Process::SendRequest(STL::PROR Request)
+{
+    this->Request = Request;
+}
+
 void Process::SetDepth(uint64_t Depth)
 {
     if (Depth > ProcessHandler::Processes.Length())
@@ -41,6 +46,40 @@ void Process::SetDepth(uint64_t Depth)
             return;
         }
     }
+}
+
+bool Process::Contains(STL::Point Other)
+{
+    return (this->Pos.X < Other.X && this->Pos.X + this->FrameBuffer.Width > Other.X &&
+            this->Pos.Y < Other.Y && this->Pos.Y + this->FrameBuffer.Height > Other.Y);
+}
+
+bool Process::Contains(Process* Other)
+{
+    return (this->Pos.X <= Other->Pos.X + Other->FrameBuffer.Width && this->Pos.X + this->FrameBuffer.Width >= Other->Pos.X &&
+            this->Pos.Y <= Other->Pos.Y + Other->FrameBuffer.Height && this->Pos.Y + this->FrameBuffer.Height >= Other->Pos.Y);
+}
+
+bool Process::Overlap(Process* Other)
+{
+    //Check if this has a higher depth value (is above) Other
+    int64_t ThisDepth = -1;
+    for (int i = 0; i < ProcessHandler::Processes.Length(); i++)
+    {
+        if (ProcessHandler::Processes[i] == this)
+        {
+            ThisDepth = i;
+        }
+        else if (ProcessHandler::Processes[i] == Other)
+        {
+            if (ThisDepth == -1)
+            {
+                return false;
+            }
+        }
+    }
+
+    return Contains(Other);
 }
 
 void Process::Clear()
@@ -60,6 +99,14 @@ void Process::Kill()
     {
         Heap::Free(FrameBuffer.Base);
     }
+
+    for (int i = 0; i < ProcessHandler::Processes.Length(); i++)
+    {
+        if (ProcessHandler::Processes[i] != this && this->Contains(ProcessHandler::Processes[i]))
+        {
+            ProcessHandler::Processes[i]->SendRequest(STL::PROR::RENDER);
+        }
+    }
 }
 
 void Process::Draw()
@@ -72,24 +119,32 @@ void Process::Draw()
     this->SendMessage(STL::PROM::DRAW, &this->FrameBuffer);
 
     this->Render();
+
+    for (int i = 0; i < ProcessHandler::Processes.Length(); i++)
+    {
+        if (ProcessHandler::Processes[i] != this && this->Overlap(ProcessHandler::Processes[i]))
+        {
+            ProcessHandler::Processes[i]->SendRequest(STL::PROR::RENDER);
+        }
+    }
 }
 
-void Process::Render()
+void Process::Render(STL::Point TopLeft, STL::Point BottomRight)
 {
     if (this->Type == STL::PROT::FRAMELESSWINDOW || this->Type == STL::PROT::FULLSCREEN)
     {
-        if (this->Pos.X + this->FrameBuffer.Width > Renderer::Backbuffer.Width || this->Pos.X < 0)
+        if (BottomRight.X > Renderer::Backbuffer.Width || TopLeft.X < 0)
         {
             return;
         }
-        if (this->Pos.Y + this->FrameBuffer.Height > Renderer::Backbuffer.Height || this->Pos.Y < 0)
+        if (BottomRight.Y > Renderer::Backbuffer.Height || TopLeft.Y < 0)
         {
             return;
         }
 
-        for (int y = 0; y < this->FrameBuffer.Height; y++)
+        for (int y = TopLeft.Y; y < BottomRight.Y; y++)
         {
-            for (int x = 0; x < this->FrameBuffer.Width; x++)
+            for (int x = TopLeft.X; x < BottomRight.X; x++)
             {
                 *(STL::ARGB*)((uint64_t)Renderer::Backbuffer.Base + (this->Pos.X + x) * 4 + (this->Pos.Y + y) * Renderer::Backbuffer.PixelsPerScanline * 4) = 
                 *(STL::ARGB*)((uint64_t)this->FrameBuffer.Base + x * 4 + y * this->FrameBuffer.PixelsPerScanline * 4);
@@ -98,6 +153,11 @@ void Process::Render()
     }
 
     ProcessHandler::SwapBuffersRequest = true;
+}
+
+void Process::Render()
+{
+    this->Render(STL::Point(0, 0), STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height));
 }
 
 void Process::SendMessage(STL::PROM Message, STL::PROI Input)

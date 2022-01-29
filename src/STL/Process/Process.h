@@ -9,6 +9,7 @@ namespace STL
     enum class PROR //Process request
     {
         SUCCESS,
+        RENDER,
         CLEAR,
         DRAW,
         KILL

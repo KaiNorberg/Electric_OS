@@ -68,6 +68,8 @@ namespace Desktop
         break;
         case STL::PROM::TICK:
         {            
+            uint64_t CurrentTick = *(uint64_t*)Input;
+
             if (CurrentAnimation != nullptr)
             {
                 return STL::PROR::DRAW;

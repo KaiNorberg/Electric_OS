@@ -23,8 +23,10 @@ namespace STL
            (MouseInfo.Pos.X > this->TopLeft.X && MouseInfo.Pos.Y > this->TopLeft.Y && MouseInfo.Pos.X < this->BottomRight.X && MouseInfo.Pos.Y < this->BottomRight.Y))
         {
             this->Pressed = !this->Pressed;
+
+            return true;
         }
-        return this->Pressed;
+        return false;
     } 
 
     bool Button::IsPressed(MINFO MouseInfo) 

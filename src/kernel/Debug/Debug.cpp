@@ -32,7 +32,7 @@ namespace Debug
         "This doesn't make any sense!",
         "It's not a good surprise...",
         "Don't do that.",
-        "Layer 8 problem detected."
+        "Layer 8 problem detected.",
         "PEBCAK detected."        
     };
 

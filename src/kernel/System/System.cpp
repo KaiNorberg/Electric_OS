@@ -6,6 +6,7 @@
 #include "Programs/tty/tty.h"
 #include "Programs/Desktop/Desktop.h"
 #include "Programs/Topbar/Topbar.h"
+#include "Programs/SystemMenu/SystemMenu.h"
 
 #include "kernel/Renderer/Renderer.h"
 #include "kernel/RTC/RTC.h"
@@ -15,7 +16,6 @@
 #include "kernel/Memory/Paging/PageAllocator.h"
 #include "kernel/Memory/Heap.h"
 #include "kernel/ProcessHandler/ProcessHandler.h"
-#include "kernel/Input/KeyBoard.h"
 
 #include <cstdarg>
 
@@ -72,9 +72,6 @@ namespace System
         FOREGROUND_COLOR(086, 182, 194)"date\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        Prints the current date\n\r"
-        FOREGROUND_COLOR(086, 182, 194)"kill\n\r"
-        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
-        FOREGROUND_COLOR(255, 255, 255)"        Kills the process with the given ID\n\r"
         FOREGROUND_COLOR(086, 182, 194)"clear\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        Clears the framebuffer of the process that performed the system call\n\r"
@@ -89,7 +86,7 @@ namespace System
         FOREGROUND_COLOR(255, 255, 255)"        Restarts the pc\n\r"
         FOREGROUND_COLOR(086, 182, 194)"shutdown\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
-        FOREGROUND_COLOR(255, 255, 255)"        Shuts down the pc\n\r"
+        FOREGROUND_COLOR(255, 255, 255)"        Shuts down the pc (Not implemented)\n\r"
         FOREGROUND_COLOR(086, 182, 194)"heapvis\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        Prints a visualization of all the segments of the heap\n\r"
@@ -163,10 +160,6 @@ namespace System
 
     const char* CommandRestart(const char* Command)
     {
-        asm("cli");
-
-        ProcessHandler::KillAllProcesses();
-
         uint8_t Good = 0x02;
         while (Good & 0x02)
         {
@@ -198,6 +191,11 @@ namespace System
         case STL::ConstHashWord("topbar"):
         {
             return STL::ToString(ProcessHandler::StartProcess(Topbar::Procedure));
+        }
+        break;
+        case STL::ConstHashWord("systemmenu"):
+        {
+            return STL::ToString(ProcessHandler::StartProcess(SystemMenu::Procedure));
         }
         break;
         default:

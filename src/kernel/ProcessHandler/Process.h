@@ -17,7 +17,15 @@ public:
 
     STL::PROR GetRequest();
 
+    void SendRequest(STL::PROR Request);
+
     void SetDepth(uint64_t Depth);
+
+    bool Contains(STL::Point Other);
+
+    bool Contains(Process* Other);
+
+    bool Overlap(Process* Other);
 
     void Clear();
 
@@ -25,10 +33,12 @@ public:
 
     void Draw();
 
+    void Render(STL::Point TopLeft, STL::Point BottomRight);
+
     void Render();
 
     void SendMessage(STL::PROM Message, STL::PROI Input = nullptr);
-
+    
     Process(STL::PROC Procedure);
 
 private:

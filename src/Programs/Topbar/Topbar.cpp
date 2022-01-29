@@ -23,6 +23,8 @@ namespace Topbar
     void(*CurrentAnimation)(STL::Framebuffer*);
     uint64_t AnimationCounter = 0;
 
+    int64_t SystemMenuID = -1;
+
     inline void StartAnimation(void(*Animation)(STL::Framebuffer*))
     {
         AnimationCounter = 0;
@@ -97,8 +99,10 @@ namespace Topbar
 
             BackgroundColor = STL::ARGB(255, 200, 200, 200);
 
-            SystemButton = STL::Button(BackgroundColor, "System", STL::Point(Info->Width - 25 - 100, 4 + RAISEDWIDTH * 2), STL::Point(Info->Width - 25, Info->Height - 4 - RAISEDWIDTH * 2));
-            StartButton = STL::Button(BackgroundColor, "Start", STL::Point(25, 4 + RAISEDWIDTH * 2), STL::Point(25 + 100, Info->Height - 4 - RAISEDWIDTH * 2));
+            SystemMenuID = -1;
+
+            SystemButton = STL::Button(BackgroundColor, "System", STL::Point(Info->Width - 150 - 100 / 2, 4 + RAISEDWIDTH * 2), STL::Point(Info->Width - 150 + 100 / 2, Info->Height - 4 - RAISEDWIDTH * 2));
+            StartButton = STL::Button(BackgroundColor, "Start", STL::Point(150 - 100 / 2, 4 + RAISEDWIDTH * 2), STL::Point(150 + 100 / 2, Info->Height - 4 - RAISEDWIDTH * 2));
 
             StartAnimation(OpenAnimation);
         }
@@ -148,7 +152,17 @@ namespace Topbar
 
             if (SystemButton.IsToggled(MouseInfo))
             {
-
+                if (SystemMenuID == -1)
+                {
+                    SystemMenuID = STL::ToInt(STL::System("start systemmenu"));
+                }
+                else
+                {
+                    STL::String Command = "kill ";
+                    Command += STL::ToString(SystemMenuID);
+                    STL::System(Command.cstr());
+                    SystemMenuID = -1;
+                }
             }
             
             StartButton.IsToggled(MouseInfo);
