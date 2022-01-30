@@ -12,14 +12,10 @@
 #define ARROW_RIGHT 0x4D
 #define PAGE_UP 0x49
 #define PAGE_DOWN 0x51
+#define CAPS_LOCK 0x3A
 
 namespace KeyBoard
 {    
-    /// <summary>
-    /// Clears all pressed keys.
-    /// </summary>
-    void Clear();
-
     void HandleScanCode(uint8_t ScanCode);
 
     /// <summary>
@@ -33,12 +29,12 @@ namespace KeyBoard
     char GetKeyHeld();
 
     /// <summary>
-    /// Returns the value for Key in the PressedTable and sets it to 0.
+    /// Returns the value for Key in the KeyCache and sets it to 0.
     /// </summary>
     bool IsPressed(char Key);
 
     /// <summary>
-    /// Returns the value for Key in the PressedTable.
+    /// Returns the value for Key in the KeyCache.
     /// </summary>
     bool IsHeld(char Key);
 }

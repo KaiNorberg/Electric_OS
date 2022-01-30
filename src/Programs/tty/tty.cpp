@@ -136,8 +136,11 @@ namespace tty
             else
             {               
                 uint64_t CommandLength = STL::Length(Command);
-                Command[CommandLength] = Key;
-                Command[CommandLength + 1] = 0;
+                if (CommandLength < 63)
+                {
+                    Command[CommandLength] = Key;
+                    Command[CommandLength + 1] = 0;
+                }
             }
 
             return STL::PROR::DRAW;

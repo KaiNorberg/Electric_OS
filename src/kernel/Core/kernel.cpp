@@ -31,9 +31,7 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 	RTC::Update();
 
 	IDT::SetupInterrupts();
-	
-	KeyBoard::Clear();
-	
+		
 	ProcessHandler::Loop();
 
 	while(true)
