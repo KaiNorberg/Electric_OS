@@ -111,11 +111,6 @@ void Process::Kill()
 
 void Process::Draw()
 {
-    if (Type == STL::PROT::BACKGROUND)
-    {
-        return;
-    }
-
     this->SendMessage(STL::PROM::DRAW, &this->FrameBuffer);
 
     this->Render();

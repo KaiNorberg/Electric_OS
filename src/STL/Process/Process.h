@@ -9,6 +9,7 @@ namespace STL
     enum class PROR //Process request
     {
         SUCCESS,
+        RESET,
         RENDER,
         CLEAR,
         DRAW,
@@ -28,7 +29,6 @@ namespace STL
 
     enum class PROT //Process Type
     {
-        BACKGROUND,
         FULLSCREEN,
         WINDOWED,
         FRAMELESSWINDOW

@@ -6,9 +6,10 @@
 #include "STL/GUI/Button.h"
 
 namespace SystemMenu
-{
-    STL::Button ShutDownButton;
+{        
+    STL::Button TTYButton;
     STL::Button RestartButton;
+    STL::Button ShutDownButton;
 
     void(*CurrentAnimation)(STL::Framebuffer*);
     uint64_t AnimationCounter = 0;
@@ -43,12 +44,14 @@ namespace SystemMenu
             Info->Left = 1920 - 200 - 25;
             Info->Top = 50;
             Info->Width = 200;
-            Info->Height = RAISEDWIDTH * 9 + 2 * (RAISEDWIDTH * 2 + 25);
+            Info->Height = RAISEDWIDTH * 12 + 3 * (RAISEDWIDTH * 2 + 25);
 
-            RestartButton = STL::Button(STL::ARGB(200), "Restart", STL::Point(RAISEDWIDTH * 3, RAISEDWIDTH * 3), 
+            TTYButton = STL::Button(STL::ARGB(200), "To TTY", STL::Point(RAISEDWIDTH * 3, RAISEDWIDTH * 3), 
                                         STL::Point(Info->Width - RAISEDWIDTH * 3, RAISEDWIDTH * 3 + (RAISEDWIDTH * 2 + 25)));
-            ShutDownButton = STL::Button(STL::ARGB(200), "Shut Down", STL::Point(RAISEDWIDTH * 3, RAISEDWIDTH * 6 + (RAISEDWIDTH * 2 + 25)), 
+            RestartButton = STL::Button(STL::ARGB(200), "Restart", STL::Point(RAISEDWIDTH * 3, RAISEDWIDTH * 6 + (RAISEDWIDTH * 2 + 25)), 
                                         STL::Point(Info->Width - RAISEDWIDTH * 3, RAISEDWIDTH * 6 + 2 * (RAISEDWIDTH * 2 + 25)));
+            ShutDownButton = STL::Button(STL::ARGB(200), "Shut Down", STL::Point(RAISEDWIDTH * 3, RAISEDWIDTH * 9 + 2 * (RAISEDWIDTH * 2 + 25)), 
+                                        STL::Point(Info->Width - RAISEDWIDTH * 3, RAISEDWIDTH * 9 + 3 * (RAISEDWIDTH * 2 + 25)));
 
             StartAnimation(OpenAnimation);
         }
@@ -68,6 +71,7 @@ namespace SystemMenu
                 }
             }   
 
+            TTYButton.Draw(Buffer);
             RestartButton.Draw(Buffer);
             ShutDownButton.Draw(Buffer);
         }
@@ -83,6 +87,12 @@ namespace SystemMenu
         case STL::PROM::MOUSE:
         {
             STL::MINFO MouseInfo = *(STL::MINFO*)Input;
+
+            if (TTYButton.IsToggled(MouseInfo))
+            {
+                STL::System("set drawmouse 0");
+                return STL::PROR::RESET;
+            }
 
             if (RestartButton.IsToggled(MouseInfo))
             {

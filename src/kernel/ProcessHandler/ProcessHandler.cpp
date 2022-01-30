@@ -28,8 +28,10 @@ namespace ProcessHandler
     {
         for (int i = 0; i < Processes.Length(); i++)
         {
-            KillProcess(Processes[i]->GetID());
+            Processes[i]->Kill();
+            delete Processes[i];
         }
+        Processes.Clear();
     }
 
     Process* GetProcess(uint64_t ID)
@@ -152,6 +154,12 @@ namespace ProcessHandler
                     i--;
                 }
                 break;
+                case STL::PROR::RESET:
+                {
+                    KillAllProcesses();
+                    Loop();
+                }
+                break;
                 default:
                 {
 
@@ -168,7 +176,7 @@ namespace ProcessHandler
 
             if (Processes.Length() == 0)
             {
-                Debug::Error("All processes killed");
+                StartProcess(tty::Procedure);
             }
 
             asm("HLT");
