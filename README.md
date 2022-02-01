@@ -10,7 +10,9 @@ To create a simple and completely useless operating system, because i can.
   
 //////////////////////Future improvments//////////////////////   
   
-Implement a GUI.
+Implement partial buffer swapping. With a list for swap buffer requests.
 Optimize mouse input.
+Optimize kernel/System.cpp
+Write more comments.
 
 Implement Tetris.
