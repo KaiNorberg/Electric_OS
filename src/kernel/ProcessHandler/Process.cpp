@@ -23,8 +23,17 @@ STL::Point Process::GetSize()
 void Process::SetPos(STL::Point NewPos)
 {
     this->Pos = NewPos;
-    this->Pos.X = STL::Clamp(this->Pos.X, (int32_t)RAISEDWIDTH, (int32_t)(Renderer::Backbuffer.Width - this->FrameBuffer.Width - RAISEDWIDTH));
-    this->Pos.Y = STL::Clamp(this->Pos.Y, (int32_t)RAISEDWIDTH, (int32_t)(Renderer::Backbuffer.Height - this->FrameBuffer.Height - RAISEDWIDTH));
+
+    if (this->Type == STL::PROT::WINDOWED)
+    {
+        this->Pos.X = STL::Clamp(this->Pos.X, (int32_t)RAISEDWIDTH, (int32_t)(Renderer::Backbuffer.Width - this->FrameBuffer.Width - RAISEDWIDTH));
+        this->Pos.Y = STL::Clamp(this->Pos.Y, (int32_t)RAISEDWIDTH + FRAME_OFFSET.Y, (int32_t)(Renderer::Backbuffer.Height - this->FrameBuffer.Height - RAISEDWIDTH));        
+    }
+    else
+    {
+        this->Pos.X = STL::Clamp(this->Pos.X, (int32_t)0, (int32_t)(Renderer::Backbuffer.Width - this->FrameBuffer.Width));
+        this->Pos.Y = STL::Clamp(this->Pos.Y, (int32_t)0, (int32_t)(Renderer::Backbuffer.Height - this->FrameBuffer.Height));        
+    }
 }
 
 STL::PROT Process::GetType()
@@ -97,22 +106,16 @@ bool Process::Overlap(Process* Other)
 }
 
 void Process::Clear()
-{
-    if (this->Type == STL::PROT::FULLSCREEN || this->Type == STL::PROT::FRAMELESSWINDOW || this->Type == STL::PROT::WINDOWED)
-    {  
-        this->FrameBuffer.Clear();
-        this->SendMessage(STL::PROM::CLEAR, &this->FrameBuffer);
-    } 
+{ 
+    this->FrameBuffer.Clear();
+    this->SendMessage(STL::PROM::CLEAR, &this->FrameBuffer);
 }
 
 void Process::Kill()
 {
     this->SendMessage(STL::PROM::KILL, nullptr);
 
-    if (this->Type == STL::PROT::FULLSCREEN || this->Type == STL::PROT::FRAMELESSWINDOW || this->Type == STL::PROT::WINDOWED)
-    {
-        Heap::Free(FrameBuffer.Base);
-    }
+    Heap::Free(FrameBuffer.Base);
 
     for (int i = 0; i < ProcessHandler::Processes.Length(); i++)
     {
@@ -132,24 +135,21 @@ void Process::Draw()
 
 void Process::Render(STL::Point TopLeft, STL::Point BottomRight)
 {
-    if (this->Type == STL::PROT::FRAMELESSWINDOW || this->Type == STL::PROT::FULLSCREEN || this->Type == STL::PROT::WINDOWED)
+    if (BottomRight.X > Renderer::Backbuffer.Width || TopLeft.X < 0)
     {
-        if (BottomRight.X > Renderer::Backbuffer.Width || TopLeft.X < 0)
-        {
-            return;
-        }
-        if (BottomRight.Y > Renderer::Backbuffer.Height || TopLeft.Y < 0)
-        {
-            return;
-        }
+        return;
+    }
+    if (BottomRight.Y > Renderer::Backbuffer.Height || TopLeft.Y < 0)
+    {
+        return;
+    }
 
-        for (int y = TopLeft.Y; y < BottomRight.Y; y++)
+    for (int y = TopLeft.Y; y < BottomRight.Y; y++)
+    {
+        for (int x = TopLeft.X; x < BottomRight.X; x++)
         {
-            for (int x = TopLeft.X; x < BottomRight.X; x++)
-            {
-                *(STL::ARGB*)((uint64_t)Renderer::Backbuffer.Base + (this->Pos.X + x) * 4 + (this->Pos.Y + y) * Renderer::Backbuffer.PixelsPerScanline * 4) = 
-                *(STL::ARGB*)((uint64_t)this->FrameBuffer.Base + x * 4 + y * this->FrameBuffer.PixelsPerScanline * 4);
-            }
+            *(STL::ARGB*)((uint64_t)Renderer::Backbuffer.Base + (this->Pos.X + x) * 4 + (this->Pos.Y + y) * Renderer::Backbuffer.PixelsPerScanline * 4) = 
+            *(STL::ARGB*)((uint64_t)this->FrameBuffer.Base + x * 4 + y * this->FrameBuffer.PixelsPerScanline * 4);
         }
     }
 
@@ -166,35 +166,46 @@ void Process::Render()
         }
     }
 
-    this->Render(STL::Point(0, 0), STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height));
-
     if (this->Type == STL::PROT::WINDOWED)
     { 
-        STL::ARGB Background;
-        STL::ARGB Foreground;
-        if (this == ProcessHandler::FocusedProcess)
+        if (this == ProcessHandler::Processes[ProcessHandler::MovingWindow])
         {
-            Background = STL::ARGB(255, 14, 0, 135);            
-            Foreground = STL::ARGB(255);
+            Renderer::Backbuffer.DrawRaisedRectEdge(this->Pos - FRAME_OFFSET, this->Pos + STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height));
         }
         else
         {
-            Background = STL::ARGB(128);            
-            Foreground = STL::ARGB(192);            
+            this->Render(STL::Point(0, 0), STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height));
+
+            STL::ARGB Background;
+            STL::ARGB Foreground;
+            if (this == ProcessHandler::FocusedProcess)
+            {
+                Background = STL::ARGB(255, 14, 0, 135);            
+                Foreground = STL::ARGB(255);
+            }
+            else
+            {
+                Background = STL::ARGB(128);            
+                Foreground = STL::ARGB(192);            
+            }
+
+            //Draw topbar
+            Renderer::Backbuffer.DrawRaisedRectEdge(this->Pos - FRAME_OFFSET, this->Pos + STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height));
+            Renderer::Backbuffer.DrawRect(this->Pos - FRAME_OFFSET, this->Pos + STL::Point(this->FrameBuffer.Width, 0), Background);
+
+            //Draw close button
+            Renderer::Backbuffer.DrawRaisedRect(this->Pos + STL::Point(this->FrameBuffer.Width, 0) + CLOSE_BUTTON_OFFSET, 
+            this->Pos + STL::Point(this->FrameBuffer.Width, 0) + CLOSE_BUTTON_OFFSET + CLOSE_BUTTON_SIZE, STL::ARGB(200));
+
+            //Print Title
+            STL::Point TextPos = this->Pos + STL::Point(RAISEDWIDTH * 2, -FRAME_OFFSET.Y / 2 - 8);
+            Renderer::Backbuffer.Print(this->Title.cstr(), TextPos, 1, Foreground, Background);
         }
-
-        //Draw topbar
-        Renderer::Backbuffer.DrawRaisedRectEdge(this->Pos - FRAME_OFFSET, this->Pos + STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height));
-        Renderer::Backbuffer.DrawRect(this->Pos - FRAME_OFFSET, this->Pos + STL::Point(this->FrameBuffer.Width, 0), Background);
-
-        //Draw close button
-        Renderer::Backbuffer.DrawRaisedRect(this->Pos + STL::Point(this->FrameBuffer.Width, 0) + CLOSE_BUTTON_OFFSET, 
-        this->Pos + STL::Point(this->FrameBuffer.Width, 0) + CLOSE_BUTTON_OFFSET + CLOSE_BUTTON_SIZE, STL::ARGB(200));
-
-        //Print Title
-        STL::Point TextPos = this->Pos + STL::Point(RAISEDWIDTH * 2, -FRAME_OFFSET.Y / 2 - 8);
-        Renderer::Backbuffer.Print(this->Title.cstr(), TextPos, 1, Foreground, Background);
     } 
+    else
+    {
+        this->Render(STL::Point(0, 0), STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height));
+    }
 }
 
 void Process::SendMessage(STL::PROM Message, STL::PROI Input)
