@@ -11,5 +11,6 @@ To create a simple and completely useless operating system, because i can.
 //////////////////////Future improvments//////////////////////   
   
 Implement a GUI.
+Optimize mouse input.
 
 Implement Tetris.

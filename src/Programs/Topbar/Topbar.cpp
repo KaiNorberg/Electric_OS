@@ -114,6 +114,7 @@ namespace Topbar
         case STL::PROM::DRAW:
         {
             STL::Framebuffer* Buffer = (STL::Framebuffer*)Input;
+            
             if (CurrentAnimation != nullptr)
             {
                 CurrentAnimation(Buffer);
@@ -150,6 +151,7 @@ namespace Topbar
                 return STL::PROR::DRAW;
             }
         }
+        break;
         case STL::PROM::MOUSE:
         {
             STL::MINFO MouseInfo = *(STL::MINFO*)Input;

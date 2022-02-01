@@ -139,10 +139,13 @@ namespace InteruptHandlers
 
     __attribute__((interrupt)) void PIT(InterruptFrame* frame)
     {
+        static uint64_t OldRTCTick = 0;
+
         PIT::Tick();
-        if (PIT::GetFrequency() % 100 == 0)
+        if (PIT::Ticks >= OldRTCTick + 100)
         {
             RTC::Update();
+            OldRTCTick = PIT::Ticks;
         }
 
         ProcessHandler::PITInterupt();
