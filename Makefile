@@ -29,7 +29,7 @@ os: $(OBJS) link
 $(OBJDIR)/kernel/Interrupts/Handlers.o: $(SRCDIR)/kernel/Interrupts/Handlers.cpp
 	@echo !==== COMPILING $^
 	@mkdir -p $(@D)
-	$(CC) -mno-red-zone -mgeneral-regs-only -ffreestanding -Isrc/ -c $^ -o $@ 
+	$(CC) -mno-red-zone -mgeneral-regs-only -ffreestanding -Isrc/ -Os -c $^ -o $@ 
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@echo !==== COMPILING $^

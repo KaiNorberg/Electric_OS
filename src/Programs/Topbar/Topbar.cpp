@@ -3,6 +3,7 @@
 #include "STL/Graphics/Framebuffer.h"
 #include "STL/System/System.h"
 #include "STL/GUI/Button.h"
+#include "STL/GUI/Label.h"
 
 #include "STL/String/cstr.h"
 
@@ -15,8 +16,7 @@
 
 namespace Topbar
 {                    
-    STL::Point TimePos;
-    STL::Point DatePos;
+    STL::Label TimeDateLabel;
 
     STL::ARGB BackgroundColor;
 
@@ -35,30 +35,6 @@ namespace Topbar
         CurrentAnimation = Animation;
     }
 
-    void TextAnimation(STL::Framebuffer* Buffer)
-    {            
-        if (AnimationCounter / 5 < 10)
-        {
-            char* Time = (char*)STL::System("time");
-
-            Time[AnimationCounter / 5] = 0;
-            STL::Point Temp = TimePos;
-            Buffer->Print(Time, Temp, 1, STL::ARGB(255, 60, 60, 60), BackgroundColor);
-        }
-        else if (AnimationCounter / 5 - 10 < 10)
-        {
-            char* Date = (char*)STL::System("date");
-
-            Date[AnimationCounter / 5 - 10] = 0;
-            STL::Point Temp = DatePos;
-            Buffer->Print(Date, Temp, 1, STL::ARGB(255, 60, 60, 60), BackgroundColor);
-        }
-        else
-        {
-            StartAnimation(nullptr);   
-        }
-    }
-
     void OpenAnimation(STL::Framebuffer* Buffer)
     {
         if (AnimationCounter == 0)
@@ -67,15 +43,16 @@ namespace Topbar
         }
         else if (AnimationCounter > Buffer->Height - RAISEDWIDTH)
         {
-            StartAnimation(TextAnimation);
+            StartAnimation(nullptr);   
             return;
         }
 
         uint64_t Offset = ((Buffer->Height - RAISEDWIDTH) - AnimationCounter);
 
         Buffer->DrawRaisedRect(STL::Point(RAISEDWIDTH, RAISEDWIDTH), STL::Point(Buffer->Width - RAISEDWIDTH, AnimationCounter), BackgroundColor);
-        Buffer->DrawSunkenRect(STL::Point(Buffer->Width / 2 - 100, 4 + RAISEDWIDTH * 2 - Offset), 
-        STL::Point(Buffer->Width / 2 + 100, Buffer->Height - 4 - RAISEDWIDTH * 2 - Offset), BackgroundColor);
+
+        TimeDateLabel.TopLeft.Y = 4 + RAISEDWIDTH * 2 - Offset;
+        TimeDateLabel.BottomRight.Y = Buffer->Height - 4 - RAISEDWIDTH * 2 - Offset;
 
         SystemButton.TopLeft.Y = 4 + RAISEDWIDTH * 2 - Offset;
         SystemButton.BottomRight.Y = Buffer->Height - 4 - RAISEDWIDTH * 2 - Offset;
@@ -98,12 +75,12 @@ namespace Topbar
             Info->Width = 1920;
             Info->Height = 16 + TOPBAR_PADDING + RAISEDWIDTH;
 
-            TimePos = STL::Point(1920 / 2 - 10 * 8, TOPBAR_PADDING / 2);
-            DatePos = STL::Point(1920 / 2, TOPBAR_PADDING / 2);
-
             BackgroundColor = STL::ARGB(255, 200, 200, 200);
 
             SystemMenuID = -1;
+
+            TimeDateLabel = STL::Label("TEMP", STL::Point(Info->Width / 2 - 100, 4 + RAISEDWIDTH * 2), STL::Point(Info->Width / 2 + 100, Info->Height - 4 - RAISEDWIDTH * 2));
+            TimeDateLabel.Style = STL::LabelStyle::Sunken;
 
             SystemButton = STL::Button(BackgroundColor, "System", STL::Point(Info->Width - BUTTONGAP - BUTTONWIDTH / 2, 4 + RAISEDWIDTH * 2), STL::Point(Info->Width - BUTTONGAP + BUTTONWIDTH / 2, Info->Height - 4 - RAISEDWIDTH * 2));
             StartButton = STL::Button(BackgroundColor, "Start", STL::Point(BUTTONGAP - BUTTONWIDTH / 2, 4 + RAISEDWIDTH * 2), STL::Point(BUTTONGAP + BUTTONWIDTH / 2, Info->Height - 4 - RAISEDWIDTH * 2));
@@ -125,21 +102,10 @@ namespace Topbar
                     return STL::PROR::DRAW;
                 }
             }   
-            else
-            {
-                Buffer->DrawSunkenRect(STL::Point(Buffer->Width / 2 - 100, 4 + RAISEDWIDTH * 2), STL::Point(Buffer->Width / 2 + 100, Buffer->Height - 4 - RAISEDWIDTH * 2), BackgroundColor);
-
-                char* Time = (char*)STL::System("time");
-                STL::Point Temp = TimePos;
-                Buffer->Print(Time, Temp, 1, STL::ARGB(255, 60, 60, 60), BackgroundColor);
-
-                char* Date = (char*)STL::System("date");
-                Temp = DatePos;
-                Buffer->Print(Date, Temp, 1, STL::ARGB(255, 60, 60, 60), BackgroundColor);                    
-            }
 
             SystemButton.Draw(Buffer);
             StartButton.Draw(Buffer);
+            TimeDateLabel.Draw(Buffer);
         }
         break;
         case STL::PROM::TICK:
@@ -148,6 +114,10 @@ namespace Topbar
 
             if (CurrentAnimation != nullptr || CurrentTick % 100 == 0)
             {
+                TimeDateLabel.Text = STL::System("time");
+                TimeDateLabel.Text += " ";
+                TimeDateLabel.Text += STL::System("date");
+
                 return STL::PROR::DRAW;
             }
         }
