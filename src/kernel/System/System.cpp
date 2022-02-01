@@ -7,6 +7,8 @@
 #include "Programs/Desktop/Desktop.h"
 #include "Programs/Topbar/Topbar.h"
 #include "Programs/SystemMenu/SystemMenu.h"
+#include "Programs/StartMenu/StartMenu.h"
+#include "Programs/Terminal/Terminal.h"
 
 #include "kernel/Renderer/Renderer.h"
 #include "kernel/RTC/RTC.h"
@@ -211,6 +213,16 @@ namespace System
         case STL::ConstHashWord("systemmenu"):
         {
             return STL::ToString(ProcessHandler::StartProcess(SystemMenu::Procedure));
+        }
+        break;
+        case STL::ConstHashWord("startmenu"):
+        {
+            return STL::ToString(ProcessHandler::StartProcess(StartMenu::Procedure));
+        }
+        break;
+        case STL::ConstHashWord("terminal"):
+        {
+            return STL::ToString(ProcessHandler::StartProcess(Terminal::Procedure));
         }
         break;
         default:

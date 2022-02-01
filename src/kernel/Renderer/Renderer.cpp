@@ -156,6 +156,20 @@ namespace Renderer
         STL::SetMemory(Backbuffer.Base + Backbuffer.PixelsPerScanline * (Backbuffer.Height - Amount), 0, Offset * 4);
     }
 
+    void RecaptureMouse()
+    {
+        for (int Y = 0; Y < 16; Y++)
+        {
+            for (int X = 0; X < 16; X++)
+            {
+                if (X + Y < 12)
+                {
+                    BeforeCursor[X + Y * 16] = GetPixel(STL::Point(Mouse::Position.X + X, Mouse::Position.Y + Y));
+                }
+            }
+        }        
+    }
+
     void SwapBuffers()
     {
         if (DrawMouse)
@@ -166,7 +180,10 @@ namespace Renderer
                 {
                     if (X + Y < 12)
                     {
-                        PutPixel(STL::Point(OldMousePos.X + X, OldMousePos.Y + Y), BeforeCursor[X + Y * 16]);
+                        if (GetPixel(STL::Point(OldMousePos.X + X, OldMousePos.Y + Y)).ToInt() == STL::ARGB(255).ToInt())
+                        {
+                            PutPixel(STL::Point(OldMousePos.X + X, OldMousePos.Y + Y), BeforeCursor[X + Y * 16]);
+                        }
                     }
                 }
             }

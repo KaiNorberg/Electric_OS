@@ -33,6 +33,8 @@ namespace Renderer
 
     void Clear();
 
+    void RecaptureMouse();
+
     void SwapBuffers();
 
     STL::Point GetScreenSize();

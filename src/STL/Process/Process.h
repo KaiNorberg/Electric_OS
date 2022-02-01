@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 #include "STL/Math/Point.h"
+#include "STL/String/String.h"
 
 namespace STL
 {
@@ -51,6 +52,8 @@ namespace STL
         uint64_t Left;
 
         uint64_t Top;
+
+        String Title;
     };
 
     struct MINFO //Mouse Info

@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+#include "Point.h"
+
 namespace STL
 {
     uint32_t GetDigit(uint32_t Number, uint32_t Digit);
@@ -11,6 +13,8 @@ namespace STL
     uint32_t IntPow(uint32_t X, uint32_t E);
 
     double Sqrt(double X);
+
+    bool Contains(Point TopLeft, Point BottomRight, Point Pos);
 
     template <typename T>
     T Clamp(const T& n, const T& lower, const T& upper) 

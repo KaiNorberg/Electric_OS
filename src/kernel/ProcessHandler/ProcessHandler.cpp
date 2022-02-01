@@ -1,6 +1,6 @@
 #include "ProcessHandler.h"
 
-#include "STL/Math/Point.h"
+#include "STL/Math/Math.h"
 #include "STL/Graphics/Framebuffer.h"
 #include "STL/Memory/Memory.h"
 #include "STL/String/cstr.h"
@@ -20,9 +20,12 @@ namespace ProcessHandler
     STL::List<Process*> Processes;
     uint64_t LastMessagedProcess = 0;
 
-    uint64_t FocusedProcess = 0;
+    Process* FocusedProcess = nullptr;
 
     bool SwapBuffersRequest = false;
+
+    uint64_t MovingWindow = 0;
+    STL::Point MovingWindowPosDelta = STL::Point(0, 0);
 
     void KillAllProcesses()
     {
@@ -49,26 +52,81 @@ namespace ProcessHandler
 
     void KeyBoardInterupt()
     {
+        if (FocusedProcess == nullptr)
+        {
+            return;
+        }
+
         uint8_t Key = KeyBoard::GetKeyPress();
-        Processes[FocusedProcess]->SendMessage(STL::PROM::KEYPRESS, &Key);
+        FocusedProcess->SendMessage(STL::PROM::KEYPRESS, &Key);
     }
 
     void MouseInterupt()
     {        
-        for (int i = Processes.Length(); i --> 0; )
+        if (MovingWindow != 0)
         {
-            if (Processes[i]->Contains(Mouse::Position))
-            {
-                FocusedProcess = i;
+            if (!Mouse::LeftHeld)
+            {       
+                for (int i = 0; i < MovingWindow; i++)
+                {
+                    if (Processes[MovingWindow]->Contains(Processes[i]));
+                    {
+                        Processes[i]->SendRequest(STL::PROR::RENDER);
+                    }
+                }
 
-                STL::MINFO MouseInfo;
-                MouseInfo.Pos = Mouse::Position - Processes[i]->GetPos();
-                MouseInfo.LeftHeld = Mouse::LeftHeld;
-                MouseInfo.MiddleHeld = Mouse::MiddleHeld;
-                MouseInfo.RightHeld = Mouse::RightHeld;
+                FocusedProcess = Processes[MovingWindow];
+                Processes[MovingWindow]->SetPos(Mouse::Position + MovingWindowPosDelta);
+                Processes[MovingWindow]->SendRequest(STL::PROR::DRAW);
 
-                Processes[i]->SendMessage(STL::PROM::MOUSE, &MouseInfo);
-                break;
+                MovingWindow = 0;
+            }       
+        }
+
+        for (int i = Processes.Length(); i --> 0; )
+        {                
+            STL::MINFO MouseInfo;
+            MouseInfo.Pos = Mouse::Position - Processes[i]->GetPos();
+            MouseInfo.LeftHeld = Mouse::LeftHeld;
+            MouseInfo.MiddleHeld = Mouse::MiddleHeld;
+            MouseInfo.RightHeld = Mouse::RightHeld;
+
+            Processes[i]->SendMessage(STL::PROM::MOUSE, &MouseInfo); 
+
+            if (Mouse::LeftHeld)
+            {                
+                if (Processes[i]->GetType() == STL::PROT::WINDOWED)
+                {
+                    STL::Point CloseButtonPos = Processes[i]->GetPos() + STL::Point(Processes[i]->GetSize().X, 0) + CLOSE_BUTTON_OFFSET;
+
+                    if (STL::Contains(CloseButtonPos, CloseButtonPos + CLOSE_BUTTON_SIZE, Mouse::Position)) //If over close button
+                    {
+                        KillProcess(Processes[i]->GetID());
+                        break;
+                    } 
+                    else if (STL::Contains(Processes[i]->GetPos() - FRAME_OFFSET, Processes[i]->GetPos() + STL::Point(Processes[i]->GetSize().X, 0), Mouse::Position)) //If over topbar
+                    {                              
+                        FocusedProcess = Processes[i];
+                        MovingWindow = i;
+                        MovingWindowPosDelta = Processes[i]->GetPos() - Mouse::Position;
+
+                        break;
+                    }                    
+                }
+               
+                if (Processes[i]->Contains(Mouse::Position)) //If over window
+                {
+                    if (Processes[i] != FocusedProcess)
+                    {
+                        FocusedProcess = Processes[i];
+                        if (Processes[i]->GetType() == STL::PROT::WINDOWED)
+                        {
+                            Processes[i]->SendRequest(STL::PROR::RENDER);
+                        }                        
+                    } 
+
+                    break;
+                }
             }
         }
 
@@ -94,6 +152,11 @@ namespace ProcessHandler
         {
             if (ProcessID == Processes[i]->GetID())
             {
+                if (Processes[i] == FocusedProcess)
+                {
+                    FocusedProcess = nullptr;
+                }
+
                 Processes[i]->Kill();
                 delete Processes[i];
                 Processes.Erase(i);
@@ -119,14 +182,15 @@ namespace ProcessHandler
                 }
             }
         }
-
+            
         return Processes.Last()->GetID();
     }
 
     void Loop()
     {                
         StartProcess(tty::Procedure);
-    
+        FocusedProcess = Processes[0];
+
         while (true) 
         {       
             for (uint64_t i = 0; i < Processes.Length(); i++)

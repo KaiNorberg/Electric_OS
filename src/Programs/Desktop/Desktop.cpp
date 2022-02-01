@@ -25,6 +25,7 @@ namespace Desktop
         {
             STL::System("set drawmouse 1");
             STL::System("start topbar");
+
             StartAnimation(nullptr);
 
             Buffer->Fill(BackgroundColor);

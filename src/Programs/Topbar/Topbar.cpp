@@ -27,6 +27,7 @@ namespace Topbar
     uint64_t AnimationCounter = 0;
 
     int64_t SystemMenuID = -1;
+    int64_t StartMenuID = -1;
 
     inline void StartAnimation(void(*Animation)(STL::Framebuffer*))
     {
@@ -168,7 +169,20 @@ namespace Topbar
                 }
             }
             
-            StartButton.IsToggled(MouseInfo);
+            if (StartButton.IsToggled(MouseInfo))
+            {
+                if (StartMenuID == -1)
+                {
+                    StartMenuID = STL::ToInt(STL::System("start startmenu"));
+                }
+                else
+                {
+                    STL::String Command = "kill ";
+                    Command += STL::ToString(StartMenuID);
+                    STL::System(Command.cstr());
+                    StartMenuID = -1;
+                }
+            }
 
             return STL::PROR::DRAW;
         }

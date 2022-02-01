@@ -55,4 +55,10 @@ namespace STL
 
         return X2;
     }
+
+    bool Contains(Point TopLeft, Point BottomRight, Point Pos)
+    {
+        return (TopLeft.X < Pos.X && BottomRight.X > Pos.X && TopLeft.Y < Pos.Y && BottomRight.Y > Pos.Y);
+    }
+
 }

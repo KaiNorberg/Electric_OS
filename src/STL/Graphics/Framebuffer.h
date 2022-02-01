@@ -7,7 +7,7 @@
 
 #define RAISEDWIDTH 4
 #define RAISEDHIGHCOLOR STL::ARGB(255)
-#define RAISEDLOWCOLOR STL::ARGB(0)
+#define RAISEDLOWCOLOR STL::ARGB(60)
 
 namespace STL
 {
@@ -27,7 +27,11 @@ namespace STL
 
 		void PutPixel(Point Pixel, ARGB Color);
 
+		void DrawRaisedRectEdge(Point TopLeft, Point BottomRight);
+
 		void DrawRaisedRect(Point TopLeft, Point BottomRight, ARGB Color);
+
+		void DrawSunkenRectEdge(Point TopLeft, Point BottomRight);
 
 		void DrawSunkenRect(Point TopLeft, Point BottomRight, ARGB Color);
 
@@ -37,6 +41,6 @@ namespace STL
 
 		void PutChar(char chr, Point Pos, uint8_t Scale, ARGB Foreground, ARGB Background);
 
-    	void Print(const char* cstr, Point& Pos, uint8_t Scale = 1, ARGB Foreground = ARGB(255), ARGB Background = ARGB(0));
+    	void Print(const char* cstr, Point& Pos, uint8_t Scale = 1, ARGB Foreground = ARGB(255), ARGB Background = ARGB(0), uint64_t NewLineOffset = 0);
 	};
 }

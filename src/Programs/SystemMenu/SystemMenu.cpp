@@ -20,11 +20,6 @@ namespace SystemMenu
         CurrentAnimation = Animation;
     }
 
-    void DrawEntry(STL::Framebuffer* Buffer, uint64_t Index, const char* Text)
-    {
-        Buffer->DrawSunkenRect(STL::Point(RAISEDWIDTH * 3, RAISEDWIDTH * (3 + Index) + Index * (RAISEDWIDTH * 2 + 25)), STL::Point(Buffer->Width - RAISEDWIDTH * 3, RAISEDWIDTH * (3 + Index) + (1 + Index) * (RAISEDWIDTH * 2 + 25)), STL::ARGB(200));
-    }
-
     void OpenAnimation(STL::Framebuffer* Buffer)
     {
         Buffer->DrawRaisedRect(STL::Point(RAISEDWIDTH, RAISEDWIDTH), STL::Point(Buffer->Width - RAISEDWIDTH, Buffer->Height - RAISEDWIDTH), STL::ARGB(200));

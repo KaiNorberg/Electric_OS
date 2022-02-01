@@ -1,6 +1,8 @@
 #include "Process.h"
 #include "ProcessHandler.h"
 
+#include "STL/Math/Math.h"
+
 #include "kernel/Memory/Heap.h"
 
 uint64_t Process::GetID()
@@ -11,6 +13,18 @@ uint64_t Process::GetID()
 STL::Point Process::GetPos()
 {
     return this->Pos;
+}
+
+STL::Point Process::GetSize()
+{
+    return STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height);
+}
+
+void Process::SetPos(STL::Point NewPos)
+{
+    this->Pos = NewPos;
+    this->Pos.X = STL::Clamp(this->Pos.X, (int32_t)RAISEDWIDTH, (int32_t)(Renderer::Backbuffer.Width - this->FrameBuffer.Width - RAISEDWIDTH));
+    this->Pos.Y = STL::Clamp(this->Pos.Y, (int32_t)RAISEDWIDTH, (int32_t)(Renderer::Backbuffer.Height - this->FrameBuffer.Height - RAISEDWIDTH));
 }
 
 STL::PROT Process::GetType()
@@ -84,7 +98,7 @@ bool Process::Overlap(Process* Other)
 
 void Process::Clear()
 {
-    if (this->Type == STL::PROT::FULLSCREEN || this->Type == STL::PROT::FRAMELESSWINDOW)
+    if (this->Type == STL::PROT::FULLSCREEN || this->Type == STL::PROT::FRAMELESSWINDOW || this->Type == STL::PROT::WINDOWED)
     {  
         this->FrameBuffer.Clear();
         this->SendMessage(STL::PROM::CLEAR, &this->FrameBuffer);
@@ -95,7 +109,7 @@ void Process::Kill()
 {
     this->SendMessage(STL::PROM::KILL, nullptr);
 
-    if (this->Type == STL::PROT::FULLSCREEN || this->Type == STL::PROT::FRAMELESSWINDOW)
+    if (this->Type == STL::PROT::FULLSCREEN || this->Type == STL::PROT::FRAMELESSWINDOW || this->Type == STL::PROT::WINDOWED)
     {
         Heap::Free(FrameBuffer.Base);
     }
@@ -114,19 +128,11 @@ void Process::Draw()
     this->SendMessage(STL::PROM::DRAW, &this->FrameBuffer);
 
     this->Render();
-
-    for (int i = 0; i < ProcessHandler::Processes.Length(); i++)
-    {
-        if (ProcessHandler::Processes[i] != this && this->Overlap(ProcessHandler::Processes[i]))
-        {
-            ProcessHandler::Processes[i]->SendRequest(STL::PROR::RENDER);
-        }
-    }
 }
 
 void Process::Render(STL::Point TopLeft, STL::Point BottomRight)
 {
-    if (this->Type == STL::PROT::FRAMELESSWINDOW || this->Type == STL::PROT::FULLSCREEN)
+    if (this->Type == STL::PROT::FRAMELESSWINDOW || this->Type == STL::PROT::FULLSCREEN || this->Type == STL::PROT::WINDOWED)
     {
         if (BottomRight.X > Renderer::Backbuffer.Width || TopLeft.X < 0)
         {
@@ -152,7 +158,43 @@ void Process::Render(STL::Point TopLeft, STL::Point BottomRight)
 
 void Process::Render()
 {
+    for (int i = 0; i < ProcessHandler::Processes.Length(); i++)
+    {
+        if (ProcessHandler::Processes[i] != this && this->Overlap(ProcessHandler::Processes[i]))
+        {
+            ProcessHandler::Processes[i]->SendRequest(STL::PROR::RENDER);
+        }
+    }
+
     this->Render(STL::Point(0, 0), STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height));
+
+    if (this->Type == STL::PROT::WINDOWED)
+    { 
+        STL::ARGB Background;
+        STL::ARGB Foreground;
+        if (this == ProcessHandler::FocusedProcess)
+        {
+            Background = STL::ARGB(255, 14, 0, 135);            
+            Foreground = STL::ARGB(255);
+        }
+        else
+        {
+            Background = STL::ARGB(128);            
+            Foreground = STL::ARGB(192);            
+        }
+
+        //Draw topbar
+        Renderer::Backbuffer.DrawRaisedRectEdge(this->Pos - FRAME_OFFSET, this->Pos + STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height));
+        Renderer::Backbuffer.DrawRect(this->Pos - FRAME_OFFSET, this->Pos + STL::Point(this->FrameBuffer.Width, 0), Background);
+
+        //Draw close button
+        Renderer::Backbuffer.DrawRaisedRect(this->Pos + STL::Point(this->FrameBuffer.Width, 0) + CLOSE_BUTTON_OFFSET, 
+        this->Pos + STL::Point(this->FrameBuffer.Width, 0) + CLOSE_BUTTON_OFFSET + CLOSE_BUTTON_SIZE, STL::ARGB(200));
+
+        //Print Title
+        STL::Point TextPos = this->Pos + STL::Point(RAISEDWIDTH * 2, -FRAME_OFFSET.Y / 2 - 8);
+        Renderer::Backbuffer.Print(this->Title.cstr(), TextPos, 1, Foreground, Background);
+    } 
 }
 
 void Process::SendMessage(STL::PROM Message, STL::PROI Input)
@@ -192,12 +234,14 @@ Process::Process(STL::PROC Procedure)
         this->FrameBuffer.PixelsPerScanline = Renderer::Backbuffer.Width + 1;
         this->FrameBuffer.Size = (this->FrameBuffer.Height + 1) * this->FrameBuffer.PixelsPerScanline * 4;
         this->FrameBuffer.Base = (STL::ARGB*)Heap::Allocate(this->FrameBuffer.Size);
-
+    
         this->FrameBuffer.Clear();
         this->Request = STL::PROR::DRAW;
     }
-    else if (Info.Type == STL::PROT::FRAMELESSWINDOW)
-    {           
+    else if (Info.Type == STL::PROT::FRAMELESSWINDOW || Info.Type == STL::PROT::WINDOWED)
+    {               
+        this->Title = Info.Title;
+
         this->SetDepth(Info.Depth);         
         this->FrameBuffer.Height = Info.Height;  
         this->FrameBuffer.Width = Info.Width;

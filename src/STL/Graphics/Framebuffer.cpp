@@ -40,10 +40,8 @@ namespace STL
         *(ARGB*)((uint64_t)this->Base + Pixel.X * 4 + Pixel.Y * this->PixelsPerScanline * 4) = Color;
     }
 
-    void Framebuffer::DrawRaisedRect(Point TopLeft, Point BottomRight, ARGB Color)
+    void Framebuffer::DrawRaisedRectEdge(Point TopLeft, Point BottomRight)
     {
-        DrawRect(TopLeft, BottomRight, Color);
-
         for (int y = TopLeft.Y - RAISEDWIDTH; y < TopLeft.Y; y++)
         {
             for (int x = TopLeft.X - RAISEDWIDTH; x < BottomRight.X + RAISEDWIDTH; x++)
@@ -91,13 +89,18 @@ namespace STL
                     this->PutPixel(STL::Point(TopLeft.X - RAISEDWIDTH + x, BottomRight.Y + y), RAISEDLOWCOLOR);
                 }
             }
-        }  
+        }          
     }
 
-    void Framebuffer::DrawSunkenRect(Point TopLeft, Point BottomRight, ARGB Color)
+    void Framebuffer::DrawRaisedRect(Point TopLeft, Point BottomRight, ARGB Color)
     {
         DrawRect(TopLeft, BottomRight, Color);
 
+        DrawRaisedRectEdge(TopLeft, BottomRight);
+    }
+
+    void Framebuffer::DrawSunkenRectEdge(Point TopLeft, Point BottomRight)
+    {
         for (int y = TopLeft.Y - RAISEDWIDTH; y < TopLeft.Y; y++)
         {
             for (int x = TopLeft.X - RAISEDWIDTH; x < BottomRight.X + RAISEDWIDTH; x++)
@@ -146,6 +149,13 @@ namespace STL
                 }
             }
         }
+    }
+
+    void Framebuffer::DrawSunkenRect(Point TopLeft, Point BottomRight, ARGB Color)
+    {
+        DrawRect(TopLeft, BottomRight, Color);
+
+        DrawSunkenRectEdge(TopLeft, BottomRight);
     }
 
     void Framebuffer::DrawRect(STL::Point TopLeft, STL::Point BottomRight, ARGB Color)
@@ -204,7 +214,7 @@ namespace STL
         }
     }
 
-    void Framebuffer::Print(const char* cstr, STL::Point& Pos, uint8_t Scale, ARGB Foreground, ARGB Background)
+    void Framebuffer::Print(const char* cstr, STL::Point& Pos, uint8_t Scale, ARGB Foreground, ARGB Background, uint64_t NewLineOffset)
     {
         for (int i = 0; i < Length(cstr); i++)
         {
@@ -217,7 +227,7 @@ namespace STL
             break;
             case '\r':
             {
-                Pos.X = 0;
+                Pos.X = NewLineOffset;
             }
             break;
             case '\033':
@@ -250,9 +260,9 @@ namespace STL
             break;
             default:
             {
-                if (Pos.X + 16 * Scale > this->Width)
+                if (Pos.X + NewLineOffset + 16 * Scale > this->Width)
                 {
-                    Pos.X = 0;
+                    Pos.X = NewLineOffset;
                     Pos.Y += 16 * Scale;
                 }
 
