@@ -153,18 +153,18 @@ namespace System
 
     const char* CommandSuicide(const char* Command)
     {
-        if (ProcessHandler::LastMessagedProcess != 0)
+        if (ProcessHandler::LastMessagedProcess != nullptr)
         {
-            ProcessHandler::KillProcess(ProcessHandler::LastMessagedProcess);
+            ProcessHandler::KillProcess(ProcessHandler::LastMessagedProcess->GetID());
         }
         return "";
     }
 
     const char* CommandClear(const char* Command)
     {
-        if (ProcessHandler::LastMessagedProcess != 0)
+        if (ProcessHandler::LastMessagedProcess != nullptr)
         {
-            ProcessHandler::GetProcess(ProcessHandler::LastMessagedProcess)->Clear();
+            ProcessHandler::LastMessagedProcess->Clear();
         }
         return "";
     }    

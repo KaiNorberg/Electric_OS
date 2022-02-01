@@ -30,6 +30,10 @@ public:
 
     STL::PROR GetRequest();
 
+    STL::PROC GetProcedure();
+
+    STL::Point GetCloseButtonPos();
+
     void SendRequest(STL::PROR Request);
 
     void SetDepth(uint64_t Depth);

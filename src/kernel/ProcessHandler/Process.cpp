@@ -53,6 +53,16 @@ void Process::SendRequest(STL::PROR Request)
     this->Request = Request;
 }
 
+STL::PROC Process::GetProcedure()
+{
+    return this->Procedure;
+}
+
+STL::Point Process::GetCloseButtonPos()
+{
+    return CLOSE_BUTTON_OFFSET + STL::Point(this->FrameBuffer.Width, 0) + this->Pos; 
+}
+
 void Process::SetDepth(uint64_t Depth)
 {
     if (Depth > ProcessHandler::Processes.Length())
@@ -168,7 +178,7 @@ void Process::Render()
 
     if (this->Type == STL::PROT::WINDOWED)
     { 
-        if (this == ProcessHandler::Processes[ProcessHandler::MovingWindow])
+        if (this == ProcessHandler::MovingWindow)
         {
             Renderer::Backbuffer.DrawRaisedRectEdge(this->Pos - FRAME_OFFSET, this->Pos + STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height));
         }
@@ -194,8 +204,7 @@ void Process::Render()
             Renderer::Backbuffer.DrawRect(this->Pos - FRAME_OFFSET, this->Pos + STL::Point(this->FrameBuffer.Width, 0), Background);
 
             //Draw close button
-            Renderer::Backbuffer.DrawRaisedRect(this->Pos + STL::Point(this->FrameBuffer.Width, 0) + CLOSE_BUTTON_OFFSET, 
-            this->Pos + STL::Point(this->FrameBuffer.Width, 0) + CLOSE_BUTTON_OFFSET + CLOSE_BUTTON_SIZE, STL::ARGB(200));
+            Renderer::Backbuffer.DrawRaisedRect(this->GetCloseButtonPos(), this->GetCloseButtonPos() + CLOSE_BUTTON_SIZE, STL::ARGB(200));
 
             //Print Title
             STL::Point TextPos = this->Pos + STL::Point(RAISEDWIDTH * 2, -FRAME_OFFSET.Y / 2 - 8);
@@ -210,7 +219,7 @@ void Process::Render()
 
 void Process::SendMessage(STL::PROM Message, STL::PROI Input)
 {
-    ProcessHandler::LastMessagedProcess = this->ID;
+    ProcessHandler::LastMessagedProcess = this;
 
     STL::PROR NewRequest = this->Procedure(Message, Input);
 

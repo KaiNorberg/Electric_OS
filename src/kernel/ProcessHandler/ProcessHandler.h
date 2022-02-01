@@ -8,9 +8,9 @@
 namespace ProcessHandler    
 {       
     extern Process* FocusedProcess;
-    extern uint64_t LastMessagedProcess;
+    extern Process* LastMessagedProcess;
     extern bool SwapBuffersRequest;
-    extern uint64_t MovingWindow;
+    extern Process* MovingWindow;
 
     extern STL::List<Process*> Processes;
 

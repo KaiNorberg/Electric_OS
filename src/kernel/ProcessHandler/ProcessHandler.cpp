@@ -4,6 +4,7 @@
 #include "STL/Graphics/Framebuffer.h"
 #include "STL/Memory/Memory.h"
 #include "STL/String/cstr.h"
+#include "STL/GUI/Button.h"
 
 #include "kernel/Debug/Debug.h"
 
@@ -18,13 +19,13 @@
 namespace ProcessHandler
 {    
     STL::List<Process*> Processes;
-    uint64_t LastMessagedProcess = 0;
+    Process* LastMessagedProcess = 0;
 
     Process* FocusedProcess = nullptr;
 
     bool SwapBuffersRequest = false;
 
-    uint64_t MovingWindow = 0;
+    Process* MovingWindow = 0;
     STL::Point MovingWindowPosDelta = STL::Point(0, 0);
 
     void KillAllProcesses()
@@ -63,86 +64,90 @@ namespace ProcessHandler
 
     void MouseInterupt()
     {        
-        if (MovingWindow != 0)
+        if (MovingWindow != nullptr)
         {
             if (!Mouse::LeftHeld)
             {       
-                for (int i = 0; i < MovingWindow; i++)
+                for (int i = 0; i < Processes.Length(); i++)
                 {
-                    if (Processes[MovingWindow]->Contains(Processes[i]));
+                    if (Processes[i] == MovingWindow)
+                    {
+                        break;
+                    }
+
+                    if (MovingWindow->Contains(Processes[i]));
                     {
                         Processes[i]->SendRequest(STL::PROR::RENDER);
                     }
                 }
 
-                FocusedProcess = Processes[MovingWindow];
-                Processes[MovingWindow]->SetPos(Mouse::Position + MovingWindowPosDelta);
-                Processes[MovingWindow]->SendRequest(STL::PROR::RENDER);
+                FocusedProcess = MovingWindow;
+                FocusedProcess->SetDepth(Processes.Length() - 1);
+                MovingWindow->SetPos(Mouse::Position + MovingWindowPosDelta);
+                MovingWindow->SendRequest(STL::PROR::RENDER);
 
                 MovingWindow = 0;
             }       
             else
             {
-                for (int i = 0; i < MovingWindow; i++)
+                for (int i = 0; i < Processes.Length(); i++)
                 {
-                    if (Processes[MovingWindow]->Contains(Processes[i]));
+                    if (Processes[i] == MovingWindow)
+                    {
+                        break;
+                    }
+
+                    if (MovingWindow->Contains(Processes[i]));
                     {
                         Processes[i]->SendRequest(STL::PROR::RENDER);
                     }
                 }
 
-                Processes[MovingWindow]->SetPos(Mouse::Position + MovingWindowPosDelta);
-                Processes[MovingWindow]->SendRequest(STL::PROR::RENDER);
+                MovingWindow->SetPos(Mouse::Position + MovingWindowPosDelta);
+                MovingWindow->SendRequest(STL::PROR::RENDER);
             }
         }
         else
         {
             for (int i = Processes.Length(); i --> 0; )
-            {                
-                STL::MINFO MouseInfo;
-                MouseInfo.Pos = Mouse::Position - Processes[i]->GetPos();
-                MouseInfo.LeftHeld = Mouse::LeftHeld;
-                MouseInfo.MiddleHeld = Mouse::MiddleHeld;
-                MouseInfo.RightHeld = Mouse::RightHeld;
-
-                Processes[i]->SendMessage(STL::PROM::MOUSE, &MouseInfo); 
-
-                if (Mouse::LeftHeld)
-                {           
-                    if (Processes[i]->GetType() == STL::PROT::WINDOWED)
-                    {
-                        if (STL::Contains(Processes[i]->GetPos() - FRAME_OFFSET, Processes[i]->GetPos() + Processes[i]->GetSize(), Mouse::Position)) // If over program or topbar
+            {                    
+                if (Mouse::LeftHeld && Processes[i]->GetType() == STL::PROT::WINDOWED)
+                {
+                    if (STL::Contains(Processes[i]->GetPos() - FRAME_OFFSET, Processes[i]->GetPos() + STL::Point(Processes[i]->GetSize().X, 0), Mouse::Position)) // If over topbar
+                    {                        
+                        STL::Point CloseButtonPos = Processes[i]->GetCloseButtonPos();
+                        if (STL::Contains(CloseButtonPos, CloseButtonPos + CLOSE_BUTTON_SIZE, Mouse::Position)) //If over close button
                         {
-                            STL::Point CloseButtonPos = Processes[i]->GetPos() + STL::Point(Processes[i]->GetSize().X, 0) + CLOSE_BUTTON_OFFSET;
-
-                            if (STL::Contains(Processes[i]->GetPos() - FRAME_OFFSET, Processes[i]->GetPos() + STL::Point(Processes[i]->GetSize().X, 0), Mouse::Position)) //If over topbar
-                            {        
-                                if (STL::Contains(CloseButtonPos, CloseButtonPos + CLOSE_BUTTON_SIZE, Mouse::Position)) //If over close button
-                                {
-                                    KillProcess(Processes[i]->GetID());
-                                    break;
-                                } 
-
-                                MovingWindow = i;
-                                MovingWindowPosDelta = Processes[i]->GetPos() - Mouse::Position;
-                            }   
-                            else if (Processes[i] != FocusedProcess)
-                            {
-                                FocusedProcess = Processes[i];
-                                Processes[i]->SendRequest(STL::PROR::RENDER);                     
-                            } 
-                            break;       
+                            KillProcess(Processes[i]->GetID());
+                            break;
                         }
-                    }     
-                    else if (Processes[i]->Contains(Mouse::Position)) //If over window
-                    {
-                        if (Processes[i] != FocusedProcess)
-                        {
-                            FocusedProcess = Processes[i];
-                        } 
 
+                        MovingWindow = Processes[i];
+                        MovingWindowPosDelta = Processes[i]->GetPos() - Mouse::Position;
+
+                        FocusedProcess = Processes[i];
+                        FocusedProcess->SetDepth(Processes.Length() - 1);
+                        Processes[i]->SendRequest(STL::PROR::RENDER);       
                         break;
                     }
+                }  
+
+                if (Processes[i]->Contains(Mouse::Position)) //If over window
+                {
+                    STL::MINFO MouseInfo;
+                    MouseInfo.Pos = Mouse::Position - Processes[i]->GetPos();
+                    MouseInfo.LeftHeld = Mouse::LeftHeld;
+                    MouseInfo.MiddleHeld = Mouse::MiddleHeld;
+                    MouseInfo.RightHeld = Mouse::RightHeld;
+
+                    Processes[i]->SendMessage(STL::PROM::MOUSE, &MouseInfo);     
+
+                    if (Mouse::LeftHeld && Processes[i] != FocusedProcess)
+                    {
+                        FocusedProcess = Processes[i];                       
+                    } 
+
+                    break;
                 }
             }
         }
@@ -174,6 +179,16 @@ namespace ProcessHandler
                     FocusedProcess = nullptr;
                 }
 
+                if (Processes[i] == LastMessagedProcess)
+                {
+                    LastMessagedProcess = nullptr;
+                }
+
+                if (Processes[i] == MovingWindow)
+                {
+                    MovingWindow = nullptr;
+                }
+
                 Processes[i]->Kill();
                 delete Processes[i];
                 Processes.Erase(i);
@@ -185,7 +200,15 @@ namespace ProcessHandler
     }
 
     uint64_t StartProcess(STL::PROC Procedure)
-    {        
+    {                    
+        for (int i = 0; i < Processes.Length(); i++)
+        {
+            if (Processes[i]->GetProcedure() == Procedure)
+            {
+                return 0;
+            }
+        }
+
         Processes.Push(new Process(Procedure));
 
         if (Processes.Last()->GetType() == STL::PROT::FULLSCREEN)
@@ -258,6 +281,7 @@ namespace ProcessHandler
             if (Processes.Length() == 0)
             {
                 StartProcess(tty::Procedure);
+                FocusedProcess = Processes[0];
             }
 
             asm("HLT");
