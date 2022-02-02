@@ -61,4 +61,10 @@ namespace STL
         return (TopLeft.X < Pos.X && BottomRight.X > Pos.X && TopLeft.Y < Pos.Y && BottomRight.Y > Pos.Y);
     }
 
+    bool Contains(Point TopLeft0, Point BottomRight0, Point TopLeft1, Point BottomRight1)
+    {
+        return (TopLeft0.X <= BottomRight1.X && BottomRight0.X >= TopLeft1.X &&
+        TopLeft0.Y <= BottomRight1.Y && BottomRight0.Y >= TopLeft1.Y);
+    }
+
 }

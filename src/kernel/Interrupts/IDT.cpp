@@ -30,6 +30,18 @@ namespace IDT
         PageFault_Int->Selector = 0x08;
     }
 
+    void EnableInterrupts()
+    {
+        IO::OutByte(PIC1_DATA, 0b11111000);
+        IO::OutByte(PIC2_DATA, 0b11101111);
+    }
+
+    void DisableInterrupts()
+    {
+        IO::OutByte(PIC1_DATA, 0b11111111);
+        IO::OutByte(PIC2_DATA, 0b11111111);
+    }
+
     void SetupInterrupts()
     {
         static IDTR idtr;
@@ -91,8 +103,7 @@ namespace IDT
 
         Mouse::InitPS2();
 
-        IO::OutByte(PIC1_DATA, 0b11111000);
-        IO::OutByte(PIC2_DATA, 0b11101111);
+        EnableInterrupts();
 
         asm ("sti");
     }

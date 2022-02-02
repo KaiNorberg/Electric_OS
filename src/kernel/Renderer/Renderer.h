@@ -11,6 +11,7 @@ namespace Renderer
     extern STL::Framebuffer Backbuffer;
 
     extern STL::Point CursorPos;
+    extern STL::Point OldMousePos;
 
     extern STL::ARGB Background;
     extern STL::ARGB Foreground;
@@ -33,7 +34,7 @@ namespace Renderer
 
     void Clear();
 
-    void RecaptureMouse();
+    void RedrawMouse();
 
     void SwapBuffers();
 

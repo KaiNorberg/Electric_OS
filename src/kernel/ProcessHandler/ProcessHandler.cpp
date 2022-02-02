@@ -156,7 +156,7 @@ namespace ProcessHandler
         Mouse::MiddleHeld = false;
         Mouse::RightHeld = false;
 
-        SwapBuffersRequest = true;
+        Renderer::RedrawMouse();
     }   
 
     void PITInterupt()
@@ -274,6 +274,7 @@ namespace ProcessHandler
 
             if (SwapBuffersRequest)
             {
+                Renderer::RedrawMouse();
                 Renderer::SwapBuffers();
                 SwapBuffersRequest = false;
             }
@@ -283,7 +284,7 @@ namespace ProcessHandler
                 StartProcess(tty::Procedure);
                 FocusedProcess = Processes[0];
             }
-
+            
             asm("HLT");
         }
     }

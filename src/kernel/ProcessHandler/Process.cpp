@@ -177,7 +177,7 @@ void Process::Render()
     }
 
     if (this->Type == STL::PROT::WINDOWED)
-    { 
+    {         
         if (this == ProcessHandler::MovingWindow)
         {
             Renderer::Backbuffer.DrawRaisedRectEdge(this->Pos - FRAME_OFFSET, this->Pos + STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height));

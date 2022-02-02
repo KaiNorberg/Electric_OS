@@ -41,5 +41,9 @@ namespace IDT
         uint64_t Offset;
     }__attribute__((packed));
 
+    void EnableInterrupts();
+
+    void DisableInterrupts();
+
     void SetupInterrupts();
 }

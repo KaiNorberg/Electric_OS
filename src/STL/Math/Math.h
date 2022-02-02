@@ -16,6 +16,8 @@ namespace STL
 
     bool Contains(Point TopLeft, Point BottomRight, Point Pos);
 
+    bool Contains(Point TopLeft0, Point BottomRight0, Point TopLeft1, Point BottomRight1);
+
     template <typename T>
     T Clamp(const T& n, const T& lower, const T& upper) 
     {
