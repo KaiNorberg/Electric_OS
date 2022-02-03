@@ -42,8 +42,6 @@ public:
 
     bool Contains(Process* Other);
 
-    bool Overlap(Process* Other);
-
     void Clear();
 
     void Kill();

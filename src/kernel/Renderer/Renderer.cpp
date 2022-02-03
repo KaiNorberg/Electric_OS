@@ -186,23 +186,28 @@ namespace Renderer
                 }
             }
             
-            for (int y = OldMousePos.Y; y < OldMousePos.Y + 16; y++)
+            for (int Y = 0; Y < 16; Y++)
             {
-                for (int x = OldMousePos.X; x < OldMousePos.X + 16; x++)
+                for (int X = 0; X < 16; X++)
                 {
-                    *(STL::ARGB*)((uint64_t)Renderer::Frontbuffer->Base + x * 4 + y * Renderer::Frontbuffer->PixelsPerScanline * 4) = 
-                    *(STL::ARGB*)((uint64_t)Renderer::Backbuffer.Base + x * 4 + y * Renderer::Backbuffer.PixelsPerScanline * 4);
+                    if (X + Y < 12)
+                    {
+                        *(STL::ARGB*)((uint64_t)Renderer::Frontbuffer->Base + (OldMousePos.X + X) * 4 + (OldMousePos.Y + Y) * Renderer::Frontbuffer->PixelsPerScanline * 4) = 
+                        *(STL::ARGB*)((uint64_t)Renderer::Backbuffer.Base + (OldMousePos.X + X) * 4 + (OldMousePos.Y + Y) * Renderer::Backbuffer.PixelsPerScanline * 4);
+                    }
                 }
             }
 
             OldMousePos = Mouse::Position;
-
-            for (int y = Mouse::Position.Y; y < Mouse::Position.Y + 16; y++)
+            for (int Y = 0; Y < 16; Y++)
             {
-                for (int x = Mouse::Position.X; x < Mouse::Position.X + 16; x++)
+                for (int X = 0; X < 16; X++)
                 {
-                    *(STL::ARGB*)((uint64_t)Renderer::Frontbuffer->Base + x * 4 + y * Renderer::Frontbuffer->PixelsPerScanline * 4) = 
-                    *(STL::ARGB*)((uint64_t)Renderer::Backbuffer.Base + x * 4 + y * Renderer::Backbuffer.PixelsPerScanline * 4);
+                    if (X + Y < 12)
+                    {
+                        *(STL::ARGB*)((uint64_t)Renderer::Frontbuffer->Base + (Mouse::Position.X + X) * 4 + (Mouse::Position.Y + Y) * Renderer::Frontbuffer->PixelsPerScanline * 4) = 
+                        *(STL::ARGB*)((uint64_t)Renderer::Backbuffer.Base + (Mouse::Position.X + X) * 4 + (Mouse::Position.Y + Y) * Renderer::Backbuffer.PixelsPerScanline * 4);
+                    }
                 }
             }
         }  

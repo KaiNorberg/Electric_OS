@@ -65,47 +65,29 @@ namespace ProcessHandler
     void MouseInterupt()
     {        
         if (MovingWindow != nullptr)
-        {
+        {                
+            for (int i = 0; i < Processes.Length(); i++)
+            {
+                if (Processes[i] == MovingWindow)
+                {
+                    break;
+                }
+
+                if (MovingWindow->Contains(Processes[i]));
+                {
+                    Processes[i]->SendRequest(STL::PROR::RENDER);
+                }
+            }
+            
+            FocusedProcess->SetDepth(Processes.Length() - 1);
+            MovingWindow->SetPos(Mouse::Position + MovingWindowPosDelta);
+            MovingWindow->SendRequest(STL::PROR::RENDER);
+
             if (!Mouse::LeftHeld)
             {       
-                for (int i = 0; i < Processes.Length(); i++)
-                {
-                    if (Processes[i] == MovingWindow)
-                    {
-                        break;
-                    }
-
-                    if (MovingWindow->Contains(Processes[i]));
-                    {
-                        Processes[i]->SendRequest(STL::PROR::RENDER);
-                    }
-                }
-
                 FocusedProcess = MovingWindow;
-                FocusedProcess->SetDepth(Processes.Length() - 1);
-                MovingWindow->SetPos(Mouse::Position + MovingWindowPosDelta);
-                MovingWindow->SendRequest(STL::PROR::RENDER);
-
                 MovingWindow = 0;
             }       
-            else
-            {
-                for (int i = 0; i < Processes.Length(); i++)
-                {
-                    if (Processes[i] == MovingWindow)
-                    {
-                        break;
-                    }
-
-                    if (MovingWindow->Contains(Processes[i]));
-                    {
-                        Processes[i]->SendRequest(STL::PROR::RENDER);
-                    }
-                }
-
-                MovingWindow->SetPos(Mouse::Position + MovingWindowPosDelta);
-                MovingWindow->SendRequest(STL::PROR::RENDER);
-            }
         }
         else
         {

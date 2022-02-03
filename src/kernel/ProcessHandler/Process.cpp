@@ -100,28 +100,6 @@ bool Process::Contains(Process* Other)
             this->Pos.Y <= Other->Pos.Y + Other->FrameBuffer.Height && this->Pos.Y + this->FrameBuffer.Height >= Other->Pos.Y);
 }
 
-bool Process::Overlap(Process* Other)
-{
-    //Check if this has a higher depth value (is above) Other
-    int64_t ThisDepth = -1;
-    for (int i = 0; i < ProcessHandler::Processes.Length(); i++)
-    {
-        if (ProcessHandler::Processes[i] == this)
-        {
-            ThisDepth = i;
-        }
-        else if (ProcessHandler::Processes[i] == Other)
-        {
-            if (ThisDepth == -1)
-            {
-                return false;
-            }
-        }
-    }
-
-    return Contains(Other);
-}
-
 void Process::Clear()
 { 
     this->FrameBuffer.Clear();
@@ -175,14 +153,6 @@ void Process::Render(STL::Point TopLeft, STL::Point BottomRight)
 
 void Process::Render()
 {
-    for (int i = 0; i < ProcessHandler::Processes.Length(); i++)
-    {
-        if (ProcessHandler::Processes[i] != this && this->Overlap(ProcessHandler::Processes[i]))
-        {
-            ProcessHandler::Processes[i]->SendRequest(STL::PROR::RENDER);
-        }
-    }
-
     if (this->Type == STL::PROT::WINDOWED)
     {         
         if (this == ProcessHandler::MovingWindow)
@@ -221,6 +191,22 @@ void Process::Render()
     else
     {
         this->Render(STL::Point(0, 0), STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height));
+    }
+
+    bool ThisFound = false;
+    for (int i = 0; i < ProcessHandler::Processes.Length(); i++)
+    {
+        if (ProcessHandler::Processes[i] == this)
+        {
+            ThisFound = true;
+        }
+        else if (ThisFound)
+        {
+            if (ProcessHandler::Processes[i]->Contains(this))
+            {    
+                ProcessHandler::Processes[i]->Render();
+            }
+        }
     }
 }
 

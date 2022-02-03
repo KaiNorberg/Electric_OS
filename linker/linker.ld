@@ -7,14 +7,9 @@ SECTIONS
     
     _KernelStart = .;
     
-	/*.text BLOCK(4K) : ALIGN(4K)
+	.text BLOCK(4K) : ALIGN(4K)
 	{
 		*(.text)
-	}
-
-	.rodata BLOCK(4K) : ALIGN(4K)
-	{
-		*(.rodata)
 	}
 
 	.data BLOCK(4K) : ALIGN(4K)
@@ -25,7 +20,7 @@ SECTIONS
 	.bss BLOCK(4K) : ALIGN(4K)
 	{
 		*(COMMON)
-    }*/
+    }
   
     _KernelEnd = .;
 }

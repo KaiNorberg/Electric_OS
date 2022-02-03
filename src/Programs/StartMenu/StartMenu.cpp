@@ -42,8 +42,8 @@ namespace StartMenu
         {
             STL::PINFO* Info = (STL::PINFO*)Input;
 
-            StartableProcesses[0].Name = "Terminal";
-            StartableProcesses[1].Name = "Calculator";
+            StartableProcesses[0].Name = "Calculator";
+            StartableProcesses[1].Name = "Terminal";
 
             for (uint64_t i = 0; i < StartableProcessesAmount; i++)
             {
