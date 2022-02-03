@@ -3,30 +3,29 @@ ENTRY(KernelMain)
 
 SECTIONS
 {
-    . = 0x100000;
-
+	. = 1M;
+    
     _KernelStart = .;
     
-    .text ALIGN(4K) :
-    {
-        KEEP(*(.text*))
-    }
+	/*.text BLOCK(4K) : ALIGN(4K)
+	{
+		*(.text)
+	}
 
-    .rodata ALIGN(4K) :
-    {
-        KEEP(*(.rodata*))
-    }
+	.rodata BLOCK(4K) : ALIGN(4K)
+	{
+		*(.rodata)
+	}
 
-    .data ALIGN(4K) :
-    {
-        KEEP(*(.data*))
-    }
+	.data BLOCK(4K) : ALIGN(4K)
+	{
+		*(.data)
+	}
 
-    .bss ALIGN(4K) :
-    {
-        KEEP(*(COMMON))
-        KEEP(*(.bss*))
-    }
+	.bss BLOCK(4K) : ALIGN(4K)
+	{
+		*(COMMON)
+    }*/
   
     _KernelEnd = .;
 }

@@ -13,8 +13,8 @@ namespace STL
             Buffer->DrawRaisedRect(this->TopLeft, this->BottomRight, this->Color);
         }
 
-        STL::Point TextPos = STL::Point((this->TopLeft.X + this->BottomRight.X) / 2 - (this->Text.Length() * 8) / 2, (this->TopLeft.Y + this->BottomRight.Y) / 2 - 8);
-        Buffer->Print(this->Text.cstr(), TextPos, 1, STL::ARGB(60), this->Color);
+        STL::Point TextPos = STL::Point((this->TopLeft.X + this->BottomRight.X) / 2 - (this->Text.Length() * 8 * this->Scale) / 2, (this->TopLeft.Y + this->BottomRight.Y) / 2 - 8 * this->Scale);
+        Buffer->Print(this->Text.cstr(), TextPos, this->Scale, STL::ARGB(60), this->Color);
     }
 
     bool Button::IsToggled(MINFO MouseInfo)
@@ -45,5 +45,7 @@ namespace STL
         this->Text = Text;
         this->TopLeft = TopLeft;
         this->BottomRight = BottomRight;
+        this->Scale = 1;
+        this->Pressed = false;
     }
 }

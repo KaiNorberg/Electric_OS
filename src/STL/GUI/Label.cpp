@@ -27,7 +27,8 @@ namespace STL
 
         STL::Point TextPos;
 
-        switch (this->VerticalAlign)
+        //Causes a crash on some systems, for a probably really good reason.
+        /*switch (this->VerticalAlign)
         {
         case LabelAlign::Negative:
         {
@@ -44,7 +45,9 @@ namespace STL
             TextPos.Y = this->BottomRight.Y - RAISEDWIDTH * Scale;
         }
         break;
-        }
+        }*/
+        
+        TextPos.Y = (this->TopLeft.Y + this->BottomRight.Y) / 2 - (16 * Scale) / 2;         
 
         switch (this->HorizontalAlign)
         {

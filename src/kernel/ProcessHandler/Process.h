@@ -70,5 +70,6 @@ private:
 
     STL::String Title;
 
-    STL::PROR Request = STL::PROR::SUCCESS; 
+    uint64_t RequestAmount;
+    STL::PROR Requests[16];
 };

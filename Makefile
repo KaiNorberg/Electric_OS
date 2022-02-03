@@ -7,7 +7,7 @@ CC = gcc
 ASMC = nasm
 LD = ld
 
-CFLAGS = -ffreestanding -fshort-wchar -mno-red-zone -fno-exceptions -Isrc/ -Os
+CFLAGS = -fno-rtti -ffreestanding -nostdlib -mno-red-zone -fno-exceptions -Isrc/ -Os -std=c++20
 ASMFLAGS =
 LDFLAGS = -T $(LDS) -static -Bsymbolic -nostdlib
 

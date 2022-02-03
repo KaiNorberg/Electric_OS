@@ -12,11 +12,13 @@ namespace STL
 
         char* cstr() const;
 
-        uint64_t Length() const;
+        uint32_t Length() const;
 
-        void Erase(uint64_t Index, uint64_t Amount = 1);
+        void Erase(uint32_t Index, uint32_t Amount = 1);
 
-        void Reserve(uint64_t MinSize);
+        void Reserve(uint32_t MinSize);
+
+        void operator=(char const& Other);
 
         void operator+=(char const& Other);
 
@@ -28,9 +30,9 @@ namespace STL
 
         void operator+=(const char* Other);
 
-        char& operator[](uint64_t Index); 
+        char& operator[](uint32_t Index); 
 
-        const char& operator[](uint64_t Index) const; 
+        const char& operator[](uint32_t Index) const; 
 
         String(const char* Other);
 
@@ -42,8 +44,8 @@ namespace STL
     
         char* Data = nullptr;
 
-        uint64_t Size = 0;
+        uint32_t Size = 0;
 
-        uint64_t ReservedSize = 0;
+        uint32_t ReservedSize = 0;
     };
 }

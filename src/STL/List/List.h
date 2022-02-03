@@ -11,7 +11,7 @@ namespace STL
     {
     public:
 
-        void Reserve(uint64_t MinSize)
+        void Reserve(uint32_t MinSize)
         {
             if (MinSize <= this->ReservedSize)
             {
@@ -47,7 +47,7 @@ namespace STL
             return this->Data[Size];
         }
 
-        uint64_t Length() const
+        uint32_t Length() const
         {
             return this->Size;
         }   
@@ -60,7 +60,7 @@ namespace STL
             this->ReservedSize = 0;
         }
 
-        void Erase(uint64_t Index)
+        void Erase(uint32_t Index)
         {
             for (int i = Index + 1; i < this->Size; i++)
             {
@@ -75,7 +75,7 @@ namespace STL
             return Data[this->Size - 1];
         }
 
-        T& operator[](uint64_t Index)
+        T& operator[](uint32_t Index)
         {
             if (Index > this->Size)
             {
@@ -93,7 +93,7 @@ namespace STL
 
         T* Data = nullptr;
 
-        uint64_t Size = 0;
-        uint64_t ReservedSize = 0;
+        uint32_t Size = 0;
+        uint32_t ReservedSize = 0;
     };  
 }

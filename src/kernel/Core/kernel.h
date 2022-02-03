@@ -16,6 +16,13 @@
 #include "kernel/ProcessHandler/ProcessHandler.h"
 
 /// <summary>
+/// Compiler definitions.
+/// </summary>
+extern "C" void __stack_chk_fail(void);
+extern "C" void* __dso_handle;
+extern "C" void* __cxa_atexit;
+
+/// <summary>
 /// The struct passed to the kernel from the bootloader.
 /// </summary>
 struct BootLoaderInfo

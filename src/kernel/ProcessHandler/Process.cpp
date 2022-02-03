@@ -43,14 +43,21 @@ STL::PROT Process::GetType()
 
 STL::PROR Process::GetRequest()
 {
-    STL::PROR Temp = this->Request;
-    this->Request = STL::PROR::SUCCESS;
-    return Temp;
+    if (RequestAmount > 0)
+    {        
+        RequestAmount--;
+        return Requests[RequestAmount];
+    }   
+    return STL::PROR::SUCCESS;
 }
 
 void Process::SendRequest(STL::PROR Request)
 {
-    this->Request = Request;
+    if (Request != STL::PROR::SUCCESS && RequestAmount < 16)
+    {
+        Requests[RequestAmount] = Request;
+        RequestAmount++;
+    }
 }
 
 STL::PROC Process::GetProcedure()
@@ -223,11 +230,7 @@ void Process::SendMessage(STL::PROM Message, STL::PROI Input)
 
     STL::PROR NewRequest = this->Procedure(Message, Input);
 
-    if (this->Request != STL::PROR::SUCCESS && NewRequest == STL::PROR::SUCCESS)
-    {
-        return;
-    }
-    this->Request = NewRequest;
+    this->SendRequest(NewRequest);
 }
 
 Process::Process(STL::PROC Procedure)
@@ -237,6 +240,7 @@ Process::Process(STL::PROC Procedure)
 
     this->ID = NewID;
     this->Procedure = Procedure;
+    this->RequestAmount = 0;
 
     STL::PINFO Info;
     this->SendMessage(STL::PROM::INIT, &Info);
@@ -256,7 +260,7 @@ Process::Process(STL::PROC Procedure)
         this->FrameBuffer.Base = (STL::ARGB*)Heap::Allocate(this->FrameBuffer.Size);
     
         this->FrameBuffer.Clear();
-        this->Request = STL::PROR::DRAW;
+        this->SendRequest(STL::PROR::DRAW);
     }
     else if (Info.Type == STL::PROT::FRAMELESSWINDOW || Info.Type == STL::PROT::WINDOWED)
     {               
@@ -270,6 +274,6 @@ Process::Process(STL::PROC Procedure)
         this->FrameBuffer.Base = (STL::ARGB*)Heap::Allocate(this->FrameBuffer.Size);
 
         this->FrameBuffer.Clear();
-        this->Request = STL::PROR::DRAW;
+        this->SendRequest(STL::PROR::DRAW);
     }
 } 

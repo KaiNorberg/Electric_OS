@@ -15,7 +15,7 @@ namespace StartMenu
         StartableProcess() = default;
     };
 
-    const uint64_t StartableProcessesAmount = 1;
+    const uint64_t StartableProcessesAmount = 2;
     StartableProcess StartableProcesses[StartableProcessesAmount];
 
     void(*CurrentAnimation)(STL::Framebuffer*);
@@ -43,6 +43,7 @@ namespace StartMenu
             STL::PINFO* Info = (STL::PINFO*)Input;
 
             StartableProcesses[0].Name = "Terminal";
+            StartableProcesses[1].Name = "Calculator";
 
             for (uint64_t i = 0; i < StartableProcessesAmount; i++)
             {

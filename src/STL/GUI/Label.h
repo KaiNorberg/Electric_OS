@@ -7,14 +7,14 @@
 
 namespace STL
 {
-    enum class LabelAlign
+    enum class LabelAlign : uint32_t
     {
         Negative,
         Center,
         Positive
     };
 
-    enum class LabelStyle
+    enum class LabelStyle : uint32_t
     {
         Flat,
         Sunken,
@@ -41,7 +41,7 @@ namespace STL
 
         LabelStyle Style;
 
-        uint64_t Scale;
+        uint8_t Scale;
 
         void Draw(Framebuffer* Buffer);
 

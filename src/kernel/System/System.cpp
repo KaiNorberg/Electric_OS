@@ -9,6 +9,7 @@
 #include "Programs/SystemMenu/SystemMenu.h"
 #include "Programs/StartMenu/StartMenu.h"
 #include "Programs/Terminal/Terminal.h"
+#include "Programs/Calculator/Calculator.h"
 
 #include "kernel/Renderer/Renderer.h"
 #include "kernel/RTC/RTC.h"
@@ -223,6 +224,11 @@ namespace System
         case STL::ConstHashWord("terminal"):
         {
             return STL::ToString(ProcessHandler::StartProcess(Terminal::Procedure));
+        }
+        break;        
+        case STL::ConstHashWord("calculator"):
+        {
+            return STL::ToString(ProcessHandler::StartProcess(Calculator::Procedure));
         }
         break;
         default:

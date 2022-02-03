@@ -7,7 +7,7 @@
 
 namespace STL
 {
-    class Button
+    class Button 
     {
     public:
 
@@ -18,6 +18,8 @@ namespace STL
         Point TopLeft;
 
         Point BottomRight;
+
+        uint8_t Scale;
 
         void Draw(Framebuffer* Buffer);
 
@@ -34,5 +36,5 @@ namespace STL
     private:
 
         bool Pressed = false;
-    };
+    } ;
 }

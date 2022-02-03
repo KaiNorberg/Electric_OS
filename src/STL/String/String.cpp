@@ -20,12 +20,12 @@ namespace STL
         return this->Data;
     }
 
-    uint64_t String::Length() const
+    uint32_t String::Length() const
     {
         return this->Size;
     }
 
-    void String::Erase(uint64_t Index, uint64_t Amount)
+    void String::Erase(uint32_t Index, uint32_t Amount)
     {
         for (int i = Index + Amount; i < this->Size; i++)
         {
@@ -35,7 +35,7 @@ namespace STL
         this->Size--;
     }
 
-    void String::Reserve(uint64_t MinSize)
+    void String::Reserve(uint32_t MinSize)
     {
         if (MinSize <= this->ReservedSize)
         {
@@ -60,9 +60,17 @@ namespace STL
     void String::operator+=(char const& Other)
     {
         this->Size++;
-        this->Reserve(this->Size);
+        this->Reserve(this->Size + 1);
 
         this->Data[this->Size - 1] = Other;
+    }
+
+    void String::operator=(char const& Other)
+    {
+        this->Reserve(2);
+
+        this->Data[0] = Other;
+        this->Size = 1;
     }
 
     void String::operator=(String const& Other)
@@ -77,7 +85,7 @@ namespace STL
 
     void String::operator=(const char* Other)
     {       
-        uint64_t OtherLength = STL::Length(Other);
+        uint32_t OtherLength = STL::Length(Other);
         this->Reserve(OtherLength + 1);
 
         for (int i = 0; i < OtherLength; i++)
@@ -89,7 +97,7 @@ namespace STL
 
     void String::operator+=(const char* Other)
     {
-        uint64_t OtherLength = STL::Length(Other);
+        uint32_t OtherLength = STL::Length(Other);
         this->Reserve(this->Size + OtherLength + 1);
 
         for (int i = 0; i < OtherLength; i++)
@@ -99,12 +107,12 @@ namespace STL
         this->Size += OtherLength;
     }
 
-    char& String::operator[](uint64_t Index)
+    char& String::operator[](uint32_t Index)
     {
         return this->Data[Index];
     }
 
-    const char& String::operator[](uint64_t Index) const
+    const char& String::operator[](uint32_t Index) const
     {
         return this->Data[Index];
     }
