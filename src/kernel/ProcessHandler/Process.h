@@ -48,8 +48,6 @@ public:
 
     void Draw();
 
-    void Render(STL::Point TopLeft, STL::Point BottomRight);
-
     void Render();
 
     void SendMessage(STL::PROM Message, STL::PROI Input = nullptr);
@@ -65,6 +63,7 @@ private:
     STL::Framebuffer FrameBuffer;
 
     STL::Point Pos;
+    STL::Point OldPos;
 
     STL::String Title;
 

@@ -19,15 +19,14 @@
 namespace ProcessHandler
 {    
     STL::List<Process*> Processes;
-    Process* LastMessagedProcess = 0;
+    Process* LastMessagedProcess = nullptr;
 
     Process* FocusedProcess = nullptr;
 
-    bool SwapBuffersRequest = false;
-    bool RedrawMouseRequest = false;
-
     Process* MovingWindow = 0;
     STL::Point MovingWindowPosDelta = STL::Point(0, 0);
+
+    bool BufferSwapRequest = false;
 
     void SetFocusedProcess(Process* NewFocus)
     {
@@ -39,12 +38,12 @@ namespace ProcessHandler
 
         if (FocusedProcess != nullptr && FocusedProcess->GetType() == STL::PROT::WINDOWED)
         {                       
-            FocusedProcess->SendRequest(STL::PROR::RENDER);       
+            ProcessHandler::BufferSwapRequest = true;
         }
 
         if (NewFocus->GetType() == STL::PROT::WINDOWED)
         {                       
-            NewFocus->SendRequest(STL::PROR::RENDER);       
+            ProcessHandler::BufferSwapRequest = true;
         }
 
         FocusedProcess = NewFocus;       
@@ -93,27 +92,14 @@ namespace ProcessHandler
     {        
         if (MovingWindow != nullptr)
         {                
-            for (int i = 0; i < Processes.Length(); i++)
-            {
-                if (Processes[i] == MovingWindow)
-                {
-                    break;
-                }
-
-                if (MovingWindow->Contains(Processes[i]));
-                {
-                    Processes[i]->SendRequest(STL::PROR::RENDER);
-                }
-            }
-            
             MovingWindow->SetPos(Mouse::Position + MovingWindowPosDelta);
-            MovingWindow->SendRequest(STL::PROR::RENDER);
 
             if (!Mouse::LeftHeld)
             {       
                 FocusedProcess = MovingWindow;
                 MovingWindow = 0;
             }       
+            BufferSwapRequest = true;
         }
         else
         {
@@ -162,7 +148,7 @@ namespace ProcessHandler
         Mouse::MiddleHeld = false;
         Mouse::RightHeld = false;
 
-        RedrawMouseRequest = true;
+        Renderer::RedrawMouse();
     }   
 
     void PITInterupt()
@@ -236,7 +222,7 @@ namespace ProcessHandler
     {                
         StartProcess(tty::Procedure);
         FocusedProcess = Processes[0];
-
+        
         while (true) 
         {     
             for (uint64_t i = 0; i < Processes.Length(); i++)
@@ -246,22 +232,20 @@ namespace ProcessHandler
                 case STL::PROR::CLEAR:
                 {
                     Processes[i]->Clear();
-                }
-                break;
-                case STL::PROR::RENDER:
-                {
-                    Processes[i]->Render();
+                    BufferSwapRequest = true;
                 }
                 break;
                 case STL::PROR::DRAW:
                 {
                     Processes[i]->Draw();
+                    BufferSwapRequest = true;
                 }
                 break;
                 case STL::PROR::KILL:
                 {
                     KillProcess(Processes[i]->GetID());
                     i--;
+                    BufferSwapRequest = true;
                 }
                 break;
                 case STL::PROR::RESET:
@@ -278,16 +262,14 @@ namespace ProcessHandler
                 }
             }
 
-            if (SwapBuffersRequest)
+            if (BufferSwapRequest)
             {
+                for (int i = 0; i < Processes.Length(); i++)
+                {
+                    Processes[i]->Render();
+                }    
                 Renderer::SwapBuffers();
-                SwapBuffersRequest = false;
-                RedrawMouseRequest = false;
-            }
-            else if (RedrawMouseRequest)
-            {
-                Renderer::RedrawMouse();
-                RedrawMouseRequest = false;
+                BufferSwapRequest = false;     
             }
 
             if (Processes.Length() == 0)

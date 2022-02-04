@@ -18,14 +18,16 @@ namespace STL
         }
     }
 
-    void CopyMemory(const void* Source, void* Dest, const uint64_t Count)
+    void CopyMemory(void* Source, void* Dest, const uint64_t Count)
     {
-        for (int i = 0; i < Count / 8; i++)
+        for(int i = 0; i < Count / 8; i++)
         {
-            ((uint64_t*)Dest)[i] = ((uint64_t*)Source)[i];
+            __asm__ __volatile__ ("movq (%0), %%mm0\n" "movq %%mm0, (%1)\n" :: "r"(Source), "r"(Dest) : "memory");
+            Source += 8;
+            Dest += 8;
         }
 
-        for (int i = Count - Count % 8; i < Count; i++)
+        for (int i = 0; i < Count % 8; i++)
         {
             ((uint8_t*)Dest)[i] = ((uint8_t*)Source)[i];
         }

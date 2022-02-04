@@ -11,7 +11,6 @@ namespace STL
     {
         SUCCESS,
         RESET,
-        RENDER,
         CLEAR,
         DRAW,
         KILL

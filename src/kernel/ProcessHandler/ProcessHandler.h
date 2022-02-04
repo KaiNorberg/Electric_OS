@@ -9,10 +9,11 @@ namespace ProcessHandler
 {       
     extern Process* FocusedProcess;
     extern Process* LastMessagedProcess;
-    extern bool SwapBuffersRequest;
     extern Process* MovingWindow;
 
     extern STL::List<Process*> Processes;
+
+    extern bool BufferSwapRequest;
 
     void KillAllProcesses();
 

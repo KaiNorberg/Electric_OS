@@ -111,14 +111,6 @@ void Process::Kill()
     this->SendMessage(STL::PROM::KILL, nullptr);
 
     Heap::Free(FrameBuffer.Base);
-
-    for (int i = 0; i < ProcessHandler::Processes.Length(); i++)
-    {
-        if (ProcessHandler::Processes[i] != this && this->Contains(ProcessHandler::Processes[i]))
-        {
-            ProcessHandler::Processes[i]->SendRequest(STL::PROR::RENDER);
-        }
-    }
 }
 
 void Process::Draw()
@@ -128,38 +120,10 @@ void Process::Draw()
     this->Render();
 }
 
-void Process::Render(STL::Point TopLeft, STL::Point BottomRight)
-{
-    if (BottomRight.X > Renderer::Backbuffer.Width || TopLeft.X < 0)
-    {
-        return;
-    }
-    if (BottomRight.Y > Renderer::Backbuffer.Height || TopLeft.Y < 0)
-    {
-        return;
-    }
-
-    for (int y = TopLeft.Y; y < BottomRight.Y; y++)
-    {
-        for (int x = TopLeft.X; x < BottomRight.X; x++)
-        {
-            *(STL::ARGB*)((uint64_t)Renderer::Backbuffer.Base + (this->Pos.X + x) * 4 + (this->Pos.Y + y) * Renderer::Backbuffer.PixelsPerScanline * 4) = 
-            *(STL::ARGB*)((uint64_t)this->FrameBuffer.Base + x * 4 + y * this->FrameBuffer.PixelsPerScanline * 4);
-        }
-    }
-
-    ProcessHandler::SwapBuffersRequest = true;
-}
-
 void Process::Render()
 {
     if (this->Type == STL::PROT::WINDOWED)
     {         
-        if (this != ProcessHandler::MovingWindow)
-        {
-            this->Render(STL::Point(0, 0), STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height));
-        }
-        
         STL::ARGB Background;
         STL::ARGB Foreground;
         if (this == ProcessHandler::FocusedProcess)
@@ -184,25 +148,16 @@ void Process::Render()
         STL::Point TextPos = this->Pos + STL::Point(RAISEDWIDTH * 2, -FRAME_OFFSET.Y / 2 - 8);
         Renderer::Backbuffer.Print(this->Title.cstr(), TextPos, 1, Foreground, Background);
     } 
-    else
+
+    if (this->Pos.X < 0 || this->Pos.X + this->FrameBuffer.Width > Renderer::Backbuffer.Width || this->Pos.Y < 0 || this->Pos.Y + this->FrameBuffer.Height > Renderer::Backbuffer.Height)
     {
-        this->Render(STL::Point(0, 0), STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height));
+        return;
     }
 
-    bool ThisFound = false;
-    for (int i = 0; i < ProcessHandler::Processes.Length(); i++)
+    for (int i = 0; i < this->FrameBuffer.Height; i++)
     {
-        if (ProcessHandler::Processes[i] == this)
-        {
-            ThisFound = true;
-        }
-        else if (ThisFound)
-        {
-            if (ProcessHandler::Processes[i]->Contains(this))
-            {    
-                ProcessHandler::Processes[i]->Render();
-            }
-        }
+        STL::CopyMemory(this->FrameBuffer.Base + this->FrameBuffer.PixelsPerScanline * i, 
+        Renderer::Backbuffer.Base + Renderer::Backbuffer.PixelsPerScanline * (i + this->Pos.Y) + this->Pos.X, this->FrameBuffer.PixelsPerScanline * 4);
     }
 }
 
@@ -213,6 +168,8 @@ void Process::SendMessage(STL::PROM Message, STL::PROI Input)
     STL::PROR NewRequest = this->Procedure(Message, Input);
 
     this->SendRequest(NewRequest);
+
+    ProcessHandler::LastMessagedProcess = nullptr;
 }
 
 Process::Process(STL::PROC Procedure)
