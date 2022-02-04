@@ -263,7 +263,7 @@ namespace ProcessHandler
             }
 
             if (BufferSwapRequest)
-            {
+            {        
                 for (int i = 0; i < Processes.Length(); i++)
                 {
                     Processes[i]->Render();

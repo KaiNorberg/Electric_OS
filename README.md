@@ -10,10 +10,8 @@ To create a simple and completely useless operating system, because i can.
   
 //////////////////////Future improvments//////////////////////   
   
-Implement partial buffer swapping. With a list for swap buffer requests.
-Implement a list of requests for each process.
-Optimize mouse input.
 Optimize kernel/System.cpp
+Add more GUI objects?
 Write more comments.
 
 Implement Tetris.
