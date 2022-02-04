@@ -13,6 +13,8 @@ namespace STL
 
 		uint32_t ToInt();
 
+		bool operator==(ARGB const& Other);
+
 		void operator+=(ARGB const& Other);
 
 		void operator-=(ARGB const& Other);

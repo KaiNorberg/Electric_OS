@@ -155,38 +155,34 @@ void Process::Render()
 {
     if (this->Type == STL::PROT::WINDOWED)
     {         
-        if (this == ProcessHandler::MovingWindow)
+        if (this != ProcessHandler::MovingWindow)
         {
-            Renderer::Backbuffer.DrawRaisedRectEdge(this->Pos - FRAME_OFFSET, this->Pos + STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height));
+            this->Render(STL::Point(0, 0), STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height));
+        }
+        
+        STL::ARGB Background;
+        STL::ARGB Foreground;
+        if (this == ProcessHandler::FocusedProcess)
+        {
+            Background = STL::ARGB(255, 14, 0, 135);            
+            Foreground = STL::ARGB(255);
         }
         else
         {
-            this->Render(STL::Point(0, 0), STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height));
-
-            STL::ARGB Background;
-            STL::ARGB Foreground;
-            if (this == ProcessHandler::FocusedProcess)
-            {
-                Background = STL::ARGB(255, 14, 0, 135);            
-                Foreground = STL::ARGB(255);
-            }
-            else
-            {
-                Background = STL::ARGB(128);            
-                Foreground = STL::ARGB(192);            
-            }
-
-            //Draw topbar
-            Renderer::Backbuffer.DrawRaisedRectEdge(this->Pos - FRAME_OFFSET, this->Pos + STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height));
-            Renderer::Backbuffer.DrawRect(this->Pos - FRAME_OFFSET, this->Pos + STL::Point(this->FrameBuffer.Width, 0), Background);
-
-            //Draw close button
-            Renderer::Backbuffer.DrawRaisedRect(this->GetCloseButtonPos(), this->GetCloseButtonPos() + CLOSE_BUTTON_SIZE, STL::ARGB(200));
-
-            //Print Title
-            STL::Point TextPos = this->Pos + STL::Point(RAISEDWIDTH * 2, -FRAME_OFFSET.Y / 2 - 8);
-            Renderer::Backbuffer.Print(this->Title.cstr(), TextPos, 1, Foreground, Background);
+            Background = STL::ARGB(128);            
+            Foreground = STL::ARGB(192);            
         }
+
+        //Draw topbar
+        Renderer::Backbuffer.DrawRaisedRectEdge(this->Pos - FRAME_OFFSET, this->Pos + STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height));
+        Renderer::Backbuffer.DrawRect(this->Pos - FRAME_OFFSET, this->Pos + STL::Point(this->FrameBuffer.Width, 0), Background);
+
+        //Draw close button
+        Renderer::Backbuffer.DrawRaisedRect(this->GetCloseButtonPos(), this->GetCloseButtonPos() + CLOSE_BUTTON_SIZE, STL::ARGB(200));
+
+        //Print Title
+        STL::Point TextPos = this->Pos + STL::Point(RAISEDWIDTH * 2, -FRAME_OFFSET.Y / 2 - 8);
+        Renderer::Backbuffer.Print(this->Title.cstr(), TextPos, 1, Foreground, Background);
     } 
     else
     {

@@ -159,33 +159,9 @@ namespace Renderer
     void RedrawMouse()
     {
         if (DrawMouse)
-        {            
-            for (int Y = 0; Y < 16; Y++)
-            {
-                for (int X = 0; X < 16; X++)
-                {
-                    if (X + Y < 12)
-                    {
-                        if (GetPixel(STL::Point(OldMousePos.X + X, OldMousePos.Y + Y)).ToInt() == STL::ARGB(255).ToInt())
-                        {
-                            PutPixel(STL::Point(OldMousePos.X + X, OldMousePos.Y + Y), BeforeCursor[X + Y * 16]);
-                        }
-                    }
-                }
-            }
-
-            for (int Y = 0; Y < 16; Y++)
-            {
-                for (int X = 0; X < 16; X++)
-                {
-                    if (X + Y < 12)
-                    {
-                        BeforeCursor[X + Y * 16] = GetPixel(STL::Point(Mouse::Position.X + X, Mouse::Position.Y + Y));
-                        PutPixel(STL::Point(Mouse::Position.X + X, Mouse::Position.Y + Y), STL::ARGB(255));
-                    }
-                }
-            }
-            
+        {                   
+            STL::Point MousePos = Mouse::Position;
+                
             for (int Y = 0; Y < 16; Y++)
             {
                 for (int X = 0; X < 16; X++)
@@ -198,15 +174,16 @@ namespace Renderer
                 }
             }
 
-            OldMousePos = Mouse::Position;
+            OldMousePos = MousePos;
+
             for (int Y = 0; Y < 16; Y++)
             {
                 for (int X = 0; X < 16; X++)
                 {
                     if (X + Y < 12)
                     {
-                        *(STL::ARGB*)((uint64_t)Renderer::Frontbuffer->Base + (Mouse::Position.X + X) * 4 + (Mouse::Position.Y + Y) * Renderer::Frontbuffer->PixelsPerScanline * 4) = 
-                        *(STL::ARGB*)((uint64_t)Renderer::Backbuffer.Base + (Mouse::Position.X + X) * 4 + (Mouse::Position.Y + Y) * Renderer::Backbuffer.PixelsPerScanline * 4);
+                        *(STL::ARGB*)((uint64_t)Renderer::Frontbuffer->Base + (MousePos.X + X) * 4 + (MousePos.Y + Y) * Renderer::Frontbuffer->PixelsPerScanline * 4) = 
+                        STL::ARGB(255);
                     }
                 }
             }
@@ -214,8 +191,53 @@ namespace Renderer
     }
 
     void SwapBuffers()
-    {
-        STL::CopyMemory(Backbuffer.Base, Frontbuffer->Base, Backbuffer.Size);
+    {             
+        if (DrawMouse)
+        {
+            STL::Point MousePos = Mouse::Position;
+
+            for (int Y = 0; Y < 16; Y++)
+            {
+                for (int X = 0; X < 16; X++)
+                {
+                    if (X + Y < 12)
+                    {
+                        *(STL::ARGB*)((uint64_t)Renderer::Frontbuffer->Base + (OldMousePos.X + X) * 4 + (OldMousePos.Y + Y) * Renderer::Frontbuffer->PixelsPerScanline * 4) = BeforeCursor[X + Y * 16];
+                    }
+                }
+            }
+            
+            OldMousePos = MousePos;
+
+            for (int Y = 0; Y < 16; Y++)
+            {
+                for (int X = 0; X < 16; X++)
+                {
+                    if (X + Y < 12)
+                    {
+                        BeforeCursor[X + Y * 16] = GetPixel(STL::Point(MousePos.X + X,MousePos.Y + Y));
+                        PutPixel(STL::Point(MousePos.X + X, MousePos.Y + Y), STL::ARGB(255));
+                    }
+                }
+            }
+
+            STL::CopyMemory(Backbuffer.Base, Frontbuffer->Base, Backbuffer.Size);
+
+            for (int Y = 0; Y < 16; Y++)
+            {
+                for (int X = 0; X < 16; X++)
+                {
+                    if (X + Y < 12)
+                    {
+                        PutPixel(STL::Point(MousePos.X + X, MousePos.Y + Y), BeforeCursor[X + Y * 16]);
+                    }
+                }
+            }
+        }
+        else
+        {
+            STL::CopyMemory(Backbuffer.Base, Frontbuffer->Base, Backbuffer.Size);
+        }
     }
     
     void Clear()

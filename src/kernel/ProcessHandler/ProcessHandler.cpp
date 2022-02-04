@@ -24,9 +24,36 @@ namespace ProcessHandler
     Process* FocusedProcess = nullptr;
 
     bool SwapBuffersRequest = false;
+    bool RedrawMouseRequest = false;
 
     Process* MovingWindow = 0;
     STL::Point MovingWindowPosDelta = STL::Point(0, 0);
+
+    void SetFocusedProcess(Process* NewFocus)
+    {
+        if (NewFocus == nullptr)
+        {
+            FocusedProcess = nullptr;
+            return;
+        }
+
+        if (FocusedProcess != nullptr && FocusedProcess->GetType() == STL::PROT::WINDOWED)
+        {                       
+            FocusedProcess->SendRequest(STL::PROR::RENDER);       
+        }
+
+        if (NewFocus->GetType() == STL::PROT::WINDOWED)
+        {                       
+            NewFocus->SendRequest(STL::PROR::RENDER);       
+        }
+
+        FocusedProcess = NewFocus;       
+
+        if (NewFocus->GetType() != STL::PROT::FULLSCREEN)
+        {
+            FocusedProcess->SetDepth(Processes.Length() - 1);
+        }  
+    }
 
     void KillAllProcesses()
     {
@@ -79,7 +106,6 @@ namespace ProcessHandler
                 }
             }
             
-            FocusedProcess->SetDepth(Processes.Length() - 1);
             MovingWindow->SetPos(Mouse::Position + MovingWindowPosDelta);
             MovingWindow->SendRequest(STL::PROR::RENDER);
 
@@ -107,9 +133,7 @@ namespace ProcessHandler
                         MovingWindow = Processes[i];
                         MovingWindowPosDelta = Processes[i]->GetPos() - Mouse::Position;
 
-                        FocusedProcess = Processes[i];
-                        FocusedProcess->SetDepth(Processes.Length() - 1);
-                        Processes[i]->SendRequest(STL::PROR::RENDER);       
+                        SetFocusedProcess(Processes[i]);    
                         break;
                     }
                 }  
@@ -124,9 +148,9 @@ namespace ProcessHandler
 
                     Processes[i]->SendMessage(STL::PROM::MOUSE, &MouseInfo);     
 
-                    if (Mouse::LeftHeld && Processes[i] != FocusedProcess)
+                    if (Mouse::LeftHeld)
                     {
-                        FocusedProcess = Processes[i];                       
+                        SetFocusedProcess(Processes[i]);    
                     } 
 
                     break;
@@ -138,7 +162,7 @@ namespace ProcessHandler
         Mouse::MiddleHeld = false;
         Mouse::RightHeld = false;
 
-        Renderer::RedrawMouse();
+        RedrawMouseRequest = true;
     }   
 
     void PITInterupt()
@@ -214,7 +238,7 @@ namespace ProcessHandler
         FocusedProcess = Processes[0];
 
         while (true) 
-        {       
+        {     
             for (uint64_t i = 0; i < Processes.Length(); i++)
             {
                 switch (Processes[i]->GetRequest())
@@ -256,9 +280,14 @@ namespace ProcessHandler
 
             if (SwapBuffersRequest)
             {
-                Renderer::RedrawMouse();
                 Renderer::SwapBuffers();
                 SwapBuffersRequest = false;
+                RedrawMouseRequest = false;
+            }
+            else if (RedrawMouseRequest)
+            {
+                Renderer::RedrawMouse();
+                RedrawMouseRequest = false;
             }
 
             if (Processes.Length() == 0)

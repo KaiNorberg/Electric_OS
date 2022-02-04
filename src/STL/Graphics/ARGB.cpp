@@ -12,6 +12,11 @@ namespace STL
         return B32 + (G32 << 8) + (R32 << 16) + (A32 << 24);
     }
 
+	bool ARGB::operator==(ARGB const& Other)
+    {
+        return (this->A == Other.A || this->R == Other.R || this->G == Other.G || this->B == Other.B);
+    }
+
     void ARGB::operator+=(ARGB const& Other)
     {
         this->A += Other.A;
