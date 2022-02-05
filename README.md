@@ -13,5 +13,9 @@ To create a simple and completely useless operating system, because i can.
 Optimize kernel/System.cpp
 Add more GUI objects?
 Write more comments.
+Implement PCI driver.
+Implement AHCI driver.
+Implement FAT filesystem.
+Implement Kernel level interpreted language?
 
 Implement Tetris.
