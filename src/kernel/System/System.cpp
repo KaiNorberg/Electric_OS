@@ -24,48 +24,165 @@
 
 namespace System
 {
-    struct Command
-    {
-        const char* Name;
-        uint64_t Hash;
-        const char* (*Function)(const char*);
-
-        Command(const char* Name, const char* (*Function)(const char*))
-        {
-            this->Function = Function;
-            this->Name = Name;
-            this->Hash = STL::HashWord(Name);
-        }
-    };
-
     const char* CommandSet(const char* Command)
     {        
         const char* Variable = STL::NextWord(Command);
         const char* Value = STL::NextWord(Variable);
 
-        switch (STL::HashWord(Variable))
+        struct SettableVar
         {
-        case STL::ConstHashWord("drawmouse"):
+            const char* Name;
+            uint64_t Hash;
+            void* Ptr;
+            uint64_t Size;
+
+            SettableVar(const char* Name, void* Ptr, uint64_t Size)
+            {
+                this->Name = Name;
+                this->Hash = STL::HashWord(Name);
+                this->Ptr = Ptr;
+                this->Size = Size;
+            }
+        };
+
+        SettableVar SettableVars[] =
         {
-            Renderer::DrawMouse = STL::ToInt(Value);
+            SettableVar("drawmouse", &Renderer::DrawMouse, sizeof(Renderer::DrawMouse))
+        };
+
+        uint64_t Hash = STL::HashWord(Variable);
+        for (int i = 0; i < sizeof(SettableVars)/sizeof(SettableVars[0]); i++)
+        {
+            if (Hash == SettableVars[i].Hash)
+            {
+                switch (SettableVars[i].Size)
+                {
+                case 1:
+                {
+                    *(uint8_t*)SettableVars[i].Ptr = STL::ToInt(Value);
+                }   
+                break;
+                case 2:
+                {
+                    *(uint16_t*)SettableVars[i].Ptr = STL::ToInt(Value);
+                }   
+                break;
+                case 4:
+                {
+                    *(uint32_t*)SettableVars[i].Ptr = STL::ToInt(Value);
+                }   
+                break;
+                case 8:
+                {
+                    *(uint64_t*)SettableVars[i].Ptr = STL::ToInt(Value);
+                }   
+                break;
+                }
+                
+                return "Variable set";
+            }
+        }
+
+        return "ERROR: Variable not found";
+    }
+
+    char CommandListOutput[1024];
+    const char* CommandList(const char* Command)
+    {      
+        char* CurrentLocation = CommandListOutput;
+        char* LineStart = CommandListOutput;
+        auto Write = [&](const char* Input) 
+        { 
+            CurrentLocation = STL::CopyString(CurrentLocation, Input) + 1;
+        }; 
+
+        auto NextEntry = [&](const char* Input) 
+        { 
+            uint32_t Amount = 15 - ((uint64_t)CurrentLocation - (uint64_t)LineStart) % 15;
+            for (int i = 0; i < Amount; i++)
+            {
+                Write(" ");            
+            }    
+            CurrentLocation = STL::CopyString(CurrentLocation, "| ") + 1;
+            Write(Input);
+        }; 
+
+        auto StartLine = [&](const char* Input) 
+        { 
+            Write(" ");
+            Write(Input);
+        }; 
+        
+        auto NewLine = [&]() 
+        {
+            *CurrentLocation = '\n';
+            CurrentLocation++;            
+            *CurrentLocation = '\r';
+            CurrentLocation++;
+            LineStart = CurrentLocation;      
+        };
+
+        auto WriteLine = [&](uint64_t EntryAmount) 
+        {            
+            NewLine();
+            for (int i = 0; i < EntryAmount; i++)
+            {
+                CurrentLocation = STL::CopyString(CurrentLocation, "+--------------") + 1;                
+            }            
+            *CurrentLocation = '+';
+            CurrentLocation++;            
+        };
+
+        uint64_t Hash = STL::HashWord(STL::NextWord(Command));
+        switch (Hash)
+        {
+        case STL::ConstHashWord("process"):
+        {            
+            StartLine("TITLE");
+            NextEntry("ID");
+            NextEntry("POSITION");
+            NextEntry("SIZE");
+
+            WriteLine(4);
+
+            for (int i = 0; i < ProcessHandler::Processes.Length(); i++)
+            {                
+                NewLine();
+
+                StartLine(ProcessHandler::Processes[i]->GetTitle());
+
+                NextEntry(STL::ToString(ProcessHandler::Processes[i]->GetID()));
+
+                NextEntry(STL::ToString(ProcessHandler::Processes[i]->GetPos().X));
+                Write(", ");
+                Write(STL::ToString(ProcessHandler::Processes[i]->GetPos().Y));
+
+                NextEntry(STL::ToString(ProcessHandler::Processes[i]->GetSize().X));
+                Write(", ");
+                Write(STL::ToString(ProcessHandler::Processes[i]->GetSize().Y));
+            }            
         }
         break;
         default:
         {
-            return "ERROR: Variable not found";
+            return "ERROR: List not found";
         }
         break;
         }
 
-        return "Variable set";
+        *CurrentLocation = 0;
+        return CommandListOutput;
     }
-    
+
     const char* CommandHelp(const char* Command)
     {       
         return 
         FOREGROUND_COLOR(086, 182, 194)"set [VARIABLE] [VALUE]\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        Sets the specified kernel variable to the specified value\n\r"
+        FOREGROUND_COLOR(086, 182, 194)"list\n\r"
+        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
+        FOREGROUND_COLOR(255, 255, 255)"        Prints the specified list\n\r"
         FOREGROUND_COLOR(086, 182, 194)"help\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        Prints this menu\n\r"
@@ -87,9 +204,6 @@ namespace System
         FOREGROUND_COLOR(086, 182, 194)"restart\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        Restarts the pc\n\r"
-        FOREGROUND_COLOR(086, 182, 194)"shutdown\n\r"
-        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
-        FOREGROUND_COLOR(255, 255, 255)"        Shuts down the pc (Not implemented)\n\r"
         FOREGROUND_COLOR(086, 182, 194)"heapvis\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        Prints a visualization of all the segments of the heap\n\r"
@@ -194,51 +308,41 @@ namespace System
 
     const char* CommandStart(const char* Command)
     {
-        switch (STL::HashWord(STL::NextWord(Command)))
+        struct StartableProcess
         {
-        case STL::ConstHashWord("tty"):
+            const char* Name;
+            uint64_t Hash;
+            STL::PROC Procedure;
+
+            StartableProcess(const char* Name, STL::PROC Procedure)
+            {
+                this->Procedure = Procedure;
+                this->Name = Name;
+                this->Hash = STL::HashWord(Name);
+            }
+        };
+
+        StartableProcess StartableProcesses[] =
         {
-            return STL::ToString(ProcessHandler::StartProcess(tty::Procedure));
-        }
-        break;
-        case STL::ConstHashWord("desktop"):
+            StartableProcess("tty", tty::Procedure),
+            StartableProcess("desktop", Desktop::Procedure),
+            StartableProcess("topbar", Topbar::Procedure),
+            StartableProcess("systemmenu", SystemMenu::Procedure),
+            StartableProcess("startmenu", StartMenu::Procedure),
+            StartableProcess("terminal", Terminal::Procedure),
+            StartableProcess("calculator", Calculator::Procedure)
+        };
+
+        uint64_t Hash = STL::HashWord(STL::NextWord(Command));
+        for (int i = 0; i < sizeof(StartableProcesses)/sizeof(StartableProcesses[0]); i++)
         {
-           return STL::ToString(ProcessHandler::StartProcess(Desktop::Procedure));
-        }
-        break;
-        case STL::ConstHashWord("topbar"):
-        {
-            return STL::ToString(ProcessHandler::StartProcess(Topbar::Procedure));
-        }
-        break;
-        case STL::ConstHashWord("systemmenu"):
-        {
-            return STL::ToString(ProcessHandler::StartProcess(SystemMenu::Procedure));
-        }
-        break;
-        case STL::ConstHashWord("startmenu"):
-        {
-            return STL::ToString(ProcessHandler::StartProcess(StartMenu::Procedure));
-        }
-        break;
-        case STL::ConstHashWord("terminal"):
-        {
-            return STL::ToString(ProcessHandler::StartProcess(Terminal::Procedure));
-        }
-        break;        
-        case STL::ConstHashWord("calculator"):
-        {
-            return STL::ToString(ProcessHandler::StartProcess(Calculator::Procedure));
-        }
-        break;
-        default:
-        {
-            return "ERROR: Process not found";
-        }
-        break;
+            if (Hash == StartableProcesses[i].Hash)
+            {
+                return STL::ToString(ProcessHandler::StartProcess(StartableProcesses[i].Procedure));
+            }
         }
 
-        return "Process started";
+        return "ERROR: Process not found";
     }
 
     char CommandHeapvisOutput[128];
@@ -351,10 +455,25 @@ namespace System
     }   
 
     const char* System(const char* Input)
-    {    
+    {        
+        struct Command
+        {
+            const char* Name;
+            uint64_t Hash;
+            const char* (*Function)(const char*);
+
+            Command(const char* Name, const char* (*Function)(const char*))
+            {
+                this->Function = Function;
+                this->Name = Name;
+                this->Hash = STL::HashWord(Name);
+            }
+        };
+
         Command Commands[] =
         {
             Command("set", CommandSet),
+            Command("list", CommandList),
             Command("help", CommandHelp),
             Command("time", CommandTime),
             Command("date", CommandDate),

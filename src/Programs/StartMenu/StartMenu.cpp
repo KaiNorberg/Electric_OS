@@ -59,6 +59,7 @@ namespace StartMenu
             Info->Top = 50;
             Info->Width = 200;
             Info->Height = StartableProcesses[StartableProcessesAmount - 1].Button.BottomRight.Y + RAISEDWIDTH * 3;
+            Info->Title = "StartMenu";
 
             StartAnimation(OpenAnimation);
         }

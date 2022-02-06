@@ -40,6 +40,7 @@ namespace SystemMenu
             Info->Top = 50;
             Info->Width = 200;
             Info->Height = RAISEDWIDTH * 12 + 3 * (RAISEDWIDTH * 2 + 25);
+            Info->Title = "SystemMenu";
 
             TTYButton = STL::Button(STL::ARGB(200), "To TTY", STL::Point(RAISEDWIDTH * 3, RAISEDWIDTH * 3), 
                                         STL::Point(Info->Width - RAISEDWIDTH * 3, RAISEDWIDTH * 3 + (RAISEDWIDTH * 2 + 25)));

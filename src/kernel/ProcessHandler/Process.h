@@ -28,6 +28,8 @@ public:
 
     STL::PROT GetType();
 
+    const char* GetTitle();
+
     STL::PROR GetRequest();
 
     STL::PROC GetProcedure();

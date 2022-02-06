@@ -41,6 +41,11 @@ STL::PROT Process::GetType()
     return this->Type;
 }
 
+const char* Process::GetTitle()
+{
+    return this->Title.cstr();
+}
+
 STL::PROR Process::GetRequest()
 {
     if (RequestAmount > 0)
@@ -187,10 +192,11 @@ Process::Process(STL::PROC Procedure)
     this->Type = Info.Type;
 
     this->Pos = STL::Point(Info.Left, Info.Top);
+    this->Title = Info.Title;
+    this->SetDepth(Info.Depth);
 
     if (Info.Type == STL::PROT::FULLSCREEN)
     {            
-        this->SetDepth(Info.Depth);
         this->Pos = STL::Point(0, 0);
         this->FrameBuffer.Height = Renderer::Backbuffer.Height;  
         this->FrameBuffer.Width = Renderer::Backbuffer.Width;
@@ -203,9 +209,6 @@ Process::Process(STL::PROC Procedure)
     }
     else if (Info.Type == STL::PROT::FRAMELESSWINDOW || Info.Type == STL::PROT::WINDOWED)
     {               
-        this->Title = Info.Title;
-
-        this->SetDepth(Info.Depth);         
         this->FrameBuffer.Height = Info.Height;  
         this->FrameBuffer.Width = Info.Width;
         this->FrameBuffer.PixelsPerScanline = Info.Width + 1;

@@ -74,6 +74,7 @@ namespace Topbar
             Info->Top = 0;
             Info->Width = 1920;
             Info->Height = 16 + TOPBAR_PADDING + RAISEDWIDTH;
+            Info->Title = "Topbar";
 
             BackgroundColor = STL::ARGB(255, 200, 200, 200);
 

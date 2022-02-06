@@ -19,6 +19,12 @@ namespace STL
     bool Contains(Point TopLeft0, Point BottomRight0, Point TopLeft1, Point BottomRight1);
 
     template <typename T>
+    T RoundToMultiple(const T N, const T Multiple) 
+    {
+        return N + N % Multiple;
+    }
+
+    template <typename T>
     T Clamp(const T& n, const T& lower, const T& upper) 
     {
         return n + ((n < lower) * (lower - n)) + ((n > upper) * (upper - n));

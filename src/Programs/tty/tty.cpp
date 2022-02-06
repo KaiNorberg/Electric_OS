@@ -30,7 +30,8 @@ namespace tty
         {
             STL::PINFO* Info = (STL::PINFO*)Input;
             Info->Type = STL::PROT::FULLSCREEN;
-            
+            Info->Title = "tty";
+
             Text = "";
             Command[0] = 0;
             CursorPos = STL::Point(0, 0);

@@ -26,6 +26,7 @@ namespace ProcessHandler
     Process* MovingWindow = 0;
     STL::Point MovingWindowPosDelta = STL::Point(0, 0);
 
+    bool RedrawRequest = false;
     bool BufferSwapRequest = false;
 
     void SetFocusedProcess(Process* NewFocus)
@@ -99,7 +100,7 @@ namespace ProcessHandler
                 FocusedProcess = MovingWindow;
                 MovingWindow = 0;
             }       
-            BufferSwapRequest = true;
+            RedrawRequest = true;
         }
         else
         {
@@ -184,6 +185,7 @@ namespace ProcessHandler
                 Processes[i]->Kill();
                 delete Processes[i];
                 Processes.Erase(i);
+                RedrawRequest = true;
                 return true;
             }
         }
@@ -232,20 +234,34 @@ namespace ProcessHandler
                 case STL::PROR::CLEAR:
                 {
                     Processes[i]->Clear();
-                    BufferSwapRequest = true;
+                    if (i == Processes.Length())
+                    {
+                        BufferSwapRequest = true;
+                    }
+                    else
+                    {
+                        RedrawRequest = true;
+                    }
                 }
                 break;
                 case STL::PROR::DRAW:
                 {
                     Processes[i]->Draw();
-                    BufferSwapRequest = true;
+                    if (i == Processes.Length())
+                    {
+                        BufferSwapRequest = true;
+                    }
+                    else
+                    {
+                        RedrawRequest = true;
+                    }
                 }
                 break;
                 case STL::PROR::KILL:
                 {
                     KillProcess(Processes[i]->GetID());
                     i--;
-                    BufferSwapRequest = true;
+                    RedrawRequest = true;
                 }
                 break;
                 case STL::PROR::RESET:
@@ -262,14 +278,20 @@ namespace ProcessHandler
                 }
             }
 
-            if (BufferSwapRequest)
+            if (RedrawRequest)
             {        
                 for (int i = 0; i < Processes.Length(); i++)
                 {
                     Processes[i]->Render();
                 }    
                 Renderer::SwapBuffers();
+                RedrawRequest = false;
                 BufferSwapRequest = false;     
+            }
+            else if (BufferSwapRequest)
+            {                
+                Renderer::SwapBuffers();
+                BufferSwapRequest = false;
             }
 
             if (Processes.Length() == 0)

@@ -45,7 +45,8 @@ namespace Desktop
             STL::PINFO* Info = (STL::PINFO*)Input;
             Info->Type = STL::PROT::FULLSCREEN;
             Info->Depth = 0;
-            
+            Info->Title = "Desktop";
+
             BackgroundColor = STL::ARGB(255, 60, 120, 180);
 
             StartAnimation(OpenAnimation);
