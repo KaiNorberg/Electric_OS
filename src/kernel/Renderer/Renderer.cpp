@@ -161,24 +161,17 @@ namespace Renderer
         {                   
             STL::Point MousePos = Mouse::Position;
                 
-            for (int Y = 0; Y < 16; Y++)
+            for (int Y = 0; Y < 12; Y++)
             {
-                for (int X = 0; X < 12 - Y; X++)
-                {
-                    *(STL::ARGB*)((uint64_t)Renderer::Frontbuffer->Base + (OldMousePos.X + X) * 4 + (OldMousePos.Y + Y) * Renderer::Frontbuffer->PixelsPerScanline * 4) = 
-                    *(STL::ARGB*)((uint64_t)Renderer::Backbuffer.Base + (OldMousePos.X + X) * 4 + (OldMousePos.Y + Y) * Renderer::Backbuffer.PixelsPerScanline * 4);
-                }
+                STL::CopyMemory(Backbuffer.Base + (OldMousePos.Y + Y) * Backbuffer.PixelsPerScanline + (OldMousePos.X), 
+                Frontbuffer->Base + (OldMousePos.Y + Y) * Frontbuffer->PixelsPerScanline + (OldMousePos.X), (12 - Y) * 4);
             }
 
             OldMousePos = MousePos;
 
-            for (int Y = 0; Y < 16; Y++)
-            {
-                for (int X = 0; X < 12 - Y; X++)
-                {
-                    *(STL::ARGB*)((uint64_t)Renderer::Frontbuffer->Base + (MousePos.X + X) * 4 + (MousePos.Y + Y) * Renderer::Frontbuffer->PixelsPerScanline * 4) = 
-                    STL::ARGB(255);
-                }
+            for (int Y = 0; Y < 12; Y++)
+            {              
+                STL::SetMemory(Frontbuffer->Base + (MousePos.Y + Y) * Frontbuffer->PixelsPerScanline + (MousePos.X), 255, (12 - Y) * 4);
             }
         }  
     }
@@ -192,7 +185,7 @@ namespace Renderer
             DrawMouse = false;
             STL::Point MousePos = Mouse::Position;
             
-            for (int Y = 0; Y < 16; Y++)
+            for (int Y = 0; Y < 12; Y++)
             {
                 for (int X = 0; X < 12 - Y; X++)
                 {
@@ -205,7 +198,7 @@ namespace Renderer
 
             STL::CopyMemory(Backbuffer.Base, Frontbuffer->Base, Backbuffer.Size);
 
-            for (int Y = 0; Y < 16; Y++)
+            for (int Y = 0; Y < 12; Y++)
             {
                 for (int X = 0; X < 12 - Y; X++)
                 {
