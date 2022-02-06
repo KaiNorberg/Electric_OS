@@ -14,6 +14,7 @@
 #include "kernel/Debug/Debug.h"
 #include "kernel/System/System.h"
 #include "kernel/ProcessHandler/ProcessHandler.h"
+#include "kernel/ACPI/ACPI.h"
 
 /// <summary>
 /// Compiler definitions.
@@ -30,6 +31,7 @@ struct BootLoaderInfo
 	STL::Framebuffer* ScreenBuffer;
 	STL::PSF_FONT * PSFFont;
 	EFI_MEMORY_MAP* MemoryMap;
+	RSDP2* RSDP;
 };
 
 /// <summary>

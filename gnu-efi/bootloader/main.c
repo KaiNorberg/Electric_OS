@@ -42,10 +42,26 @@ typedef struct
 	Framebuffer* framebuffer;
 	PSF_FONT* PSF_Font;
 	EFI_MEMORY_MAP* MemoryMap;
+	void* RSDP;
 } BootInfo;
 
 EFI_HANDLE ImageHandle;
 EFI_SYSTEM_TABLE* SystemTable;
+
+int strcmp(const char* Str1, const char* Str2)
+{
+	int i = 0;
+	while (Str1[i] != 0 && Str2[i] != 0)
+	{
+		if (Str1[i] != Str2[i])
+		{
+			return 0;
+		}
+		i++;
+	}
+
+	return (i != 0);
+}
 
 int memcmp(const void* aptr, const void* bptr, size_t n){
 	const unsigned char* a = aptr, *b = bptr;
@@ -198,9 +214,9 @@ EFI_MEMORY_MAP GetMemoryMap()
 	return NewMap;
 }
 
-Elf64_Ehdr LoadELFFile(CHAR16* Path)
+Elf64_Ehdr LoadELFFile(EFI_FILE* Directory, CHAR16* Path)
 {
-	EFI_FILE* File = LoadFile(NULL, Path);
+	EFI_FILE* File = LoadFile(Directory, Path);
 	if (File == NULL)
 	{
 		Print(L"ERROR: Failed to load %s\n\r", Path);
@@ -260,6 +276,26 @@ Elf64_Ehdr LoadELFFile(CHAR16* Path)
 	return Header;
 }
 
+void* GetRSDP()
+{	
+	Print(L"Getting RSDP...\n\r");
+
+	EFI_CONFIGURATION_TABLE* ConfigTable = SystemTable->ConfigurationTable;
+	void* RSDP = 0;
+	EFI_GUID Acpi2TableGuid = ACPI_20_TABLE_GUID;
+
+	for (UINTN i = 0; i < SystemTable->NumberOfTableEntries; i++)
+	{
+		if (CompareGuid(&ConfigTable[i].VendorGuid, &Acpi2TableGuid) && strcmp("RSD PTR ", ConfigTable->VendorTable))
+		{
+			RSDP = ConfigTable->VendorTable;
+		}
+		ConfigTable++;
+	}
+
+	return RSDP;
+}
+
 EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 {
 	ImageHandle = In_ImageHandle;
@@ -268,10 +304,13 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 	InitializeLib(ImageHandle, SystemTable);
 	Print(L"Bootloader loaded!\n\r");
 
-	Elf64_Ehdr Header = LoadELFFile(L"Electric_OS.elf");
-	PSF_FONT newFont = LoadPSFFont(NULL, L"zap-vga16.psf");
+
+	EFI_FILE* KernelDir = LoadFile(NULL, L"KERNEL");
+	Elf64_Ehdr Header = LoadELFFile(KernelDir, L"Kernel.elf");
+	PSF_FONT newFont = LoadPSFFont(KernelDir, L"zap-vga16.psf");
 	Framebuffer newBuffer = GetFramebuffer();
 	EFI_MEMORY_MAP newMap = GetMemoryMap();
+	void* RSDP = GetRSDP();
 
 	void (*KernelMain)(BootInfo*) = ((__attribute__((sysv_abi)) void (*)(BootInfo*)) Header.e_entry);
 
@@ -279,6 +318,7 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 	bootInfo.framebuffer = &newBuffer;
 	bootInfo.PSF_Font = &newFont;
 	bootInfo.MemoryMap = &newMap;
+	bootInfo.RSDP = RSDP;
 
 	Print(L"Exiting boot services...\n\r");
 	SystemTable->BootServices->ExitBootServices(ImageHandle, newMap.Key);

@@ -1,15 +1,16 @@
+OUTPUTNAME = Kernel
 OSNAME = Electric_OS
 
 GNUEFI = gnu-efi
 OVMFDIR = OVMFbin
 LDS = linker/linker.ld
-CC = gcc
+CC = g++
 ASMC = nasm
 LD = ld
 
-CFLAGS = -fno-rtti -ffreestanding -nostdlib -mno-red-zone -fno-exceptions -Isrc/ -Os -std=c++20
+CFLAGS = -fno-rtti -ffreestanding -nostdlib -fno-exceptions -Isrc/ -Os -std=c++20
 ASMFLAGS =
-LDFLAGS = -T $(LDS) -static -Bsymbolic -nostdlib
+LDFLAGS = -T $(LDS) -Bsymbolic -nostdlib
 
 SRCDIR := src
 OBJDIR := build
@@ -43,7 +44,7 @@ $(OBJDIR)/%_ASM.o: $(SRCDIR)/%.asm
 
 link:
 	@echo !==== LINKING
-	$(LD) $(LDFLAGS) -o $(BUILDDIR)/$(OSNAME).elf $(OBJS)
+	$(LD) $(LDFLAGS) -o $(BUILDDIR)/$(OUTPUTNAME).elf $(OBJS)
 
 setup:
 	@mkdir $(BUILDDIR)
@@ -55,11 +56,12 @@ buildimg:
 	sudo mformat -i $(BUILDDIR)/$(OSNAME).img -f 1440 ::
 	mmd -i $(BUILDDIR)/$(OSNAME).img ::/EFI
 	mmd -i $(BUILDDIR)/$(OSNAME).img ::/EFI/BOOT
+	mmd -i $(BUILDDIR)/$(OSNAME).img ::/KERNEL
 	cp $(BOOTEFI)/main.efi  $(BOOTEFI)/bootx64.efi 
 	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BOOTEFI)/bootx64.efi ::/EFI/BOOT
-	mcopy -i $(BUILDDIR)/$(OSNAME).img $(SRCDIR)/kernel/startup.nsh ::
-	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BUILDDIR)/$(OSNAME).elf ::
-	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BUILDDIR)/zap-vga16.psf ::
+	mcopy -i $(BUILDDIR)/$(OSNAME).img startup.nsh ::
+	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BUILDDIR)/$(OUTPUTNAME).elf ::/KERNEL
+	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BUILDDIR)/zap-vga16.psf ::/KERNEL
 
 run:
 	qemu-system-x86_64 -drive file=$(BUILDDIR)/$(OSNAME).img -m 4G -cpu qemu64 -drive if=pflash,format=raw,unit=0,file="$(OVMFDIR)/OVMF_CODE-pure-efi.fd",readonly=on -drive if=pflash,format=raw,unit=1,file="$(OVMFDIR)/OVMF_VARS-pure-efi.fd" -net none

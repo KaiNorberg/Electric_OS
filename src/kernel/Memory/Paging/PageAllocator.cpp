@@ -12,23 +12,6 @@ namespace PageAllocator
 
     uint64_t FirstFreePage = 0;
 
-    bool GetPageStatus(uint64_t Index)
-    {
-        return (PageStatusMap[Index / 8] >> (Index % 8)) & 1;
-    }
-
-    void SetPageStatus(uint64_t Index, bool Status)
-    {
-        if (Status)
-        {
-            PageStatusMap[Index / 8] |= 1 << (Index % 8);
-        }
-        else
-        {
-            PageStatusMap[Index / 8] &= ~(1 << (Index % 8));
-        }
-    }
-
     void Init(EFI_MEMORY_MAP* MemoryMap, STL::Framebuffer* ScreenBuffer, STL::PSF_FONT * PSFFont)
     {   
         PageAmount = 0;
@@ -50,11 +33,11 @@ namespace PageAllocator
             }
         }
         PageStatusMap = (uint8_t*)LargestFreeSegment; 
-        for (int i = 0; i < PageAmount / 8; i++)
+        for (int i = 0; i < PageAmount; i++)
         {
             PageStatusMap[i] = false;
         }
-        LockPages(PageStatusMap, (PageAmount / 4096 / 8) + 1);
+        LockPages(PageStatusMap, (PageAmount / 4096) + 1);
 
         for (int i = 0; i < MemoryMap->Size / MemoryMap->DescSize; i++)
         {
@@ -76,7 +59,7 @@ namespace PageAllocator
         uint64_t FreeMemory = 0;
         for (int i = 0; i < PageAmount; i++)
         {
-            FreeMemory += !GetPageStatus(i);
+            FreeMemory += !PageStatusMap[i];
         }
         return FreeMemory;
     }
@@ -86,7 +69,7 @@ namespace PageAllocator
         uint64_t LockedMemory = 0;
         for (int i = 0; i < PageAmount; i++)
         {
-            LockedMemory += GetPageStatus(i);
+            LockedMemory += PageStatusMap[i];
         }
         return LockedMemory;
     }
@@ -100,7 +83,7 @@ namespace PageAllocator
     {
         for (uint64_t i = FirstFreePage; i < PageAmount; i++)
         {
-            if (!GetPageStatus(i))
+            if (!PageStatusMap[i])
             {
                 FirstFreePage = i + 1;
                 return LockPage((void*)(i * 4096));
@@ -117,7 +100,7 @@ namespace PageAllocator
         {
             return nullptr;
         }
-        SetPageStatus(PageIndex, true);
+        PageStatusMap[PageIndex] = true;
 
         return Address;
     }
@@ -129,7 +112,7 @@ namespace PageAllocator
         {
             return nullptr;
         }
-        SetPageStatus(PageIndex, false);
+        PageStatusMap[PageIndex] = false;
         if (FirstFreePage > PageIndex)
         {
             FirstFreePage = PageIndex;

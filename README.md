@@ -13,6 +13,7 @@ To create a simple and completely useless operating system, because i can.
 Optimize kernel/System.cpp
 Add more GUI objects?
 Write more comments.
+Reorganize files within img file.
 Implement PCI driver.
 Implement AHCI driver.
 Implement FAT filesystem.
