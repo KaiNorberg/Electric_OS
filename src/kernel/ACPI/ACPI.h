@@ -34,6 +34,15 @@ struct MCFGHeader
     uint64_t Reserved;
 } __attribute__((packed));
 
+struct DeviceConfig
+{
+    uint64_t Base;
+    uint16_t PCISegGroup;
+    uint8_t StartBus;
+    uint8_t EndBus;
+    uint32_t Reserved;
+} __attribute__((packed));
+
 namespace ACPI
 {
     void Prepare(RSDP2* In_RSDP);

@@ -1,6 +1,8 @@
 #include "ACPI.h"
 
 #include "kernel/Renderer/Renderer.h"
+#include "kernel/PCI/PCI.h"
+
 #include "STL/String/cstr.h"
 
 namespace ACPI
@@ -16,9 +18,12 @@ namespace ACPI
 
         MCFG = (MCFGHeader*)FindTable("MCFG");
 
-        //Renderer::Print(STL::ToString((uint64_t)MCFG));
+        for (int j = 0; j < 4; j++)
+        {
+            Renderer::Print(MCFG->Header.Signature[j]);
+        }
 
-        //Renderer::SwapBuffers();
+        PCI::Enumerate(MCFG);
     }
 
     void* FindTable(const char* Signature)
@@ -31,10 +36,15 @@ namespace ACPI
 
             for (int j = 0; j < 4; j++)
             {
-                Renderer::Print(NewHeader->Signature[j]);
-
+                if (NewHeader->Signature[j] != Signature[j])
+                {
+                    break;
+                }
+                else if (j == 3)
+                {
+                    return NewHeader;
+                }
             }
-            Renderer::Print(" ");
         }
 
         return nullptr;
