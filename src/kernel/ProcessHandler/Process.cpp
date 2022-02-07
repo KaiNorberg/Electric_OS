@@ -159,10 +159,34 @@ void Process::Render()
         return;
     }
 
-    for (int i = 0; i < this->FrameBuffer.Height; i++)
-    {
-        STL::CopyMemory(this->FrameBuffer.Base + this->FrameBuffer.PixelsPerScanline * i, 
-        Renderer::Backbuffer.Base + Renderer::Backbuffer.PixelsPerScanline * (i + this->Pos.Y) + this->Pos.X, this->FrameBuffer.PixelsPerScanline * 4);
+    //Copy this->FrameBuffer to Renderer::Backbuffer
+
+    uint8_t* Source = (uint8_t*)(this->FrameBuffer.Base);
+    uint8_t* Dest = (uint8_t*)(Renderer::Backbuffer.Base + this->Pos.X + Renderer::Backbuffer.PixelsPerScanline * this->Pos.Y);
+
+    for (int y = 0; y < this->FrameBuffer.Height; y++)
+    {             
+        uint8_t* TempSource = Source;
+        uint8_t* TempDest = Dest;
+        Source += this->FrameBuffer.PixelsPerScanline * 4;
+        Dest += Renderer::Backbuffer.PixelsPerScanline * 4;   
+
+        while (TempSource + 24 < Source)
+        {
+            __asm__ __volatile__ ("movq (%0), %%mm0\n" "movq %%mm0, (%1)\n" :: "r"(TempSource), "r"(TempDest) : "memory");
+            __asm__ __volatile__ ("movq (%0), %%mm0\n" "movq %%mm0, (%1)\n" :: "r"(TempSource + 8), "r"(TempDest + 8) : "memory");
+            __asm__ __volatile__ ("movq (%0), %%mm0\n" "movq %%mm0, (%1)\n" :: "r"(TempSource + 16), "r"(TempDest + 16) : "memory");
+
+            TempSource += 24;
+            TempDest += 24;
+        }
+
+        while (TempSource < Source)
+        {
+            *TempDest = *TempSource;
+            TempSource++;
+            TempDest++;
+        }
     }
 }
 
