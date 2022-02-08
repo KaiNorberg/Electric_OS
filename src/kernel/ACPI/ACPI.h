@@ -45,7 +45,7 @@ struct DeviceConfig
 
 namespace ACPI
 {
-    void Prepare(RSDP2* In_RSDP);
+    void Init(RSDP2* In_RSDP);
 
     void* FindTable(const char* Signature);
 }

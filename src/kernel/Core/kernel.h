@@ -15,6 +15,7 @@
 #include "kernel/System/System.h"
 #include "kernel/ProcessHandler/ProcessHandler.h"
 #include "kernel/ACPI/ACPI.h"
+#include "kernel/PCI/PCI.h"
 
 /// <summary>
 /// Compiler definitions.

@@ -32,7 +32,9 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 
 	IDT::SetupInterrupts();
 		
-	ACPI::Prepare(BootInfo->RSDP);
+	ACPI::Init(BootInfo->RSDP);
+
+	PCI::ResetEnumeration();
 
 	ProcessHandler::Loop();
 

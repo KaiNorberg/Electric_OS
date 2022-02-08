@@ -19,6 +19,8 @@
 #include "kernel/Memory/Paging/PageAllocator.h"
 #include "kernel/Memory/Heap.h"
 #include "kernel/ProcessHandler/ProcessHandler.h"
+#include "kernel/ACPI/ACPI.h"
+#include "kernel/PCI/PCI.h"
 
 #include <cstdarg>
 
@@ -86,11 +88,13 @@ namespace System
         return "ERROR: Variable not found";
     }
 
-    char CommandListOutput[1024];
     const char* CommandList(const char* Command)
-    {      
+    {         
+        static char CommandListOutput[1024];
+
         char* CurrentLocation = CommandListOutput;
         char* LineStart = CommandListOutput;
+
         auto Write = [&](const char* Input) 
         { 
             CurrentLocation = STL::CopyString(CurrentLocation, Input) + 1;
@@ -122,15 +126,9 @@ namespace System
             LineStart = CurrentLocation;      
         };
 
-        auto WriteLine = [&](uint64_t EntryAmount) 
+        auto WriteLine = [&]() 
         {            
-            NewLine();
-            for (int i = 0; i < EntryAmount; i++)
-            {
-                CurrentLocation = STL::CopyString(CurrentLocation, "+--------------") + 1;                
-            }            
-            *CurrentLocation = '+';
-            CurrentLocation++;            
+            Write("\n\r+--------------+--------------+");           
         };
 
         uint64_t Hash = STL::HashWord(STL::NextWord(Command));
@@ -138,12 +136,10 @@ namespace System
         {
         case STL::ConstHashWord("process"):
         {            
-            StartLine("TITLE");
+            Write(" TITLE");
             NextEntry("ID");
-            NextEntry("POSITION");
-            NextEntry("SIZE");
 
-            WriteLine(4);
+            WriteLine();
 
             for (int i = 0; i < ProcessHandler::Processes.Length(); i++)
             {                
@@ -152,15 +148,28 @@ namespace System
                 StartLine(ProcessHandler::Processes[i]->GetTitle());
 
                 NextEntry(STL::ToString(ProcessHandler::Processes[i]->GetID()));
+            }
+        }
+        break;
+        case STL::ConstHashWord("pci"):
+        {            
+            Write(" VENDORID");
+            NextEntry("DEVICEID");
 
-                NextEntry(STL::ToString(ProcessHandler::Processes[i]->GetPos().X));
-                Write(", ");
-                Write(STL::ToString(ProcessHandler::Processes[i]->GetPos().Y));
+            WriteLine();
+            
+            MCFGHeader* MCFG = (MCFGHeader*)ACPI::FindTable("MCFG");
+        
+            DeviceHeader* Device;
+            PCI::ResetEnumeration();
+            while (PCI::Enumerate(MCFG, Device))
+            {                
+                NewLine();
 
-                NextEntry(STL::ToString(ProcessHandler::Processes[i]->GetSize().X));
-                Write(", ");
-                Write(STL::ToString(ProcessHandler::Processes[i]->GetSize().Y));
-            }            
+                StartLine(STL::ToString(Device->VendorID));
+
+                NextEntry(STL::ToString(Device->DeviceID));
+            }    
         }
         break;
         default:
@@ -212,9 +221,10 @@ namespace System
         FOREGROUND_COLOR(255, 255, 255)"        A neofetch lookalike to give system information\n\r";
     }
 
-    char CommandTimeOutput[16];
     const char* CommandTime(const char* Command)
-    {
+    {    
+        static char CommandTimeOutput[16];
+
         uint64_t Hour = RTC::GetHour();
         uint64_t Minute = RTC::GetMinute();
         uint64_t Second = RTC::GetSecond();
@@ -232,9 +242,10 @@ namespace System
         return CommandTimeOutput;
     }
 
-    char CommandDateOutput[64];
     const char* CommandDate(const char* Command)
-    {        
+    {            
+        static char CommandDateOutput[64];
+
         uint64_t Day = RTC::GetDay();
         uint64_t Month = RTC::GetMonth();
         uint64_t Year = RTC::GetYear();
@@ -345,9 +356,10 @@ namespace System
         return "ERROR: Process not found";
     }
 
-    char CommandHeapvisOutput[128];
     const char* CommandHeapvis(const char* Command)
-    {
+    {    
+        static char CommandHeapvisOutput[128];
+
         char* Index = CommandHeapvisOutput;
         auto Write = [&](const char* String)
         {

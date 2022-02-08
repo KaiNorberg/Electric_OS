@@ -22,5 +22,7 @@ struct DeviceHeader
 
 namespace PCI
 {        
-    void Enumerate(MCFGHeader* MCFG);
+    void ResetEnumeration();
+
+    bool Enumerate(MCFGHeader* MCFG, DeviceHeader*& Out);
 }

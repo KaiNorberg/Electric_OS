@@ -4,70 +4,87 @@
 
 namespace PCI
 {       
-    void EnumerateFunction(uint64_t DeviceAddress, uint64_t Function)
-    {    
-        uint64_t FunctionAddress = DeviceAddress + (Function << 12);
+    uint8_t Entry = 0;
+    uint8_t Bus = 0;
+    uint8_t Device = 0;
+    uint8_t Func = 0;
 
-        PageTableManager::MapAddress((void*)FunctionAddress, (void*)FunctionAddress);
-
-        DeviceHeader* Header = (DeviceHeader*)FunctionAddress;
-
-        if (Header->DeviceID == 0 || Header->DeviceID == 0xFFFF)
-        {
-            return;
-        }
+    void ResetEnumeration()
+    {       
+        Entry = 0;
+        Bus = 0;
+        Device = 0;
+        Func = 0;
     }
 
-    void EnumerateDevice(uint64_t BusAddress, uint64_t Device)
-    {
-        uint64_t DeviceAddress = BusAddress + (Device << 15);
-
-        PageTableManager::MapAddress((void*)DeviceAddress, (void*)DeviceAddress);
-
-        DeviceHeader* Header = (DeviceHeader*)DeviceAddress;
-
-        if (Header->DeviceID == 0 || Header->DeviceID == 0xFFFF)
-        {
-            return;
-        }
-
-        for (uint64_t Func = 0; Func < 8; Func++)
-        {
-            EnumerateFunction(BusAddress, Func);
-        }
-    }
-
-    void EnumerateBus(uint64_t BaseAddress, uint64_t Bus)
-    {
-        uint64_t BusAddress = BaseAddress + (Bus << 20);
-
-        PageTableManager::MapAddress((void*)BusAddress, (void*)BusAddress);
-
-        DeviceHeader* Header = (DeviceHeader*)BusAddress;
-
-        if (Header->DeviceID == 0 || Header->DeviceID == 0xFFFF)
-        {
-            return;
-        }    
-
-        for (uint64_t Device = 0; Device < 32; Device++)
-        {
-            EnumerateDevice(BusAddress, Device);
-        }
-    }
-
-    void Enumerate(MCFGHeader* MCFG)
-    {
+    bool Enumerate(MCFGHeader* MCFG, DeviceHeader*& Out)
+    {        
         uint64_t Entries = (MCFG->Header.Length - sizeof(MCFGHeader)) / sizeof(DeviceConfig);
 
-        for (uint64_t i = 0; i < Entries; i++)
+        for (; Entry < Entries; Entry++)
         {
-            DeviceConfig* NewDeviceConfig = (DeviceConfig*)((uint64_t)MCFG + sizeof(MCFGHeader) + i * sizeof(DeviceConfig));
+            DeviceConfig* NewDeviceConfig = (DeviceConfig*)((uint64_t)MCFG + sizeof(MCFGHeader) + Entry * sizeof(DeviceConfig));
 
-            for (uint64_t Bus = NewDeviceConfig->StartBus; Bus < NewDeviceConfig->EndBus; Bus++)
+            if (Bus == 0)
             {
-                EnumerateBus(NewDeviceConfig->Base, Bus);
+                Bus = NewDeviceConfig->StartBus;
             }
+
+            for (; Bus < NewDeviceConfig->EndBus; Bus++)
+            {
+                uint64_t BusAddress = NewDeviceConfig->Base + (Bus << 20);
+
+                PageTableManager::MapAddress((void*)BusAddress, (void*)BusAddress);
+
+                DeviceHeader* BusHeader = (DeviceHeader*)BusAddress;
+
+                if (BusHeader->DeviceID == 0 || BusHeader->DeviceID == 0xFFFF)
+                {
+                    continue;
+                }    
+
+                for (; Device < 32; Device++)
+                {
+                    uint64_t DeviceAddress = BusAddress + (Device << 15);
+
+                    PageTableManager::MapAddress((void*)DeviceAddress, (void*)DeviceAddress);
+
+                    DeviceHeader* DevHeader = (DeviceHeader*)DeviceAddress;
+
+                    if (DevHeader->DeviceID == 0 || DevHeader->DeviceID == 0xFFFF)
+                    {
+                        continue;
+                    }
+
+                    for (; Func < 8; Func++)
+                    {
+                        uint64_t FunctionAddress = DeviceAddress + (Func << 12);
+
+                        PageTableManager::MapAddress((void*)FunctionAddress, (void*)FunctionAddress);
+
+                        DeviceHeader* FuncHeader = (DeviceHeader*)FunctionAddress;
+
+                        if (FuncHeader->DeviceID == 0 || FuncHeader->DeviceID == 0xFFFF)
+                        {
+                            continue;
+                        }       
+                        
+                        Func++;
+                        Out = FuncHeader;
+                        return true;
+                    }
+
+                    Func = 0;
+                }
+
+                Device = 0;
+            }
+
+            Bus = 0;
         }
+
+        Entry = 0;
+
+        return false;
     }
 }
