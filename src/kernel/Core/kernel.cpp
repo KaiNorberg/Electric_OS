@@ -16,7 +16,7 @@ void* __cxa_atexit = (void*) &__cxa_atexit;
 extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 {
 	InitGDT();
- 
+	
 	PageAllocator::Init(BootInfo->MemoryMap, BootInfo->ScreenBuffer, BootInfo->PSFFont);
 	PageTableManager::Init(BootInfo->ScreenBuffer);
 

@@ -127,9 +127,15 @@ namespace System
             LineStart = CurrentLocation;      
         };
 
-        auto WriteLine = [&]() 
+        auto WriteLine = [&](uint64_t EntryAmount) 
         {            
-            Write("\n\r+--------------+--------------+");           
+            NewLine();
+            for (uint32_t i = 0; i < EntryAmount; i++)
+            {
+                CurrentLocation = STL::CopyString(CurrentLocation, "+--------------") + 1;                
+            }            
+            *CurrentLocation = '+';
+            CurrentLocation++;            
         };
 
         uint64_t Hash = STL::HashWord(STL::NextWord(Command));
@@ -137,10 +143,10 @@ namespace System
         {
         case STL::ConstHashWord("process"):
         {            
-            Write(" TITLE");
+            StartLine("TITLE");
             NextEntry("ID");
 
-            WriteLine();
+            WriteLine(2);
 
             for (int i = 0; i < ProcessHandler::Processes.Length(); i++)
             {                
@@ -154,10 +160,10 @@ namespace System
         break;
         case STL::ConstHashWord("pci"):
         {            
-            Write(" VENDOR");
+            StartLine("VENDOR");
             NextEntry("TYPE");
 
-            WriteLine();
+            WriteLine(2);
             
             MCFGHeader* MCFG = (MCFGHeader*)ACPI::FindTable("MCFG");
         

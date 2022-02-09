@@ -12,10 +12,27 @@ namespace PageAllocator
 
     uint64_t FirstFreePage = 0;
 
+    bool GetPageStatus(uint64_t Index)
+    {
+        return (PageStatusMap[Index / 8] >> (Index % 8)) & 1;
+    }
+
+    void SetPageStatus(uint64_t Index, bool Status)
+    {
+        if (Status)
+        {
+            PageStatusMap[Index / 8] |= 1 << (Index % 8);
+        }
+        else
+        {
+            PageStatusMap[Index / 8] &= ~(1 << (Index % 8));
+        }
+    }
+
     void Init(EFI_MEMORY_MAP* MemoryMap, STL::Framebuffer* ScreenBuffer, STL::PSF_FONT * PSFFont)
     {   
         PageAmount = 0;
-        for (int i = 0; i < MemoryMap->Size / MemoryMap->DescSize; i++)
+        for (uint64_t i = 0; i < MemoryMap->Size / MemoryMap->DescSize; i++)
         {
             EFI_MEMORY_DESCRIPTOR* Desc = (EFI_MEMORY_DESCRIPTOR*)((uint64_t)MemoryMap->Base + (i * MemoryMap->DescSize));
             PageAmount += Desc->NumberOfPages;
@@ -23,7 +40,7 @@ namespace PageAllocator
 
         void* LargestFreeSegment = nullptr;
         uint64_t LargestFreeSegmentSize = 0;
-        for (int i = 0; i < MemoryMap->Size / MemoryMap->DescSize; i++)
+        for (uint64_t i = 0; i < MemoryMap->Size / MemoryMap->DescSize; i++)
         {
             EFI_MEMORY_DESCRIPTOR* Desc = (EFI_MEMORY_DESCRIPTOR*)((uint64_t)MemoryMap->Base + (i * MemoryMap->DescSize));
             if (Desc->Type == (uint32_t)EFI_MEMORY_TYPE::EfiConventionalMemory && LargestFreeSegmentSize < Desc->NumberOfPages * 4096)
@@ -33,13 +50,13 @@ namespace PageAllocator
             }
         }
         PageStatusMap = (uint8_t*)LargestFreeSegment; 
-        for (int i = 0; i < PageAmount; i++)
+        for (uint64_t i = 0; i < PageAmount / 8; i++)
         {
             PageStatusMap[i] = false;
         }
-        LockPages(PageStatusMap, (PageAmount / 4096) + 1);
+        LockPages(PageStatusMap, (PageAmount / 4096 / 8) + 1);
 
-        for (int i = 0; i < MemoryMap->Size / MemoryMap->DescSize; i++)
+        for (uint64_t i = 0; i < MemoryMap->Size / MemoryMap->DescSize; i++)
         {
             EFI_MEMORY_DESCRIPTOR* Desc = (EFI_MEMORY_DESCRIPTOR*)((uint64_t)MemoryMap->Base + (i * MemoryMap->DescSize));
             if (Desc->Type != (uint32_t)EFI_MEMORY_TYPE::EfiConventionalMemory)
@@ -57,9 +74,9 @@ namespace PageAllocator
     uint64_t GetFreePages()
     {
         uint64_t FreeMemory = 0;
-        for (int i = 0; i < PageAmount; i++)
+        for (uint64_t i = 0; i < PageAmount; i++)
         {
-            FreeMemory += !PageStatusMap[i];
+            FreeMemory += !GetPageStatus(i);
         }
         return FreeMemory;
     }
@@ -67,9 +84,9 @@ namespace PageAllocator
     uint64_t GetLockedPages()
     {
         uint64_t LockedMemory = 0;
-        for (int i = 0; i < PageAmount; i++)
+        for (uint64_t i = 0; i < PageAmount; i++)
         {
-            LockedMemory += PageStatusMap[i];
+            LockedMemory += GetPageStatus(i);
         }
         return LockedMemory;
     }
@@ -83,7 +100,7 @@ namespace PageAllocator
     {
         for (uint64_t i = FirstFreePage; i < PageAmount; i++)
         {
-            if (!PageStatusMap[i])
+            if (!GetPageStatus(i))
             {
                 FirstFreePage = i + 1;
                 return LockPage((void*)(i * 4096));
@@ -100,7 +117,7 @@ namespace PageAllocator
         {
             return nullptr;
         }
-        PageStatusMap[PageIndex] = true;
+        SetPageStatus(PageIndex, true);
 
         return Address;
     }
@@ -112,7 +129,7 @@ namespace PageAllocator
         {
             return nullptr;
         }
-        PageStatusMap[PageIndex] = false;
+        SetPageStatus(PageIndex, false);
         if (FirstFreePage > PageIndex)
         {
             FirstFreePage = PageIndex;
@@ -123,7 +140,7 @@ namespace PageAllocator
 
     void LockPages(void* Address, uint64_t Count)
     {
-        for (int i = 0; i < Count; i++)
+        for (uint64_t i = 0; i < Count; i++)
         {
             LockPage((void*)((uint64_t)Address + i * 4096));
         }
@@ -131,7 +148,7 @@ namespace PageAllocator
 
     void FreePages(void* Address, uint64_t Count)
     {
-        for (int i = 0; i < Count; i++)
+        for (uint64_t i = 0; i < Count; i++)
         {
             FreePage((void*)((uint64_t)Address + i * 4096));
         }
