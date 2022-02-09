@@ -10,6 +10,7 @@ SECTIONS
 	.text BLOCK(4K) : ALIGN(4K)
 	{
 		*(.text)
+		*(.rodata)
 	}
 
 	.data BLOCK(4K) : ALIGN(4K)
@@ -19,6 +20,7 @@ SECTIONS
 
 	.bss BLOCK(4K) : ALIGN(4K)
 	{
+		*(.bss)
 		*(COMMON)
     }
   

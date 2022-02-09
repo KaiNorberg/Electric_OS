@@ -26,6 +26,9 @@
 
 namespace System
 {
+    static char CommandOutput[1024];
+
+
     const char* CommandSet(const char* Command)
     {        
         const char* Variable = STL::NextWord(Command);
@@ -90,10 +93,8 @@ namespace System
 
     const char* CommandList(const char* Command)
     {         
-        static char CommandListOutput[1024];
-
-        char* CurrentLocation = CommandListOutput;
-        char* LineStart = CommandListOutput;
+        char* CurrentLocation = CommandOutput;
+        char* LineStart = CommandOutput;
 
         auto Write = [&](const char* Input) 
         { 
@@ -153,8 +154,8 @@ namespace System
         break;
         case STL::ConstHashWord("pci"):
         {            
-            Write(" VENDORID");
-            NextEntry("DEVICEID");
+            Write(" VENDOR");
+            NextEntry("TYPE");
 
             WriteLine();
             
@@ -166,9 +167,9 @@ namespace System
             {                
                 NewLine();
 
-                StartLine(STL::ToString(Device->VendorID));
+                StartLine(Device->GetVendorString());
 
-                NextEntry(STL::ToString(Device->DeviceID));
+                NextEntry(Device->GetTypeString());
             }    
         }
         break;
@@ -180,7 +181,7 @@ namespace System
         }
 
         *CurrentLocation = 0;
-        return CommandListOutput;
+        return CommandOutput;
     }
 
     const char* CommandHelp(const char* Command)
@@ -223,46 +224,42 @@ namespace System
 
     const char* CommandTime(const char* Command)
     {    
-        static char CommandTimeOutput[16];
-
         uint64_t Hour = RTC::GetHour();
         uint64_t Minute = RTC::GetMinute();
         uint64_t Second = RTC::GetSecond();
 
-        CommandTimeOutput[0] = '0' + (Hour / 10); 
-        CommandTimeOutput[1] = '0' + (Hour % 10); 
-        CommandTimeOutput[2] = ':'; 
-        CommandTimeOutput[3] = '0' + (Minute / 10); 
-        CommandTimeOutput[4] = '0' + (Minute % 10); 
-        CommandTimeOutput[5] = ':'; 
-        CommandTimeOutput[6] = '0' + (Second / 10); 
-        CommandTimeOutput[7] = '0' + (Second % 10); 
-        CommandTimeOutput[8] = 0; 
+        CommandOutput[0] = '0' + (Hour / 10); 
+        CommandOutput[1] = '0' + (Hour % 10); 
+        CommandOutput[2] = ':'; 
+        CommandOutput[3] = '0' + (Minute / 10); 
+        CommandOutput[4] = '0' + (Minute % 10); 
+        CommandOutput[5] = ':'; 
+        CommandOutput[6] = '0' + (Second / 10); 
+        CommandOutput[7] = '0' + (Second % 10); 
+        CommandOutput[8] = 0; 
 
-        return CommandTimeOutput;
+        return CommandOutput;
     }
 
     const char* CommandDate(const char* Command)
     {            
-        static char CommandDateOutput[64];
-
         uint64_t Day = RTC::GetDay();
         uint64_t Month = RTC::GetMonth();
         uint64_t Year = RTC::GetYear();
 
-        CommandDateOutput[0] = '0' + (Day / 10); 
-        CommandDateOutput[1] = '0' + (Day % 10); 
-        CommandDateOutput[2] = '/'; 
-        CommandDateOutput[3] = '0' + (Month / 10); 
-        CommandDateOutput[4] = '0' + (Month % 10); 
-        CommandDateOutput[5] = '/'; 
-        CommandDateOutput[6] = '2'; 
-        CommandDateOutput[7] = '0'; 
-        CommandDateOutput[8] = '0' + (Year / 10); 
-        CommandDateOutput[9] = '0' + (Year % 10); 
-        CommandDateOutput[10] = 0; 
+        CommandOutput[0] = '0' + (Day / 10); 
+        CommandOutput[1] = '0' + (Day % 10); 
+        CommandOutput[2] = '/'; 
+        CommandOutput[3] = '0' + (Month / 10); 
+        CommandOutput[4] = '0' + (Month % 10); 
+        CommandOutput[5] = '/'; 
+        CommandOutput[6] = '2'; 
+        CommandOutput[7] = '0'; 
+        CommandOutput[8] = '0' + (Year / 10); 
+        CommandOutput[9] = '0' + (Year % 10); 
+        CommandOutput[10] = 0; 
 
-        return CommandDateOutput;
+        return CommandOutput;
     }
 
     const char* CommandKill(const char* Command)
@@ -358,9 +355,7 @@ namespace System
 
     const char* CommandHeapvis(const char* Command)
     {    
-        static char CommandHeapvisOutput[128];
-
-        char* Index = CommandHeapvisOutput;
+        char* Index = CommandOutput;
         auto Write = [&](const char* String)
         {
             Index = STL::CopyString(Index, String) + 1;
@@ -408,7 +403,7 @@ namespace System
         Write(FOREGROUND_COLOR(255, 255, 255));
         Write(BACKGROUND_COLOR(000, 000, 000));
 
-        return CommandHeapvisOutput;
+        return CommandOutput;
     }
 
     const char* CommandSysfetch(const char* Command)
