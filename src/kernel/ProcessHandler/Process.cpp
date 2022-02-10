@@ -121,8 +121,6 @@ void Process::Kill()
 void Process::Draw()
 {
     this->SendMessage(STL::PROM::DRAW, &this->FrameBuffer);
-
-    this->Render();
 }
 
 void Process::Render()

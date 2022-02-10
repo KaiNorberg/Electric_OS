@@ -1,4 +1,5 @@
 #include "ProcessHandler.h"
+#include "Compositor.h"
 
 #include "STL/Math/Math.h"
 #include "STL/Graphics/Framebuffer.h"
@@ -26,9 +27,6 @@ namespace ProcessHandler
     Process* MovingWindow = 0;
     STL::Point MovingWindowPosDelta = STL::Point(0, 0);
 
-    bool RedrawRequest = false;
-    bool BufferSwapRequest = false;
-
     void SetFocusedProcess(Process* NewFocus)
     {
         if (NewFocus == nullptr)
@@ -39,12 +37,12 @@ namespace ProcessHandler
 
         if (FocusedProcess != nullptr && FocusedProcess->GetType() == STL::PROT::WINDOWED)
         {                       
-            ProcessHandler::BufferSwapRequest = true;
+            Compositor::RedrawRequest = true;
         }
 
         if (NewFocus->GetType() == STL::PROT::WINDOWED)
         {                       
-            ProcessHandler::BufferSwapRequest = true;
+            Compositor::RedrawRequest = true;
         }
 
         FocusedProcess = NewFocus;       
@@ -57,7 +55,7 @@ namespace ProcessHandler
 
     void KillAllProcesses()
     {
-        for (int i = 0; i < Processes.Length(); i++)
+        for (uint32_t i = 0; i < Processes.Length(); i++)
         {
             Processes[i]->Kill();
             delete Processes[i];
@@ -67,7 +65,7 @@ namespace ProcessHandler
 
     Process* GetProcess(uint64_t ID)
     {
-        for (int i = 0; i < Processes.Length(); i++)
+        for (uint32_t i = 0; i < Processes.Length(); i++)
         {
             if (Processes[i]->GetID() == ID)
             {
@@ -100,11 +98,11 @@ namespace ProcessHandler
                 FocusedProcess = MovingWindow;
                 MovingWindow = 0;
             }       
-            RedrawRequest = true;
+            Compositor::RedrawRequest = true;
         }
         else
         {
-            for (int i = Processes.Length(); i --> 0; )
+            for (uint32_t i = Processes.Length(); i --> 0; )
             {                    
                 if (Mouse::LeftHeld && Processes[i]->GetType() == STL::PROT::WINDOWED)
                 {
@@ -154,7 +152,7 @@ namespace ProcessHandler
 
     void PITInterupt()
     {
-        for (int i = 0; i < Processes.Length(); i++)
+        for (uint32_t i = 0; i < Processes.Length(); i++)
         {
             uint64_t Tick = PIT::Ticks;
             Processes[i]->SendMessage(STL::PROM::TICK, &Tick);
@@ -163,7 +161,7 @@ namespace ProcessHandler
 
     bool KillProcess(uint64_t ProcessID)
     {
-        for (int i = 0; i < Processes.Length(); i++)
+        for (uint32_t i = 0; i < Processes.Length(); i++)
         {
             if (ProcessID == Processes[i]->GetID())
             {
@@ -185,7 +183,7 @@ namespace ProcessHandler
                 Processes[i]->Kill();
                 delete Processes[i];
                 Processes.Erase(i);
-                RedrawRequest = true;
+                Compositor::RedrawRequest = true;
                 return true;
             }
         }
@@ -195,7 +193,7 @@ namespace ProcessHandler
 
     uint64_t StartProcess(STL::PROC Procedure)
     {                    
-        for (int i = 0; i < Processes.Length(); i++)
+        for (uint32_t i = 0; i < Processes.Length(); i++)
         {
             if (Processes[i]->GetProcedure() == Procedure)
             {
@@ -207,7 +205,7 @@ namespace ProcessHandler
 
         if (Processes.Last()->GetType() == STL::PROT::FULLSCREEN)
         {
-            for (int i = 0; i < Processes.Length() - 1; i++)
+            for (uint32_t i = 0; i < Processes.Length() - 1; i++)
             {
                 if (Processes[i]->GetType() == STL::PROT::FULLSCREEN)
                 {
@@ -226,42 +224,28 @@ namespace ProcessHandler
         FocusedProcess = Processes[0];
         
         while (true) 
-        {     
-            for (uint64_t i = 0; i < Processes.Length(); i++)
+        {   
+            for (uint32_t i = 0; i < Processes.Length(); i++)
             {
                 switch (Processes[i]->GetRequest())
                 {
                 case STL::PROR::CLEAR:
                 {
                     Processes[i]->Clear();
-                    if (i == Processes.Length())
-                    {
-                        BufferSwapRequest = true;
-                    }
-                    else
-                    {
-                        RedrawRequest = true;
-                    }
+                    Compositor::Update(i);
                 }
                 break;
                 case STL::PROR::DRAW:
                 {
                     Processes[i]->Draw();
-                    if (i == Processes.Length())
-                    {
-                        BufferSwapRequest = true;
-                    }
-                    else
-                    {
-                        RedrawRequest = true;
-                    }
+                    Compositor::Update(i);
                 }
                 break;
                 case STL::PROR::KILL:
                 {
                     KillProcess(Processes[i]->GetID());
                     i--;
-                    RedrawRequest = true;
+                    Compositor::RedrawRequest = true;
                 }
                 break;
                 case STL::PROR::RESET:
@@ -278,28 +262,14 @@ namespace ProcessHandler
                 }
             }
 
-            if (RedrawRequest)
-            {        
-                for (int i = 0; i < Processes.Length(); i++)
-                {
-                    Processes[i]->Render();
-                }    
-                Renderer::SwapBuffers();
-                RedrawRequest = false;
-                BufferSwapRequest = false;     
-            }
-            else if (BufferSwapRequest)
-            {                
-                Renderer::SwapBuffers();
-                BufferSwapRequest = false;
-            }
+            Compositor::Update();
 
             if (Processes.Length() == 0)
             {
                 StartProcess(tty::Procedure);
                 FocusedProcess = Processes[0];
             }
-            
+
             asm("HLT");
         }
     }

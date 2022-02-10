@@ -77,10 +77,6 @@ namespace STL
 
         T& operator[](uint32_t Index)
         {
-            if (Index > this->Size)
-            {
-                return Data[this->Size];
-            }
             return Data[Index];
         }
 

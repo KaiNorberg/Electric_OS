@@ -13,8 +13,6 @@ namespace ProcessHandler
 
     extern STL::List<Process*> Processes;
 
-    extern bool BufferSwapRequest;
-
     void KillAllProcesses();
 
     Process* GetProcess(uint64_t ID);
