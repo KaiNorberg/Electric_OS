@@ -142,12 +142,15 @@ namespace InteruptHandlers
         static uint64_t OldRTCTick = 0;
 
         PIT::Tick();
+
+        /// If multiple of one second update time and date.
         if (PIT::Ticks >= OldRTCTick + 100)
         {
             RTC::Update();
             OldRTCTick = PIT::Ticks;
         }
 
+        /// Notify processes of interupt.
         ProcessHandler::PITInterupt();
 
         IO::OutByte(PIC1_COMMAND, PIC_EOI);
@@ -164,6 +167,7 @@ namespace InteruptHandlers
             ProcessHandler::KeyBoardInterupt();
         }
 
+        /// Notify processes of interupt.
         IO::OutByte(PIC1_COMMAND, PIC_EOI);
     }
 
@@ -196,9 +200,10 @@ namespace InteruptHandlers
         {
             MousePacket[2] = MouseData;
             MouseCycle = 0;
-
+            
             Mouse::HandleMousePacket(MousePacket);
-
+            
+            /// Notify processes of interupt.
             ProcessHandler::MouseInterupt();
         }
         break;

@@ -2,6 +2,9 @@
 
 #include <stdint.h>
 
+/// <summary>
+/// (Root System Description Pointer Version 2)
+/// </summary>
 struct RSDP2
 {
     uint8_t Signature[8];
@@ -15,6 +18,9 @@ struct RSDP2
     uint8_t Reserved[3];
 } __attribute__((packed));
 
+/// <summary>
+/// (System Descriptor Table Header) 
+/// </summary>
 struct SDTHeader
 {
     uint8_t Signature[4];
@@ -26,12 +32,6 @@ struct SDTHeader
     uint32_t OEMRevision;
     uint32_t CreatorID;
     uint32_t CreatorRevision; 
-} __attribute__((packed));
-
-struct MCFGHeader
-{
-    SDTHeader Header;
-    uint64_t Reserved;
 } __attribute__((packed));
 
 struct DeviceConfig
@@ -47,5 +47,5 @@ namespace ACPI
 {
     void Init(RSDP2* In_RSDP);
 
-    void* FindTable(const char* Signature);
+    SDTHeader* FindTable(const char* Signature);
 }

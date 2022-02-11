@@ -15,7 +15,7 @@ namespace ACPI
         XSDT = (SDTHeader*)(RSDP->XSDTAddress);
     }
 
-    void* FindTable(const char* Signature)
+    SDTHeader* FindTable(const char* Signature)
     {
         int Entries = (XSDT->Length - sizeof(SDTHeader)) / 8;
 

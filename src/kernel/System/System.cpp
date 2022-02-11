@@ -165,7 +165,7 @@ namespace System
 
             WriteLine(2);
             
-            MCFGHeader* MCFG = (MCFGHeader*)ACPI::FindTable("MCFG");
+            SDTHeader* MCFG = ACPI::FindTable("MCFG");
         
             DeviceHeader* Device;
             PCI::ResetEnumeration();

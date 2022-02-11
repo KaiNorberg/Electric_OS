@@ -23,6 +23,9 @@ namespace Mouse
     
     bool RightHeld;
 
+    /// <summary>
+    /// Waits untill the mouse is ready to recive data or untill a timeout is reached.
+    /// </summary>
     void MouseWait()
     {   
         uint64_t TimeOut = 100000;
@@ -36,6 +39,9 @@ namespace Mouse
         }
     }
 
+    /// <summary>
+    /// Waits untill the mouse is ready to send data or untill a timeout is reached.
+    /// </summary>
     void MouseWaitInput()
     {   
         uint64_t TimeOut = 100000;
@@ -49,6 +55,9 @@ namespace Mouse
         }
     }
 
+    /// <summary>
+    /// Writes a command to the mouse port (0x60).
+    /// </summary>
     void MouseWrite(uint8_t Value)
     {
         MouseWait();
@@ -57,6 +66,9 @@ namespace Mouse
         IO::OutByte(0x60, Value);
     }
 
+    /// <summary>
+    /// Reads date from the mouse port (0x60).
+    /// </summary>
     uint8_t MouseRead()
     {
         MouseWaitInput();
@@ -89,7 +101,8 @@ namespace Mouse
     }
     
     void HandleMousePacket(uint8_t* MousePacket)
-    {
+    {   
+        /// If sign bit is set move in negative direction.
         if (MousePacket[0] & PS2XSign)
         {      
             MousePacket[1] = 256 - MousePacket[1];
@@ -99,7 +112,6 @@ namespace Mouse
         {
             Position.X += MousePacket[1];
         }
-
         if (MousePacket[0] & PS2YSign)
         {
             MousePacket[2] = 256 - MousePacket[2];
@@ -110,21 +122,21 @@ namespace Mouse
             Position.Y -= MousePacket[2];
         }
 
+        /// Check for button presses.
         if ((MousePacket[0] & PS2Leftbutton))
         {
             LeftHeld = true;
-        }
-        
+        }  
         if ((MousePacket[0] & PS2Middlebutton))
         {
             MiddleHeld = true;
         }
-
         if ((MousePacket[0] & PS2Rightbutton))
         {
             RightHeld = true;
         }
 
+        /// Clamp mouse pos to the screen.
         Position.X = STL::Clamp(Position.X, 0, Renderer::GetScreenSize().X - 8);
         Position.Y = STL::Clamp(Position.Y, 0, Renderer::GetScreenSize().Y - 16);
     }

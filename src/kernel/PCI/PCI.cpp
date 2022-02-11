@@ -17,13 +17,13 @@ namespace PCI
         Func = 0;
     }
 
-    bool Enumerate(MCFGHeader* MCFG, DeviceHeader*& Out)
+    bool Enumerate(SDTHeader* MCFG, DeviceHeader*& Out)
     {        
-        uint64_t Entries = (MCFG->Header.Length - sizeof(MCFGHeader)) / sizeof(DeviceConfig);
+        uint64_t Entries = (MCFG->Length - (sizeof(SDTHeader) + 8)) / sizeof(DeviceConfig);
 
         for (; Entry < Entries; Entry++)
         {
-            DeviceConfig* NewDeviceConfig = (DeviceConfig*)((uint64_t)MCFG + sizeof(MCFGHeader) + Entry * sizeof(DeviceConfig));
+            DeviceConfig* NewDeviceConfig = (DeviceConfig*)((uint64_t)MCFG + (sizeof(SDTHeader) + 8) + Entry * sizeof(DeviceConfig));
 
             if (Bus == 0)
             {
