@@ -211,8 +211,16 @@ namespace Calculator
                 }
                 else if (PreviousOperator == '/')
                 {
-                    uint64_t NewNum = PreviousNum / STL::ToInt(Label.Text.cstr());
-                    Label.Text = STL::ToString(NewNum);  
+                    uint64_t Devisor = STL::ToInt(Label.Text.cstr());
+                    if (Devisor != 0)
+                    {
+                        uint64_t NewNum = PreviousNum / Devisor;
+                        Label.Text = STL::ToString(NewNum);                         
+                    }
+                    else 
+                    {
+                        Label.Text = "DIV BY ZERO!";
+                    }
                     PreviousNum = 0;               
                 }
 
@@ -255,7 +263,14 @@ namespace Calculator
             if (DivButton.IsPressed(MouseInfo))
             {
                 uint64_t NewNum = STL::ToInt(Label.Text.cstr());
-                Label.Text = STL::ToString(PreviousNum / NewNum);
+                if (NewNum != 0)
+                {
+                    Label.Text = STL::ToString(PreviousNum / NewNum);
+                }
+                else 
+                {
+                    Label.Text = "DIV BY ZERO!";
+                }
                 ClearLabel = true;
                 PreviousOperator = '/';
                 PreviousNum = NewNum;
