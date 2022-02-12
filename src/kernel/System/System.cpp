@@ -191,8 +191,118 @@ namespace System
     }
 
     const char* CommandHelp(const char* Command)
-    {       
-        return 
+    {              
+        struct Manual
+        {
+            const char* Name;
+            uint64_t Hash;
+            const char* String;
+            const char* Description;
+
+            Manual(const char* Name, const char* Description, const char* String)
+            {
+                this->Name = Name;
+                this->Hash = STL::HashWord(Name);
+                this->String = String;
+                this->Description = Description;
+            }
+        }; 
+
+        Manual Manuals[] =
+        {
+            Manual("set", "An interface to access kernel variables.",
+            FOREGROUND_COLOR(086, 182, 194)"\nNAME:\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"    set - An interface to access kernel variables.\n\n\r"
+            FOREGROUND_COLOR(086, 182, 194)"SYNOPSIS:\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"    set [VARIABLE] [VALUE]\n\n\r"
+            FOREGROUND_COLOR(224, 108, 117)"    VARIABLE:\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"        drawmouse - A boolean value that sets if a cursor is drawn to the screen.\n\n\r"
+            FOREGROUND_COLOR(086, 182, 194)"    VALUE:\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"        Any positive integer.\n\n\r"
+            ),
+            Manual("list", "An interface to list information about the kernel or hardware.",
+            FOREGROUND_COLOR(086, 182, 194)"\nNAME:\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"    list - An interface to list information about the kernel or hardware.\n\n\r"
+            FOREGROUND_COLOR(086, 182, 194)"SYNOPSIS:\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"    list [LIST]\n\n\r"
+            FOREGROUND_COLOR(224, 108, 117)"    LIST:\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"        process - A list of all currently running processes.\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"        pci - A list of all connected PCI devices.\n\r"
+            ),
+            Manual("time", "Allows access to the time values read from the appropriate CMOS registers.",
+            FOREGROUND_COLOR(086, 182, 194)"\nNAME:\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"    time - Allows access to the time values read from the appropriate CMOS registers.\n\r"
+            ),
+            Manual("date", "Allows access to the time values read from the appropriate CMOS registers.",
+            FOREGROUND_COLOR(086, 182, 194)"\nNAME:\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"    date - Allows access to the time values read from the appropriate CMOS registers.\n\r"
+            ),           
+            Manual("clear", "Send a request to clear the framebuffer of the process that called the command.",
+            FOREGROUND_COLOR(086, 182, 194)"\nNAME:\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"    clear - Send a request to clear the framebuffer of the process that called the command.\n\r"
+            ),           
+            Manual("start", "An interface to start any kernel level processes.",
+            FOREGROUND_COLOR(086, 182, 194)"\nNAME:\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"    start - An interface to start any kernel level processes.\n\n\r"
+            FOREGROUND_COLOR(086, 182, 194)"SYNOPSIS:\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"    start [PROCESS]\n\n\r"
+            FOREGROUND_COLOR(224, 108, 117)"    PROCESS:\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"        calculator - A calculator.\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"        desktop - The process responsible for drawing the desktop background.\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"        topbar - The process responsible for giving the user access to the startmenu and systemmenu.\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"        startmenu - The process used to start process when using the desktop.\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"        systemmenu - The process used to access the system when using the desktop.\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"        terminal - A GUI terminal.\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"        tty - A terminal like process that starts at boot.\n\r"
+            ),           
+            Manual("suicide", "Send a request to kill the process that called the command.",
+            FOREGROUND_COLOR(086, 182, 194)"\nNAME:\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"    suicide - Send a request to kill the process that called the command.\n\r"
+            ),           
+            Manual("restart", "Restarts the pc.",
+            FOREGROUND_COLOR(086, 182, 194)"\nNAME:\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"    restart - Restarts the pc.\n\r"
+            ),           
+            Manual("heapvis", "Shows a visualization of all the segments in the heap.",
+            FOREGROUND_COLOR(086, 182, 194)"\nNAME:\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"    heapvis - Shows a visualization of all the segments in the heap.\n\r"
+            ),           
+            Manual("sysfetch", "A neofetch lookalike to give system information.",
+            FOREGROUND_COLOR(086, 182, 194)"\nNAME:\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"    sysfetch - A neofetch lookalike to give system information.\n\r"
+            ), 
+        };  
+
+        uint64_t Hash = STL::HashWord(STL::NextWord(Command));
+        if (Hash == 0)
+        {
+            char* CurrentLocation = CommandOutput;
+            CurrentLocation = STL::CopyString(CurrentLocation, "\nType help [COMMAND] for information about the specified COMMAND.\n\n\r") + 1;
+            CurrentLocation = STL::CopyString(CurrentLocation, FOREGROUND_COLOR(224, 108, 117)"COMMAND: \n\r"FOREGROUND_COLOR(255, 255, 255)) + 1;
+
+            for (int i = 0; i < sizeof(Manuals)/sizeof(Manuals[0]); i++)
+            {                
+                CurrentLocation = STL::CopyString(CurrentLocation, "    ") + 1;
+                CurrentLocation = STL::CopyString(CurrentLocation, Manuals[i].Name) + 1;
+                CurrentLocation = STL::CopyString(CurrentLocation, " - ") + 1;
+                CurrentLocation = STL::CopyString(CurrentLocation, Manuals[i].Description) + 1;
+                CurrentLocation = STL::CopyString(CurrentLocation, "\r\n") + 1;
+            }
+            *CurrentLocation = 0;
+            return CommandOutput;
+        }
+
+        for (int i = 0; i < sizeof(Manuals)/sizeof(Manuals[0]); i++)
+        {   
+            if (Manuals[i].Hash == Hash)
+            {
+                return Manuals[i].String;
+            }
+        }   
+
+        return "ERROR: Invalid value of COMMAND ";
+
+        /*return 
         FOREGROUND_COLOR(086, 182, 194)"set [VARIABLE] [VALUE]\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
         FOREGROUND_COLOR(255, 255, 255)"        Sets the specified kernel variable to the specified value\n\r"
@@ -225,7 +335,7 @@ namespace System
         FOREGROUND_COLOR(255, 255, 255)"        Prints a visualization of all the segments of the heap\n\r"
         FOREGROUND_COLOR(086, 182, 194)"sysfetch\n\r"
         FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
-        FOREGROUND_COLOR(255, 255, 255)"        A neofetch lookalike to give system information\n\r";
+        FOREGROUND_COLOR(255, 255, 255)"        A neofetch lookalike to give system information\n\r";*/
     }
 
     const char* CommandTime(const char* Command)
