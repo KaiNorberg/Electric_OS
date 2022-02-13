@@ -4,11 +4,15 @@ OSNAME = Electric_OS
 GNUEFI = gnu-efi
 OVMFDIR = OVMFbin
 LDS = linker/linker.ld
-CC = g++
+CC = gcc
 ASMC = nasm
 LD = ld
 
-CFLAGS = -fno-rtti -ffreestanding -fno-threadsafe-statics -fno-builtin -fno-stack-protector -nostdlib -lgcc -fno-exceptions -Isrc/ -Os -std=c++20
+OPTIMFLAGS = -O2 -fno-align-functions -fno-align-jumps -fno-align-labels -fno-align-loops
+OPTIMFLAGS += -fgcse-after-reload -fipa-cp-clone -floop-interchange -floop-unroll-and-jam 
+OPTIMFLAGS += -fpeel-loops -fpredictive-commoning -fsplit-loops -fsplit-paths -ftree-loop-distribution 
+OPTIMFLAGS += -ftree-partial-pre -funswitch-loops -fvect-cost-model=dynamic -fversion-loops-for-strides
+CFLAGS = -fno-rtti -ffreestanding -fno-threadsafe-statics -fno-stack-protector -fno-exceptions -Isrc/ -std=c++20 $(OPTIMFLAGS)
 ASMFLAGS =
 LDFLAGS = -T $(LDS) -Bsymbolic -nostdlib
 

@@ -28,7 +28,6 @@ namespace System
 {
     static char CommandOutput[1024];
 
-
     const char* CommandSet(const char* Command)
     {        
         const char* Variable = STL::NextWord(Command);
@@ -301,41 +300,6 @@ namespace System
         }   
 
         return "ERROR: Invalid value of COMMAND ";
-
-        /*return 
-        FOREGROUND_COLOR(086, 182, 194)"set [VARIABLE] [VALUE]\n\r"
-        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
-        FOREGROUND_COLOR(255, 255, 255)"        Sets the specified kernel variable to the specified value\n\r"
-        FOREGROUND_COLOR(086, 182, 194)"list\n\r"
-        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
-        FOREGROUND_COLOR(255, 255, 255)"        Prints the specified list\n\r"
-        FOREGROUND_COLOR(086, 182, 194)"help\n\r"
-        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
-        FOREGROUND_COLOR(255, 255, 255)"        Prints this menu\n\r"
-        FOREGROUND_COLOR(086, 182, 194)"time\n\r"
-        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
-        FOREGROUND_COLOR(255, 255, 255)"        Prints the current time\n\r"
-        FOREGROUND_COLOR(086, 182, 194)"date\n\r"
-        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
-        FOREGROUND_COLOR(255, 255, 255)"        Prints the current date\n\r"
-        FOREGROUND_COLOR(086, 182, 194)"clear\n\r"
-        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
-        FOREGROUND_COLOR(255, 255, 255)"        Clears the framebuffer of the process that performed the system call\n\r"
-        FOREGROUND_COLOR(086, 182, 194)"start\n\r"
-        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
-        FOREGROUND_COLOR(255, 255, 255)"        Starts the process with the given name\n\r"
-        FOREGROUND_COLOR(086, 182, 194)"suicide\n\r"
-        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
-        FOREGROUND_COLOR(255, 255, 255)"        Kills the process that performed the system call\n\r"
-        FOREGROUND_COLOR(086, 182, 194)"restart\n\r"
-        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
-        FOREGROUND_COLOR(255, 255, 255)"        Restarts the pc\n\r"
-        FOREGROUND_COLOR(086, 182, 194)"heapvis\n\r"
-        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
-        FOREGROUND_COLOR(255, 255, 255)"        Prints a visualization of all the segments of the heap\n\r"
-        FOREGROUND_COLOR(086, 182, 194)"sysfetch\n\r"
-        FOREGROUND_COLOR(224, 108, 117)"    DESC:\n\r"
-        FOREGROUND_COLOR(255, 255, 255)"        A neofetch lookalike to give system information\n\r";*/
     }
 
     const char* CommandTime(const char* Command)
