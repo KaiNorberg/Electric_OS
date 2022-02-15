@@ -46,7 +46,7 @@ const char* Process::GetTitle()
     return this->Title.cstr();
 }
 
-STL::PROR Process::GetRequest()
+STL::PROR Process::PopRequest()
 {
     if (RequestAmount > 0)
     {        
@@ -56,7 +56,7 @@ STL::PROR Process::GetRequest()
     return STL::PROR::SUCCESS;
 }
 
-void Process::SendRequest(STL::PROR Request)
+void Process::PushRequest(STL::PROR Request)
 {
     if (Request != STL::PROR::SUCCESS && RequestAmount < 16)
     {
@@ -176,7 +176,7 @@ void Process::SendMessage(STL::PROM Message, STL::PROI Input)
 
     STL::PROR NewRequest = this->Procedure(Message, Input);
 
-    this->SendRequest(NewRequest);
+    this->PushRequest(NewRequest);
 
     ProcessHandler::LastMessagedProcess = nullptr;
 }
@@ -209,7 +209,7 @@ Process::Process(STL::PROC Procedure)
         this->FrameBuffer.Base = (STL::ARGB*)Heap::Allocate(this->FrameBuffer.Size);
     
         this->FrameBuffer.Clear();
-        this->SendRequest(STL::PROR::DRAW);
+        this->PushRequest(STL::PROR::DRAW);
     }
     else if (Info.Type == STL::PROT::FRAMELESSWINDOW || Info.Type == STL::PROT::WINDOWED)
     {               
@@ -220,6 +220,6 @@ Process::Process(STL::PROC Procedure)
         this->FrameBuffer.Base = (STL::ARGB*)Heap::Allocate(this->FrameBuffer.Size);
 
         this->FrameBuffer.Clear();
-        this->SendRequest(STL::PROR::DRAW);
+        this->PushRequest(STL::PROR::DRAW);
     }
 } 

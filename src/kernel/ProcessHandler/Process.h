@@ -30,13 +30,13 @@ public:
 
     const char* GetTitle();
 
-    STL::PROR GetRequest();
+    STL::PROR PopRequest();
 
     STL::PROC GetProcedure();
 
     STL::Point GetCloseButtonPos();
 
-    void SendRequest(STL::PROR Request);
+    void PushRequest(STL::PROR Request);
 
     void SetDepth(uint64_t Depth);
 

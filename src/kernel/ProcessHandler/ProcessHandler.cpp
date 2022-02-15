@@ -18,13 +18,13 @@
 #include "kernel/PIT/PIT.h"
 
 namespace ProcessHandler
-{    
+{        
     STL::List<Process*> Processes;
+
     Process* LastMessagedProcess = nullptr;
-
     Process* FocusedProcess = nullptr;
+    Process* MovingWindow = nullptr;
 
-    Process* MovingWindow = 0;
     STL::Point MovingWindowPosDelta = STL::Point(0, 0);
 
     void SetFocusedProcess(Process* NewFocus)
@@ -51,29 +51,6 @@ namespace ProcessHandler
         {
             FocusedProcess->SetDepth(Processes.Length() - 1);
         }  
-    }
-
-    void KillAllProcesses()
-    {
-        for (uint32_t i = 0; i < Processes.Length(); i++)
-        {
-            Processes[i]->Kill();
-            delete Processes[i];
-        }
-        Processes.Clear();
-    }
-
-    Process* GetProcess(uint64_t ID)
-    {
-        for (uint32_t i = 0; i < Processes.Length(); i++)
-        {
-            if (Processes[i]->GetID() == ID)
-            {
-                return Processes[i];
-            }
-        }
-        
-        return nullptr;
     }
 
     void KeyBoardInterupt()
@@ -104,26 +81,22 @@ namespace ProcessHandler
         {
             for (uint32_t i = Processes.Length(); i --> 0; )
             {                    
-                if (Mouse::LeftHeld && Processes[i]->GetType() == STL::PROT::WINDOWED)
-                {
-                    if (STL::Contains(Processes[i]->GetPos() - FRAME_OFFSET, Processes[i]->GetPos() + STL::Point(Processes[i]->GetSize().X, 0), Mouse::Position)) // If over topbar
-                    {                        
-                        STL::Point CloseButtonPos = Processes[i]->GetCloseButtonPos();
-                        if (STL::Contains(CloseButtonPos, CloseButtonPos + CLOSE_BUTTON_SIZE, Mouse::Position)) //If over close button
-                        {
-                            KillProcess(Processes[i]->GetID());
-                            break;
-                        }
-
-                        MovingWindow = Processes[i];
-                        MovingWindowPosDelta = Processes[i]->GetPos() - Mouse::Position;
-
-                        SetFocusedProcess(Processes[i]);    
+                if (Mouse::LeftHeld && Processes[i]->GetType() == STL::PROT::WINDOWED && STL::Contains(Processes[i]->GetPos() - FRAME_OFFSET, Processes[i]->GetPos() + STL::Point(Processes[i]->GetSize().X, 0), Mouse::Position))
+                {               
+                    STL::Point CloseButtonPos = Processes[i]->GetCloseButtonPos();
+                    if (STL::Contains(CloseButtonPos, CloseButtonPos + CLOSE_BUTTON_SIZE, Mouse::Position)) //If over close button
+                    {
+                        KillProcess(Processes[i]->GetID());
                         break;
                     }
-                }  
 
-                if (Processes[i]->Contains(Mouse::Position)) //If over window
+                    MovingWindow = Processes[i];
+                    MovingWindowPosDelta = Processes[i]->GetPos() - Mouse::Position;
+
+                    SetFocusedProcess(Processes[i]);    
+                    break;
+                }  
+                else if (Processes[i]->Contains(Mouse::Position)) //If over window
                 {
                     STL::MINFO MouseInfo;
                     MouseInfo.Pos = Mouse::Position - Processes[i]->GetPos();
@@ -157,6 +130,29 @@ namespace ProcessHandler
             uint64_t Tick = PIT::Ticks;
             Processes[i]->SendMessage(STL::PROM::TICK, &Tick);
         }
+    }
+
+    void KillAllProcesses()
+    {
+        for (uint32_t i = 0; i < Processes.Length(); i++)
+        {
+            Processes[i]->Kill();
+            delete Processes[i];
+        }
+        Processes.Clear();
+    }
+
+    Process* GetProcess(uint64_t ID)
+    {
+        for (uint32_t i = 0; i < Processes.Length(); i++)
+        {
+            if (Processes[i]->GetID() == ID)
+            {
+                return Processes[i];
+            }
+        }
+        
+        return nullptr;
     }
 
     bool KillProcess(uint64_t ProcessID)
@@ -227,7 +223,7 @@ namespace ProcessHandler
         {   
             for (uint32_t i = 0; i < Processes.Length(); i++)
             {
-                switch (Processes[i]->GetRequest())
+                switch (Processes[i]->PopRequest())
                 {
                 case STL::PROR::CLEAR:
                 {
