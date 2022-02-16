@@ -17,6 +17,7 @@ Add more GUI objects?
 Write more comments.
 Create own stack in the kernel.
 Add -Wall and fix all warnings.
+Implement Shutdown using UEFI.
 Add list for sata devices.
 
 Implement Tetris.
