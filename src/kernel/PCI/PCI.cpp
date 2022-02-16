@@ -9,6 +9,14 @@ namespace PCI
     uint8_t Device = 0;
     uint8_t Func = 0;
 
+    SDTHeader* MCFG;
+
+    void Init()
+    {
+        ResetEnumeration();
+        MCFG = ACPI::FindTable("MCFG");
+    }
+
     void ResetEnumeration()
     {       
         Entry = 0;
@@ -17,7 +25,7 @@ namespace PCI
         Func = 0;
     }
 
-    bool Enumerate(SDTHeader* MCFG, DeviceHeader*& Out)
+    bool Enumerate(DeviceHeader*& Out)
     {        
         uint64_t Entries = (MCFG->Length - (sizeof(SDTHeader) + 8)) / sizeof(DeviceConfig);
 

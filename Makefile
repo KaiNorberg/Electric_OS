@@ -61,11 +61,12 @@ buildimg:
 	mmd -i $(BUILDDIR)/$(OSNAME).img ::/EFI
 	mmd -i $(BUILDDIR)/$(OSNAME).img ::/EFI/BOOT
 	mmd -i $(BUILDDIR)/$(OSNAME).img ::/KERNEL
-	cp $(BOOTEFI)/main.efi  $(BOOTEFI)/bootx64.efi 
+	cp $(BOOTEFI)/main.efi  $(BOOTEFI)/bootx64.efi
 	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BOOTEFI)/bootx64.efi ::/EFI/BOOT
 	mcopy -i $(BUILDDIR)/$(OSNAME).img startup.nsh ::
 	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BUILDDIR)/$(OUTPUTNAME).elf ::/KERNEL
 	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BUILDDIR)/zap-vga16.psf ::/KERNEL
+	mcopy -i $(BUILDDIR)/$(OSNAME).img $(BUILDDIR)/Test.txt ::/KERNEL
 
 run:
 	qemu-system-x86_64 -drive file=$(BUILDDIR)/$(OSNAME).img -m 4G -cpu qemu64 -drive if=pflash,format=raw,unit=0,file="$(OVMFDIR)/OVMF_CODE-pure-efi.fd",readonly=on -drive if=pflash,format=raw,unit=1,file="$(OVMFDIR)/OVMF_VARS-pure-efi.fd" -net none

@@ -163,12 +163,10 @@ namespace System
             NextEntry("TYPE");
 
             WriteLine(2);
-            
-            SDTHeader* MCFG = ACPI::FindTable("MCFG");
-        
+                    
             DeviceHeader* Device;
             PCI::ResetEnumeration();
-            while (PCI::Enumerate(MCFG, Device))
+            while (PCI::Enumerate(Device))
             {                
                 NewLine();
 

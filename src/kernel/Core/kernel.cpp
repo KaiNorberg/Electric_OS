@@ -11,7 +11,7 @@ void* __dso_handle = (void*) &__dso_handle;
 void* __cxa_atexit = (void*) &__cxa_atexit;
 
 /// <summary>
-////The function called by the bootloader when it leaves boot services.
+/// The function called by the bootloader when it leaves boot services.
 /// </summary>
 extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 {
@@ -34,7 +34,9 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 		
 	ACPI::Init(BootInfo->RSDP);
 
-	PCI::ResetEnumeration();
+	PCI::Init();
+
+	AHCI::Init();
 
 	ProcessHandler::Loop();
 
