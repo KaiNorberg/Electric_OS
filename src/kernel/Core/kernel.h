@@ -31,7 +31,8 @@ extern "C" void* __cxa_atexit;
 struct BootLoaderInfo
 {
 	STL::Framebuffer* ScreenBuffer;
-	STL::PSF_FONT * PSFFont;
+	STL::PSF_FONT** PSFFonts;
+	uint8_t FontAmount;
 	EFI_MEMORY_MAP* MemoryMap;
 	RSDP2* RSDP;
 };

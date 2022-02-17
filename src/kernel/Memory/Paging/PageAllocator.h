@@ -11,7 +11,7 @@ namespace PageAllocator
 {    
     extern uint64_t PageAmount;
 
-    void Init(EFI_MEMORY_MAP* MemoryMap, STL::Framebuffer* ScreenBuffer, STL::PSF_FONT * PSFFont);
+    void Init(EFI_MEMORY_MAP* MemoryMap, STL::Framebuffer* ScreenBuffer);
 
     void* RequestPage();
 

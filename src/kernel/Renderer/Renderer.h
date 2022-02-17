@@ -18,7 +18,7 @@ namespace Renderer
 
     extern bool DrawMouse;
 
-    void Init(STL::Framebuffer* framebuffer, STL::PSF_FONT * PSF_Font);
+    void Init(STL::Framebuffer* framebuffer);
 
     void PutPixel(STL::Point Pixel, STL::ARGB Color);
 

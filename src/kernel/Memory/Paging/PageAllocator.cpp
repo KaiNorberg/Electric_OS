@@ -29,7 +29,7 @@ namespace PageAllocator
         }
     }
 
-    void Init(EFI_MEMORY_MAP* MemoryMap, STL::Framebuffer* ScreenBuffer, STL::PSF_FONT * PSFFont)
+    void Init(EFI_MEMORY_MAP* MemoryMap, STL::Framebuffer* ScreenBuffer)
     {   
         PageAmount = 0;
         for (uint64_t i = 0; i < MemoryMap->Size / MemoryMap->DescSize; i++)
@@ -67,8 +67,6 @@ namespace PageAllocator
         LockPages(&_KernelStart, ((uint64_t)&_KernelEnd - (uint64_t)&_KernelStart) / 4096 + 1);
            
         LockPages(ScreenBuffer->Base, ScreenBuffer->Size / 4096 + 1);
-
-        LockPage(PSFFont);
     }
 
     uint64_t GetFreePages()

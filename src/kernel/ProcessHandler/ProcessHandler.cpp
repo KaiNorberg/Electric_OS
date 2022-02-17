@@ -197,11 +197,11 @@ namespace ProcessHandler
             }
         }
 
-        Processes.Push(new Process(Procedure));
+        Process* NewProcess = new Process(Procedure);
 
-        if (Processes.Last()->GetType() == STL::PROT::FULLSCREEN)
+        if (NewProcess->GetType() == STL::PROT::FULLSCREEN)
         {
-            for (uint32_t i = 0; i < Processes.Length() - 1; i++)
+            for (uint32_t i = 0; i < Processes.Length(); i++)
             {
                 if (Processes[i]->GetType() == STL::PROT::FULLSCREEN)
                 {
@@ -210,8 +210,11 @@ namespace ProcessHandler
                 }
             }
         }
-            
-        return Processes.Last()->GetID();
+
+        Processes.Push(NewProcess);
+        NewProcess->UpdateDepth();
+
+        return NewProcess->GetID();
     }
 
     void Loop()

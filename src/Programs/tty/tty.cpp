@@ -31,6 +31,7 @@ namespace tty
             STL::PINFO* Info = (STL::PINFO*)Input;
             Info->Type = STL::PROT::FULLSCREEN;
             Info->Title = "tty";
+            Info->Depth = 0;
 
             Text = "";
             Command[0] = 0;

@@ -2,15 +2,23 @@
 
 namespace STL
 {
-    PSF_FONT* CurrentFont = nullptr;
+    PSF_FONT** Fonts;
+    uint8_t FontAmount;
+    uint8_t SelectedFont = 0;
 
-    void SetFont(PSF_FONT* NewFont)
+    void SetFonts(PSF_FONT** NewFonts, uint8_t NewFontAmount)
     {
-        CurrentFont = NewFont;
+        Fonts = NewFonts;
+        FontAmount = NewFontAmount;
     }
 
     const PSF_FONT* GetFont()
     {
-        return CurrentFont;
+        if (SelectedFont >= FontAmount)
+        {
+            SelectedFont = 0;
+        }
+
+        return Fonts[SelectedFont];
     }
 }

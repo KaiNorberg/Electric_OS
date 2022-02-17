@@ -17,14 +17,14 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 {
 	InitGDT();
 	
-	PageAllocator::Init(BootInfo->MemoryMap, BootInfo->ScreenBuffer, BootInfo->PSFFont);
+	PageAllocator::Init(BootInfo->MemoryMap, BootInfo->ScreenBuffer);
 	PageTableManager::Init(BootInfo->ScreenBuffer);
 
 	Heap::Init();
 
-	Renderer::Init(BootInfo->ScreenBuffer, BootInfo->PSFFont);
+	STL::SetFonts(BootInfo->PSFFonts, BootInfo->FontAmount);
 
-	STL::SetFont(BootInfo->PSFFont);
+	Renderer::Init(BootInfo->ScreenBuffer);
 
 	PIT::SetFrequency(100);
 

@@ -40,7 +40,8 @@ typedef struct
 typedef struct
 {
 	Framebuffer* framebuffer;
-	PSF_FONT* PSF_Font;
+	PSF_FONT** PSFFonts;	
+	uint8_t FontAmount;
 	EFI_MEMORY_MAP* MemoryMap;
 	void* RSDP;
 } BootInfo;
@@ -154,7 +155,7 @@ PSF_FONT LoadPSFFont(EFI_FILE* Directory, CHAR16* Path)
 	UINTN size = sizeof(PSF_HEADER);
 	Font->Read(Font, &size, FontHeader);
 
-	if (FontHeader->magic[0] != PSF_MAGIC0 || FontHeader->magic[1] != PSF_MAGIC1)
+	/*if (FontHeader->magic[0] != PSF_MAGIC0 || FontHeader->magic[1] != PSF_MAGIC1)
 	{
 		Print(L"ERROR: Invalid font loaded!\n\r");
 		
@@ -162,7 +163,7 @@ PSF_FONT LoadPSFFont(EFI_FILE* Directory, CHAR16* Path)
 		{
 			__asm__("HLT");
 		}
-	}
+	}*/
 
 	UINTN GlyphBufferSize = FontHeader->charsize * 256;
 	if (FontHeader->mode == 1)
@@ -304,19 +305,26 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 	InitializeLib(ImageHandle, SystemTable);
 	Print(L"Bootloader loaded!\n\r");
 
-
 	EFI_FILE* KernelDir = LoadFile(NULL, L"KERNEL");
-	Elf64_Ehdr Header = LoadELFFile(KernelDir, L"Kernel.elf");
-	PSF_FONT newFont = LoadPSFFont(KernelDir, L"zap-vga16.psf");
+	EFI_FILE* FontsDir = LoadFile(NULL, L"FONTS");
+
+	Elf64_Ehdr KernelELF = LoadELFFile(KernelDir, L"Kernel.elf");
+
+	PSF_FONT FontVGA = LoadPSFFont(FontsDir, L"zap-vga16.psf");
+	PSF_FONT FontLight = LoadPSFFont(FontsDir, L"zap-light16.psf");
+
+	PSF_FONT* Fonts[] = {&FontVGA, &FontLight};
+
 	Framebuffer newBuffer = GetFramebuffer();
 	EFI_MEMORY_MAP newMap = GetMemoryMap();
 	void* RSDP = GetRSDP();
 
-	void (*KernelMain)(BootInfo*) = ((__attribute__((sysv_abi)) void (*)(BootInfo*)) Header.e_entry);
+	void (*KernelMain)(BootInfo*) = ((__attribute__((sysv_abi)) void (*)(BootInfo*)) KernelELF.e_entry);
 
 	BootInfo bootInfo;
 	bootInfo.framebuffer = &newBuffer;
-	bootInfo.PSF_Font = &newFont;
+	bootInfo.PSFFonts = Fonts;
+	bootInfo.FontAmount = sizeof(Fonts)/sizeof(Fonts[0]);	
 	bootInfo.MemoryMap = &newMap;
 	bootInfo.RSDP = RSDP;
 

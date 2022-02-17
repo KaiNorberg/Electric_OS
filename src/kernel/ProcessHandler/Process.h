@@ -40,6 +40,8 @@ public:
 
     void SetDepth(uint64_t Depth);
 
+    void UpdateDepth();
+
     bool Contains(STL::Point Other);
 
     bool Contains(Process* Other);
@@ -66,6 +68,7 @@ private:
 
     STL::Point Pos;
     STL::Point OldPos;
+    uint64_t Depth;
 
     STL::String Title;
 

@@ -82,6 +82,8 @@ void Process::SetDepth(uint64_t Depth)
         return;
     }
 
+    this->Depth = Depth;
+
     for (int i = 0; i < ProcessHandler::Processes.Length(); i++)
     {
         if (ProcessHandler::Processes[i] == this)
@@ -91,6 +93,11 @@ void Process::SetDepth(uint64_t Depth)
             return;
         }
     }
+}
+
+void Process::UpdateDepth()
+{
+    this->SetDepth(this->Depth);
 }
 
 bool Process::Contains(STL::Point Other)

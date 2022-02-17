@@ -2,6 +2,7 @@
 
 #include "STL/String/cstr.h"
 #include "STL/Process/Process.h"
+#include "STL/Graphics/Graphics.h"
 
 #include "Programs/tty/tty.h"
 #include "Programs/Desktop/Desktop.h"
@@ -51,7 +52,8 @@ namespace System
 
         SettableVar SettableVars[] =
         {
-            SettableVar("drawmouse", &Renderer::DrawMouse, sizeof(Renderer::DrawMouse))
+            SettableVar("drawmouse", &Renderer::DrawMouse, sizeof(Renderer::DrawMouse)),
+            SettableVar("font", &STL::SelectedFont, sizeof(STL::SelectedFont))
         };
 
         uint64_t Hash = STL::HashWord(Variable);
@@ -213,7 +215,8 @@ namespace System
             FOREGROUND_COLOR(086, 182, 194)"SYNOPSIS:\n\r"
             FOREGROUND_COLOR(255, 255, 255)"    set [VARIABLE] [VALUE]\n\n\r"
             FOREGROUND_COLOR(224, 108, 117)"    VARIABLE:\n\r"
-            FOREGROUND_COLOR(255, 255, 255)"        drawmouse - A boolean value that sets if a cursor is drawn to the screen.\n\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"        drawmouse - A boolean value that sets if a cursor is drawn to the screen.\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"        font - A byte value that sets what font is used to render text.\n\n\r"
             FOREGROUND_COLOR(086, 182, 194)"    VALUE:\n\r"
             FOREGROUND_COLOR(255, 255, 255)"        Any positive integer.\n\n\r"
             ),

@@ -2,9 +2,13 @@
 
 #include "Font.h"
 
+#include <stdint.h>
+
 namespace STL
-{
-    void SetFont(PSF_FONT* NewFont);
+{    
+    extern uint8_t SelectedFont;
+
+    void SetFonts(PSF_FONT** NewFonts, uint8_t NewFontAmount);
 
     const PSF_FONT* GetFont();
 }
