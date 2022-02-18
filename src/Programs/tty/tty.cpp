@@ -68,7 +68,7 @@ namespace tty
 
             if (RedrawText)
             {                
-                for (int i = 0; i < STL::Length(Command) + 2; i++)
+                for (uint32_t i = 0; i < STL::Length(Command) + 2; i++)
                 {
                     Buffer->PutChar(' ', STL::Point(CursorPos.X + 8 * i, CursorPos.Y), 1, STL::ARGB(255), STL::ARGB(0));
                 }
@@ -92,7 +92,7 @@ namespace tty
 
             if (ClearCommand)
             {
-                for (int i = 0; i < STL::Length(Command) + 2; i++)
+                for (uint32_t i = 0; i < STL::Length(Command) + 2; i++)
                 {
                     Buffer->PutChar(' ', STL::Point(CursorPos.X + 8 * i, CursorPos.Y), 1, STL::ARGB(255), STL::ARGB(0));
                 }
@@ -159,6 +159,11 @@ namespace tty
         {
             Text = "";
             Command[0] = 0;
+        }
+        break;
+        default:
+        {
+
         }
         break;
         }

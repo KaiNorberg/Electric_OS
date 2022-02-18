@@ -160,6 +160,11 @@ namespace Topbar
             return STL::PROR::DRAW;
         }
         break;
+        default:
+        {
+
+        }
+        break;
         }
 
         return STL::PROR::SUCCESS;

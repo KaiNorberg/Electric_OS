@@ -23,7 +23,7 @@ namespace STL
 
             if (this->Data != nullptr)
             {        
-                for (int i = 0; i < this->Size; i++)
+                for (uint32_t i = 0; i < this->Size; i++)
                 {
                     NewData[i] = this->Data[i];
                 }
@@ -62,7 +62,7 @@ namespace STL
 
         void Erase(uint32_t Index)
         {
-            for (int i = Index + 1; i < this->Size; i++)
+            for (uint32_t i = Index + 1; i < this->Size; i++)
             {
                 this->Data[i - 1] = this->Data[i];
             }

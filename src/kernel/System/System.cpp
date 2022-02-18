@@ -57,7 +57,7 @@ namespace System
         };
 
         uint64_t Hash = STL::HashWord(Variable);
-        for (int i = 0; i < sizeof(SettableVars)/sizeof(SettableVars[0]); i++)
+        for (uint32_t i = 0; i < sizeof(SettableVars)/sizeof(SettableVars[0]); i++)
         {
             if (Hash == SettableVars[i].Hash)
             {
@@ -105,7 +105,7 @@ namespace System
         auto NextEntry = [&](const char* Input) 
         { 
             uint32_t Amount = 15 - ((uint64_t)CurrentLocation - (uint64_t)LineStart) % 15;
-            for (int i = 0; i < Amount; i++)
+            for (uint32_t i = 0; i < Amount; i++)
             {
                 Write(" ");            
             }    
@@ -149,7 +149,7 @@ namespace System
 
             WriteLine(2);
 
-            for (int i = 0; i < ProcessHandler::Processes.Length(); i++)
+            for (uint32_t i = 0; i < ProcessHandler::Processes.Length(); i++)
             {                
                 NewLine();
 
@@ -278,9 +278,10 @@ namespace System
         {
             char* CurrentLocation = CommandOutput;
             CurrentLocation = STL::CopyString(CurrentLocation, "\nType help [COMMAND] for information about the specified COMMAND.\n\n\r") + 1;
-            CurrentLocation = STL::CopyString(CurrentLocation, FOREGROUND_COLOR(224, 108, 117)"COMMAND: \n\r"FOREGROUND_COLOR(255, 255, 255)) + 1;
+            CurrentLocation = STL::CopyString(CurrentLocation, FOREGROUND_COLOR(224, 108, 117)) + 1;
+            CurrentLocation = STL::CopyString(CurrentLocation, "COMMAND: \n\r" FOREGROUND_COLOR(255, 255, 255)) + 1;
 
-            for (int i = 0; i < sizeof(Manuals)/sizeof(Manuals[0]); i++)
+            for (uint32_t i = 0; i < sizeof(Manuals)/sizeof(Manuals[0]); i++)
             {                
                 CurrentLocation = STL::CopyString(CurrentLocation, "    ") + 1;
                 CurrentLocation = STL::CopyString(CurrentLocation, Manuals[i].Name) + 1;
@@ -292,7 +293,7 @@ namespace System
             return CommandOutput;
         }
 
-        for (int i = 0; i < sizeof(Manuals)/sizeof(Manuals[0]); i++)
+        for (uint32_t i = 0; i < sizeof(Manuals)/sizeof(Manuals[0]); i++)
         {   
             if (Manuals[i].Hash == Hash)
             {
@@ -423,7 +424,7 @@ namespace System
         };
 
         uint64_t Hash = STL::HashWord(STL::NextWord(Command));
-        for (int i = 0; i < sizeof(StartableProcesses)/sizeof(StartableProcesses[0]); i++)
+        for (uint32_t i = 0; i < sizeof(StartableProcesses)/sizeof(StartableProcesses[0]); i++)
         {
             if (Hash == StartableProcesses[i].Hash)
             {
@@ -576,7 +577,7 @@ namespace System
         };
 
         uint64_t Hash = STL::HashWord(Input);
-        for (int i = 0; i < sizeof(Commands)/sizeof(Commands[0]); i++)
+        for (uint32_t i = 0; i < sizeof(Commands)/sizeof(Commands[0]); i++)
         {
             if (Hash == Commands[i].Hash)
             {

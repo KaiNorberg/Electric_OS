@@ -10,14 +10,17 @@ namespace STL
 
         if (DigitAmount == 0)
         {
-            return "0";
+            IntToStringOutput[0] = '0';
+            IntToStringOutput[1] = 0;           
         }
-
-        for (uint32_t i = DigitAmount; i-- > 0;)
+        else
         {
-            IntToStringOutput[DigitAmount - i - 1] = '0' + STL::GetDigit(Number, i);
+           for (uint32_t i = DigitAmount; i-- > 0;)
+            {
+                IntToStringOutput[DigitAmount - i - 1] = '0' + STL::GetDigit(Number, i);
+            }
+            IntToStringOutput[DigitAmount] = '\0';         
         }
-        IntToStringOutput[DigitAmount] = '\0';
 
         return IntToStringOutput;
     }

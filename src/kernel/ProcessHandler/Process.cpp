@@ -84,7 +84,7 @@ void Process::SetDepth(uint64_t Depth)
 
     this->Depth = Depth;
 
-    for (int i = 0; i < ProcessHandler::Processes.Length(); i++)
+    for (uint32_t i = 0; i < ProcessHandler::Processes.Length(); i++)
     {
         if (ProcessHandler::Processes[i] == this)
         {
@@ -102,14 +102,14 @@ void Process::UpdateDepth()
 
 bool Process::Contains(STL::Point Other)
 {
-    return (this->Pos.X < Other.X && this->Pos.X + this->FrameBuffer.Width > Other.X &&
-            this->Pos.Y < Other.Y && this->Pos.Y + this->FrameBuffer.Height > Other.Y);
+    return (this->Pos.X < Other.X && this->Pos.X + (int32_t)this->FrameBuffer.Width > Other.X &&
+            this->Pos.Y < Other.Y && this->Pos.Y + (int32_t)this->FrameBuffer.Height > Other.Y);
 }
 
 bool Process::Contains(Process* Other)
 {
-    return (this->Pos.X <= Other->Pos.X + Other->FrameBuffer.Width && this->Pos.X + this->FrameBuffer.Width >= Other->Pos.X &&
-            this->Pos.Y <= Other->Pos.Y + Other->FrameBuffer.Height && this->Pos.Y + this->FrameBuffer.Height >= Other->Pos.Y);
+    return (this->Pos.X <= Other->Pos.X + (int32_t)Other->FrameBuffer.Width && this->Pos.X + (int32_t)this->FrameBuffer.Width >= Other->Pos.X &&
+            this->Pos.Y <= Other->Pos.Y + (int32_t)Other->FrameBuffer.Height && this->Pos.Y + (int32_t)this->FrameBuffer.Height >= Other->Pos.Y);
 }
 
 void Process::Clear()
@@ -169,11 +169,11 @@ void Process::Render()
     void* Source = (uint8_t*)(this->FrameBuffer.Base);
     void* Dest = (uint8_t*)(Renderer::Backbuffer.Base + this->Pos.X + Renderer::Backbuffer.PixelsPerScanline * this->Pos.Y);
 
-    for (int y = 0; y < this->FrameBuffer.Height; y++)
+    for (uint32_t y = 0; y < this->FrameBuffer.Height; y++)
     {             
         STL::CopyMemory(Source, Dest, this->FrameBuffer.PixelsPerScanline * 4);
-        Source += this->FrameBuffer.PixelsPerScanline * 4;
-        Dest += Renderer::Backbuffer.PixelsPerScanline * 4;   
+        Source = (void*)((uint64_t)Source + this->FrameBuffer.PixelsPerScanline * 4);
+        Dest = (void*)((uint64_t)Dest + Renderer::Backbuffer.PixelsPerScanline * 4);   
     }
 }
 

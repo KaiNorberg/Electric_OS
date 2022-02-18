@@ -38,7 +38,7 @@ namespace Renderer
 
     void PutPixel(STL::Point Pixel, STL::ARGB Color)
     {
-        if (Pixel.X > Backbuffer.Width || Pixel.X < 0 || Pixel.Y > Backbuffer.Height || Pixel.Y < 0)
+        if (Pixel.X > (int32_t)Backbuffer.Width || Pixel.X < 0 || Pixel.Y > (int32_t)Backbuffer.Height || Pixel.Y < 0)
         {
             return;
         }
@@ -48,7 +48,7 @@ namespace Renderer
 
     STL::ARGB GetPixel(STL::Point Pixel)
     {        
-        if (Pixel.X > Backbuffer.Width || Pixel.X < 0 || Pixel.Y > Backbuffer.Height || Pixel.Y < 0)
+        if (Pixel.X > (int32_t)Backbuffer.Width || Pixel.X < 0 || Pixel.Y > (int32_t)Backbuffer.Height || Pixel.Y < 0)
         {
             return STL::ARGB(0);
         }

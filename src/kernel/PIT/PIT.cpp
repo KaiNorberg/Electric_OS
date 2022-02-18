@@ -39,6 +39,6 @@ namespace PIT
 
     void Tick()
     {
-        Ticks++;
+        Ticks = Ticks + 1;
     }
 }

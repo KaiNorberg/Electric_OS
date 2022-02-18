@@ -87,7 +87,7 @@ namespace Mouse
         MouseWaitInput();
 
         uint8_t Status = IO::InByte(0x60);
-        Status != 0b10;
+        Status |= 0b10;
         MouseWait();
         IO::OutByte(0x64, 0x60);
         MouseWait();

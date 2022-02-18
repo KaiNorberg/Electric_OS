@@ -27,7 +27,7 @@ namespace STL
 
     void String::Erase(uint32_t Index, uint32_t Amount)
     {
-        for (int i = Index + Amount; i < this->Size; i++)
+        for (uint32_t i = Index + Amount; i < this->Size; i++)
         {
             this->Data[i - Amount] = this->Data[i];
         }
@@ -47,7 +47,7 @@ namespace STL
 
         if (this->Data != nullptr)
         {        
-            for (int i = 0; i < this->Size; i++)
+            for (uint32_t i = 0; i < this->Size; i++)
             {
                 NewData[i] = this->Data[i];
             }
@@ -88,7 +88,7 @@ namespace STL
         uint32_t OtherLength = STL::Length(Other);
         this->Reserve(OtherLength + 1);
 
-        for (int i = 0; i < OtherLength; i++)
+        for (uint32_t i = 0; i < OtherLength; i++)
         {
             this->Data[i] = Other[i];
         }
@@ -100,7 +100,7 @@ namespace STL
         uint32_t OtherLength = STL::Length(Other);
         this->Reserve(this->Size + OtherLength + 1);
 
-        for (int i = 0; i < OtherLength; i++)
+        for (uint32_t i = 0; i < OtherLength; i++)
         {
             this->Data[this->Size + i] = Other[i];
         }

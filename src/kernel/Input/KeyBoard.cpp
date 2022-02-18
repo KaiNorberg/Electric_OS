@@ -162,7 +162,7 @@ namespace KeyBoard
         return CurrentKey;
     }
 
-    bool IsPressed(char Key)
+    bool IsPressed(uint8_t Key)
     {
         bool IsPressed = KeyCache[Key];
         KeyCache[Key] = false;
@@ -173,7 +173,7 @@ namespace KeyBoard
         return IsPressed;
     }
 
-    bool IsHeld(char Key)
+    bool IsHeld(uint8_t Key)
     {
         return KeyCache[Key];
     }

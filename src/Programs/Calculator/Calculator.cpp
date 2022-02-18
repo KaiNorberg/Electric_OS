@@ -151,9 +151,9 @@ namespace Calculator
         break;
         case STL::PROM::KEYPRESS:
         {
-            uint8_t Key = *(uint8_t*)Input;
+            /*uint8_t Key = *(uint8_t*)Input;
 
-            /*if (Key >= '0' && Key <= '9')
+            if (Key >= '0' && Key <= '9')
             {
                 if (ClearLabel)
                 {
@@ -182,7 +182,7 @@ namespace Calculator
                         Label.Text = NumButtons[i].Text;
                         ClearLabel = false; 
                     }
-                    else if (Label.Text.Length() < LABEL_SIZE.X / 16 - 1)
+                    else if (Label.Text.Length() < (uint32_t)LABEL_SIZE.X / 16 - 1)
                     {
                         Label.Text += NumButtons[i].Text;     
                     }
@@ -277,6 +277,11 @@ namespace Calculator
             }
 
             return STL::PROR::DRAW;
+        }
+        break;
+        default:
+        {
+
         }
         break;
         }

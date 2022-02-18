@@ -73,7 +73,7 @@ namespace Terminal
             STL::Framebuffer* Buffer = (STL::Framebuffer*)Input;
 
             //Clear command
-            for (int i = 0; i < STL::Length(Command) + 2; i++)
+            for (uint32_t i = 0; i < STL::Length(Command) + 2; i++)
             {
                 Buffer->PutChar(' ', STL::Point(CursorPos.X + 8 * i, CursorPos.Y), 1, STL::ARGB(255), STL::ARGB(0));
             }            
@@ -83,18 +83,18 @@ namespace Terminal
             {
                 uint64_t Amount = (CursorPos.Y + STL::LineAmount(Text.cstr()) * 16 + NEWLINE_OFFSET * 2) - Buffer->Height;
                 
-                for (int y = NEWLINE_OFFSET; y < Buffer->Height - NEWLINE_OFFSET - Amount; y++)
+                for (uint32_t y = NEWLINE_OFFSET; y < Buffer->Height - NEWLINE_OFFSET - Amount; y++)
                 {
-                    for (int x = NEWLINE_OFFSET; x < Buffer->Width - NEWLINE_OFFSET; x++)
+                    for (uint32_t x = NEWLINE_OFFSET; x < Buffer->Width - NEWLINE_OFFSET; x++)
                     {
                         *(STL::ARGB*)((uint64_t)Buffer->Base + x * 4 + y * Buffer->PixelsPerScanline * 4) = 
                         *(STL::ARGB*)((uint64_t)Buffer->Base + x * 4 + (y + Amount) * Buffer->PixelsPerScanline * 4);
                     }
                 }
 
-                for (int y = Buffer->Height - NEWLINE_OFFSET - Amount; y < Buffer->Height; y++)
+                for (uint32_t y = Buffer->Height - NEWLINE_OFFSET - Amount; y < Buffer->Height; y++)
                 {
-                    for (int x = NEWLINE_OFFSET; x < Buffer->Width - NEWLINE_OFFSET; x++)
+                    for (uint32_t x = NEWLINE_OFFSET; x < Buffer->Width - NEWLINE_OFFSET; x++)
                     {
                         *(STL::ARGB*)((uint64_t)Buffer->Base + x * 4 + y * Buffer->PixelsPerScanline * 4) = STL::ARGB(0);
                     }
@@ -184,6 +184,11 @@ namespace Terminal
         {
             Text = "";
             Command[0] = 0;
+        }
+        break;
+        default:
+        {
+
         }
         break;
         }

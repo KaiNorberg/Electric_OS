@@ -111,6 +111,11 @@ namespace StartMenu
             return STL::PROR::DRAW;
         }
         break;
+        default:
+        {
+
+        }
+        break;
         }
 
         return STL::PROR::SUCCESS;

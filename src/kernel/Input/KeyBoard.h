@@ -31,10 +31,10 @@ namespace KeyBoard
     /// <summary>
     /// Returns the value for Key in the KeyCache and sets it to 0.
     /// </summary>
-    bool IsPressed(char Key);
+    bool IsPressed(uint8_t Key);
 
     /// <summary>
     /// Returns the value for Key in the KeyCache.
     /// </summary>
-    bool IsHeld(char Key);
+    bool IsHeld(uint8_t Key);
 }

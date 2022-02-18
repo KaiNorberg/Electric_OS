@@ -22,7 +22,7 @@ namespace STL
 
     ARGB Framebuffer::GetPixel(Point Pixel)
     {
-        if (Pixel.X > this->Width || Pixel.X < 0 || Pixel.Y > this->Height || Pixel.Y < 0)
+        if (Pixel.X > (int32_t)this->Width || Pixel.X < 0 || Pixel.Y > (int32_t)this->Height || Pixel.Y < 0)
         {
             return ARGB(0);
         }
@@ -32,7 +32,7 @@ namespace STL
 
     void Framebuffer::PutPixel(Point Pixel, ARGB Color)
     {
-        if (Pixel.X > this->Width || Pixel.X < 0 || Pixel.Y > this->Height || Pixel.Y < 0)
+        if (Pixel.X > (int32_t)this->Width || Pixel.X < 0 || Pixel.Y > (int32_t)this->Height || Pixel.Y < 0)
         {
             return;
         }
@@ -160,12 +160,12 @@ namespace STL
 
     void Framebuffer::DrawRect(STL::Point TopLeft, STL::Point BottomRight, ARGB Color)
     {        
-        if (TopLeft.X > this->Width || TopLeft.X < 0 || TopLeft.Y > this->Height || TopLeft.Y < 0)
+        if (TopLeft.X > (int32_t)this->Width || TopLeft.X < 0 || TopLeft.Y > (int32_t)this->Height || TopLeft.Y < 0)
         {
             return;
         }
 
-        if (BottomRight.X > this->Width || BottomRight.X < 0 || BottomRight.Y > this->Height || BottomRight.Y < 0)
+        if (BottomRight.X > (int32_t)this->Width || BottomRight.X < 0 || BottomRight.Y > (int32_t)this->Height || BottomRight.Y < 0)
         {
             return;
         }
@@ -181,9 +181,9 @@ namespace STL
 
     void Framebuffer::Fill(ARGB Color)
     {
-        for (int y = 0; y < this->Height; y++)
+        for (uint32_t y = 0; y < this->Height; y++)
         {
-            for (int x = 0; x < this->Width; x++)
+            for (uint32_t x = 0; x < this->Width; x++)
             {
                 *(ARGB*)((uint64_t)this->Base + x * 4 + y * this->PixelsPerScanline * 4) = Color;
             }
@@ -216,7 +216,7 @@ namespace STL
 
     void Framebuffer::Print(const char* cstr, STL::Point& Pos, uint8_t Scale, ARGB Foreground, ARGB Background, uint64_t NewLineOffset)
     {
-        for (int i = 0; i < Length(cstr); i++)
+        for (uint32_t i = 0; i < Length(cstr); i++)
         {
             switch (cstr[i])
             {
