@@ -17,6 +17,7 @@
 #include "kernel/ACPI/ACPI.h"
 #include "kernel/AHCI/AHCI.h"
 #include "kernel/PCI/PCI.h"
+#include "kernel/UEFI/UEFI.h"
 
 /// <summary>
 /// Compiler definitions.
@@ -35,6 +36,7 @@ struct BootLoaderInfo
 	uint8_t FontAmount;
 	EFI_MEMORY_MAP* MemoryMap;
 	RSDP2* RSDP;
+	EfiRuntimeServices* RT;
 };
 
 /// <summary>

@@ -44,6 +44,7 @@ typedef struct
 	uint8_t FontAmount;
 	EFI_MEMORY_MAP* MemoryMap;
 	void* RSDP;
+	EFI_RUNTIME_SERVICES *RT;
 } BootInfo;
 
 EFI_HANDLE ImageHandle;
@@ -321,15 +322,16 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 
 	void (*KernelMain)(BootInfo*) = ((__attribute__((sysv_abi)) void (*)(BootInfo*)) KernelELF.e_entry);
 
+	Print(L"Exiting boot services...\n\r");
+	SystemTable->BootServices->ExitBootServices(ImageHandle, newMap.Key);
+	
 	BootInfo bootInfo;
 	bootInfo.framebuffer = &newBuffer;
 	bootInfo.PSFFonts = Fonts;
 	bootInfo.FontAmount = sizeof(Fonts)/sizeof(Fonts[0]);	
 	bootInfo.MemoryMap = &newMap;
 	bootInfo.RSDP = RSDP;
-
-	Print(L"Exiting boot services...\n\r");
-	SystemTable->BootServices->ExitBootServices(ImageHandle, newMap.Key);
+	bootInfo.RT = SystemTable->RuntimeServices;
 
 	Print(L"Entering Kernel...\n\r");
 	KernelMain(&bootInfo);

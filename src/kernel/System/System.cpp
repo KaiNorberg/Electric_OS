@@ -22,6 +22,7 @@
 #include "kernel/ProcessHandler/ProcessHandler.h"
 #include "kernel/ACPI/ACPI.h"
 #include "kernel/PCI/PCI.h"
+#include "kernel/UEFI/UEFI.h"
 
 #include <cstdarg>
 
@@ -263,6 +264,10 @@ namespace System
             FOREGROUND_COLOR(086, 182, 194)"\nNAME:\n\r"
             FOREGROUND_COLOR(255, 255, 255)"    restart - Restarts the pc.\n\r"
             ),           
+            Manual("shutdown", "Shuts down the pc.",
+            FOREGROUND_COLOR(086, 182, 194)"\nNAME:\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"    shutdown - Shuts down the pc.\n\r"
+            ),    
             Manual("heapvis", "Shows a visualization of all the segments in the heap.",
             FOREGROUND_COLOR(086, 182, 194)"\nNAME:\n\r"
             FOREGROUND_COLOR(255, 255, 255)"    heapvis - Shows a visualization of all the segments in the heap.\n\r"
@@ -376,23 +381,61 @@ namespace System
 
     const char* CommandShutdown(const char* Command)
     {
+        Renderer::Backbuffer.Fill(STL::ARGB(255, 60, 120, 180));
+
+        Renderer::Backbuffer.DrawRaisedRect(STL::Point(Renderer::Backbuffer.Width / 2 - 350, Renderer::Backbuffer.Height / 2 - 250), 
+        STL::Point(Renderer::Backbuffer.Width / 2 + 350, Renderer::Backbuffer.Height / 2 + 250), STL::ARGB(255, 200, 200, 200));
+ 
+        Renderer::Background = STL::ARGB(STL::ARGB(255, 200, 200, 200));
+        Renderer::Foreground = STL::ARGB(STL::ARGB(255, 0, 0, 0));
+
+        Renderer::CursorPos = STL::Point(Renderer::Backbuffer.Width / 2 - 14 * 8, Renderer::Backbuffer.Height / 2 - 100);
+        Renderer::Print("Please wait...", 2);
+
+        Renderer::CursorPos = STL::Point(Renderer::Backbuffer.Width / 2 - 41 * 8, Renderer::Backbuffer.Height / 2 + 50);
+        Renderer::Print("It is now safe to turn off your computer.", 2);
+
+        Renderer::SwapBuffers();
+
+        asm("CLI");
+
+        UEFI::GetRT()->ResetSystem(EfiResetType::Shutdown, 0, 0, nullptr);
+
+        while (true)
+        {
+            asm("HLT");
+        }
 
         return "";
     }  
 
     const char* CommandRestart(const char* Command)
     {
-        uint8_t Good = 0x02;
-        while (Good & 0x02)
-        {
-            Good = IO::InByte(0x64);
-        }
-        IO::OutByte(0x64, 0xFE);
+        Renderer::Backbuffer.Fill(STL::ARGB(255, 60, 120, 180));
+
+        Renderer::Backbuffer.DrawRaisedRect(STL::Point(Renderer::Backbuffer.Width / 2 - 350, Renderer::Backbuffer.Height / 2 - 250), 
+        STL::Point(Renderer::Backbuffer.Width / 2 + 350, Renderer::Backbuffer.Height / 2 + 250), STL::ARGB(255, 200, 200, 200));
+ 
+        Renderer::Background = STL::ARGB(STL::ARGB(255, 200, 200, 200));
+        Renderer::Foreground = STL::ARGB(STL::ARGB(255, 0, 0, 0));
+
+        Renderer::CursorPos = STL::Point(Renderer::Backbuffer.Width / 2 - 14 * 8, Renderer::Backbuffer.Height / 2 - 100);
+        Renderer::Print("Please wait...", 2);
+
+        Renderer::CursorPos = STL::Point(Renderer::Backbuffer.Width / 2 - 41 * 8, Renderer::Backbuffer.Height / 2 + 50);
+        Renderer::Print("It is now safe to turn off your computer.", 2);
+
+        Renderer::SwapBuffers();
+        
+        asm("CLI");
+
+        UEFI::GetRT()->ResetSystem(EfiResetType::Cold, 0, 0, nullptr);
 
         while (true)
         {
             asm("HLT");
         }
+
         return "";
     }   
 

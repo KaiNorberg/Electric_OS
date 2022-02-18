@@ -16,7 +16,9 @@ void* __cxa_atexit = (void*) &__cxa_atexit;
 extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 {
 	InitGDT();
-	
+
+	UEFI::Init(BootInfo->RT);
+
 	PageAllocator::Init(BootInfo->MemoryMap, BootInfo->ScreenBuffer);
 	PageTableManager::Init(BootInfo->ScreenBuffer);
 
