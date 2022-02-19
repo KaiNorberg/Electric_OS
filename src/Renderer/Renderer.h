@@ -11,29 +11,17 @@ namespace Renderer
     extern STL::Framebuffer Backbuffer;
 
     extern STL::Point CursorPos;
-    
-    extern STL::Point OldMousePos;
-
     extern STL::ARGB Background;
     extern STL::ARGB Foreground;
 
     extern bool DrawMouse;
+    extern STL::Point OldMousePos;
 
-    void Init(STL::Framebuffer* framebuffer);
-
-    void PutPixel(STL::Point Pixel, STL::ARGB Color);
-
-    STL::ARGB GetPixel(STL::Point Pixel);
-
-    void PutChar(char chr, STL::Point Pos, uint8_t Scale = 1);
+    void Init(STL::Framebuffer* Screenbuffer);
 
     void Print(const char* str, uint8_t Scale = 1);
 
     void Print(char Chr, uint8_t Scale = 1);
-
-    void ScrollUp(uint64_t Amount);
-
-    void Clear();
 
     void RedrawMouse();
 

@@ -38,7 +38,7 @@ namespace Terminal
             Info->Left = 360;
             Info->Top = 200;
             Info->Width = 1000 + NEWLINE_OFFSET * 2;
-            Info->Height = 600;
+            Info->Height = 650;
             Info->Title = "Terminal";
 
             Text = "";

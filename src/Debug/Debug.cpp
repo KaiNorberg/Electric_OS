@@ -46,7 +46,7 @@ namespace Debug
         STL::Point StartPoint = STL::Point(100, 50);
 
         Renderer::DrawMouse = false;
-        Renderer::Clear();
+        Renderer::Backbuffer.Clear();
 
         Renderer::Background = STL::ARGB(0);
         Renderer::Foreground = STL::ARGB(255);

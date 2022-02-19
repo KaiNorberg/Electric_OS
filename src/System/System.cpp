@@ -108,7 +108,7 @@ namespace System
 
         auto NextEntry = [&](const char* Input) 
         { 
-            uint32_t Amount = 32 - ((uint64_t)CurrentLocation - (uint64_t)LineStart) % 32;
+            uint32_t Amount = 33 - ((uint64_t)CurrentLocation - (uint64_t)LineStart) % 33;
             for (uint32_t i = 0; i < Amount; i++)
             {
                 Write(" ");            
@@ -143,7 +143,7 @@ namespace System
         {            
             for (uint32_t i = 0; i < EntryAmount; i++)
             {
-                CurrentLocation = STL::CopyString(CurrentLocation, "+-------------------------------") + 1;                
+                CurrentLocation = STL::CopyString(CurrentLocation, "+--------------------------------") + 1;                
             }            
             *CurrentLocation = '+';
             CurrentLocation++;             

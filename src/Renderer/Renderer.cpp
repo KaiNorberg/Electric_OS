@@ -21,9 +21,9 @@ namespace Renderer
     bool DrawMouse; 
     STL::Point OldMousePos;
     
-    void Init(STL::Framebuffer* framebuffer)
+    void Init(STL::Framebuffer* Screenbuffer)
     {
-        Frontbuffer = framebuffer;
+        Frontbuffer = Screenbuffer;
         Backbuffer = *Frontbuffer;
         Backbuffer.Base = (STL::ARGB*)Heap::Allocate(Backbuffer.Size);
 
@@ -34,26 +34,6 @@ namespace Renderer
         Foreground = STL::ARGB(255);
 
         DrawMouse = false;
-    }
-
-    void PutPixel(STL::Point Pixel, STL::ARGB Color)
-    {
-        if (Pixel.X > (int32_t)Backbuffer.Width || Pixel.X < 0 || Pixel.Y > (int32_t)Backbuffer.Height || Pixel.Y < 0)
-        {
-            return;
-        }
-
-        *(STL::ARGB*)((uint64_t)Backbuffer.Base + Pixel.X * 4 + Pixel.Y * Backbuffer.PixelsPerScanline * 4) = Color;
-    }
-
-    STL::ARGB GetPixel(STL::Point Pixel)
-    {        
-        if (Pixel.X > (int32_t)Backbuffer.Width || Pixel.X < 0 || Pixel.Y > (int32_t)Backbuffer.Height || Pixel.Y < 0)
-        {
-            return STL::ARGB(0);
-        }
-
-        return *(STL::ARGB*)((uint64_t)Backbuffer.Base + Pixel.X * 4 + Pixel.Y * Backbuffer.PixelsPerScanline * 4);
     }
 
     void PutChar(char chr, STL::Point Pos, uint8_t Scale)
@@ -69,13 +49,6 @@ namespace Renderer
     void Print(char Chr, uint8_t Scale)
     {        
         Backbuffer.PutChar(Chr, CursorPos, Scale, Foreground, Background);
-    }
-
-    void ScrollUp(uint64_t Amount)
-    {
-        uint64_t Offset = Backbuffer.PixelsPerScanline * Amount;
-        STL::CopyMemory(Backbuffer.Base + Offset, Backbuffer.Base, Backbuffer.Size - Offset * 4);
-        STL::SetMemory(Backbuffer.Base + Backbuffer.PixelsPerScanline * (Backbuffer.Height - Amount), 0, Offset * 4);
     }
 
     void RedrawMouse()
@@ -112,8 +85,8 @@ namespace Renderer
             {
                 for (int X = 0; X < 12 - Y; X++)
                 {
-                    BeforeCursor[X + Y * 16] = GetPixel(STL::Point(MousePos.X + X,MousePos.Y + Y));
-                    PutPixel(STL::Point(MousePos.X + X, MousePos.Y + Y), STL::ARGB(255));
+                    BeforeCursor[X + Y * 16] = Backbuffer.GetPixel(STL::Point(MousePos.X + X,MousePos.Y + Y));
+                    Backbuffer.PutPixel(STL::Point(MousePos.X + X, MousePos.Y + Y), STL::ARGB(255));
                 }
             }
 
@@ -125,7 +98,7 @@ namespace Renderer
             {
                 for (int X = 0; X < 12 - Y; X++)
                 {
-                    PutPixel(STL::Point(MousePos.X + X, MousePos.Y + Y), BeforeCursor[X + Y * 16]);
+                    Backbuffer.PutPixel(STL::Point(MousePos.X + X, MousePos.Y + Y), BeforeCursor[X + Y * 16]);
                 }
             }
             DrawMouse = true;
@@ -134,14 +107,6 @@ namespace Renderer
         {
             STL::CopyMemory(Backbuffer.Base, Frontbuffer->Base, Backbuffer.Size);
         }
-    }
-    
-    void Clear()
-    {
-        CursorPos.X = 0;
-        CursorPos.Y = 0;
-
-        STL::SetMemory(Backbuffer.Base, 0, Backbuffer.Size);
     }
 
     STL::Point GetScreenSize()
