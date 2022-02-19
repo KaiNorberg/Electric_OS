@@ -110,7 +110,7 @@ namespace STL
     {
         uint64_t SourceLength = Length(Source);
 
-        for (int i = 0; i < SourceLength; i++)
+        for (uint32_t i = 0; i < SourceLength; i++)
         {
             Dest[i] = Source[i];
         }

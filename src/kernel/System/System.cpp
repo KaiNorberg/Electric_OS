@@ -23,6 +23,7 @@
 #include "kernel/ACPI/ACPI.h"
 #include "kernel/PCI/PCI.h"
 #include "kernel/UEFI/UEFI.h"
+#include "kernel/AHCI/AHCI.h"
 
 #include <cstdarg>
 
@@ -179,6 +180,57 @@ namespace System
             }    
         }
         break;
+        case STL::ConstHashWord("sata"):
+        {            
+            StartLine("PORT");
+            NextEntry("TYPE");
+
+            WriteLine(2);
+                    
+            for (int i = 0; i < 32; i++)
+            {                     
+                NewLine();
+           
+                StartLine(STL::ToString(i));
+
+                if ((AHCI::GetABAR()->PortsImplemented) & (1 << i))
+                {
+                    switch (AHCI::GetABAR()->Ports[i].GetPortType())
+                    {
+                    case HBAPortType::SATAPI:
+                    {                
+                        NextEntry("SATAPI");
+                    }
+                    break;
+                    case HBAPortType::SATA:
+                    {                
+                        NextEntry("SATA");
+                    }
+                    break;
+                    case HBAPortType::PM:
+                    {                
+                        NextEntry("PM");
+                    }
+                    break;
+                    case HBAPortType::SEMB:
+                    {                
+                        NextEntry("SEMB");
+                    }
+                    break;
+                    default:
+                    {                
+                        NextEntry("NONE");
+                    }
+                    break;
+                    }
+                }
+                else
+                {
+                    NextEntry("NOT IMPLEMENTED");
+                }
+            }    
+        }
+        break;
         default:
         {
             return "ERROR: List not found";
@@ -229,6 +281,7 @@ namespace System
             FOREGROUND_COLOR(224, 108, 117)"    LIST:\n\r"
             FOREGROUND_COLOR(255, 255, 255)"        process - A list of all currently running processes.\n\r"
             FOREGROUND_COLOR(255, 255, 255)"        pci - A list of all connected PCI devices.\n\r"
+            FOREGROUND_COLOR(255, 255, 255)"        sata - A list of all sata ports.\n\r"
             ),
             Manual("time", "Allows access to the time values read from the appropriate CMOS registers.",
             FOREGROUND_COLOR(086, 182, 194)"\nNAME:\n\r"

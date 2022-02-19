@@ -23,4 +23,6 @@ struct HBAMemory
 namespace AHCI
 {    
     void Init();
+
+    HBAMemory* GetABAR();
 }
