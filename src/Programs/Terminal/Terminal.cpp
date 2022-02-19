@@ -5,6 +5,8 @@
 #include "STL/String/cstr.h"
 #include "STL/System/System.h"
 
+#include "Version.h"
+
 #define NEWLINE_OFFSET RAISEDWIDTH * 3
 
 namespace Terminal

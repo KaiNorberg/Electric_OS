@@ -5,6 +5,8 @@
 #include "STL/String/cstr.h"
 #include "STL/System/System.h"
 
+#include "Version.h"
+
 namespace tty
 {
     uint64_t PrevTick = 0;

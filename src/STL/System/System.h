@@ -6,8 +6,6 @@
 #define SYSCALL_MALLOC 1
 #define SYSCALL_FREE 2
 
-#define OS_VERSION "Electric_OS 09/02/2022"
-
 #define ENTER 0x1C
 #define BACKSPACE 0x0E
 #define CONTROL 0x1D

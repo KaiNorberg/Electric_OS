@@ -31,7 +31,7 @@ DIRS = $(wildcard $(SRCDIR)/*)
 
 os: $(OBJS) link
 
-$(OBJDIR)/kernel/Interrupts/Handlers.o: $(SRCDIR)/kernel/Interrupts/Handlers.cpp
+$(OBJDIR)/Interrupts/Handlers.o: $(SRCDIR)/Interrupts/Handlers.cpp
 	@echo !==== COMPILING $^
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -mno-red-zone -mgeneral-regs-only -c $^ -o $@ 
