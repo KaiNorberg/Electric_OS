@@ -18,6 +18,6 @@ Implement the rest of the UEFI runtime services.
 Add more GUI objects?
 Write more comments.
 Create own stack in the kernel.
-Add list for sata devices.
+Implement "taskbar/dock".
 
 Implement Tetris.
