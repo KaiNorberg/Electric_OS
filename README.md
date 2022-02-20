@@ -13,11 +13,11 @@ To create a simple and completely useless operating system, because i can.
   
 //////////////////////Future improvments//////////////////////   
 
-Fix shutdown general protection fault.
-Implement the rest of the UEFI runtime services.
-Add more GUI objects?
-Write more comments.
-Create own stack in the kernel.
-Implement "taskbar/dock".
-
-Implement Tetris.
+Fix shutdown general protection fault.  
+Implement the rest of the UEFI runtime services.  
+Add more GUI objects?  
+Write more comments.  
+Create own stack in the kernel.  
+Implement "taskbar/dock".  
+  
+Implement Tetris.  
