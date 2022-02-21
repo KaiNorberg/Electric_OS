@@ -2,11 +2,11 @@
   
 A simple operating system inspired by whetever will work.  
 
-# About
-Boot Loader:  GNU-EFI
-Arch: x86_64
-  
-Main Goal:  
+# About  
+Boot Loader: GNU-EFI  
+Arch: x86_64  
+   
+Main Goal:   
 To create a simple and completely useless operating system, because i can.  
   
 ## Build instructions   
