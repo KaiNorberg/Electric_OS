@@ -1,6 +1,8 @@
 #include "Process.h"
 #include "ProcessHandler.h"
 
+#include "Debug/Debug.h"
+
 #include "STL/Math/Math.h"
 
 #include "Memory/Heap.h"
@@ -24,15 +26,20 @@ void Process::SetPos(STL::Point NewPos)
 {
     this->Pos = NewPos;
 
-    if (this->Type == STL::PROT::WINDOWED)
+    switch (this->Type)
+    {
+    case STL::PROT::WINDOWED:
     {
         this->Pos.X = STL::Clamp(this->Pos.X, (int32_t)RAISEDWIDTH, (int32_t)(Renderer::Backbuffer.Width - this->FrameBuffer.Width - RAISEDWIDTH));
         this->Pos.Y = STL::Clamp(this->Pos.Y, (int32_t)RAISEDWIDTH + FRAME_OFFSET.Y, (int32_t)(Renderer::Backbuffer.Height - this->FrameBuffer.Height - RAISEDWIDTH));        
     }
-    else
+    break;
+    default:
     {
         this->Pos.X = STL::Clamp(this->Pos.X, (int32_t)0, (int32_t)(Renderer::Backbuffer.Width - this->FrameBuffer.Width));
         this->Pos.Y = STL::Clamp(this->Pos.Y, (int32_t)0, (int32_t)(Renderer::Backbuffer.Height - this->FrameBuffer.Height));        
+    }
+    break;
     }
 }
 
@@ -102,14 +109,19 @@ void Process::UpdateDepth()
 
 bool Process::Contains(STL::Point Other)
 {
-    return (this->Pos.X < Other.X && this->Pos.X + (int32_t)this->FrameBuffer.Width > Other.X &&
-            this->Pos.Y < Other.Y && this->Pos.Y + (int32_t)this->FrameBuffer.Height > Other.Y);
+    STL::Point Size = this->GetSize();
+
+    return (this->Pos.X < Other.X && this->Pos.X + (int32_t)Size.X > Other.X &&
+            this->Pos.Y < Other.Y && this->Pos.Y + (int32_t)Size.Y > Other.Y);
 }
 
 bool Process::Contains(Process* Other)
-{
-    return (this->Pos.X <= Other->Pos.X + (int32_t)Other->FrameBuffer.Width && this->Pos.X + (int32_t)this->FrameBuffer.Width >= Other->Pos.X &&
-            this->Pos.Y <= Other->Pos.Y + (int32_t)Other->FrameBuffer.Height && this->Pos.Y + (int32_t)this->FrameBuffer.Height >= Other->Pos.Y);
+{    
+    STL::Point ThisSize = this->GetSize();
+    STL::Point OtherSize = Other->GetSize();
+
+    return (this->Pos.X <= Other->Pos.X + (int32_t)OtherSize.X && this->Pos.X + (int32_t)ThisSize.X >= Other->Pos.X &&
+            this->Pos.Y <= Other->Pos.Y + (int32_t)OtherSize.Y && this->Pos.Y + (int32_t)ThisSize.Y >= Other->Pos.Y);
 }
 
 void Process::Clear()
@@ -132,8 +144,10 @@ void Process::Draw()
 
 void Process::Render()
 {
-    if (this->Type == STL::PROT::WINDOWED)
-    {         
+    switch (this->Type)
+    {
+    case STL::PROT::WINDOWED:
+    {
         STL::ARGB Background;
         STL::ARGB Foreground;
         if (this == ProcessHandler::FocusedProcess)
@@ -156,24 +170,29 @@ void Process::Render()
 
         //Print Title
         STL::Point TextPos = this->Pos + STL::Point(RAISEDWIDTH * 2, -FRAME_OFFSET.Y / 2 - 8);
-        Renderer::Backbuffer.Print(this->Title.cstr(), TextPos, 1, Foreground, Background);
-    } 
-
-    if (this->Pos.X < 0 || this->Pos.X + this->FrameBuffer.Width > Renderer::Backbuffer.Width || this->Pos.Y < 0 || this->Pos.Y + this->FrameBuffer.Height > Renderer::Backbuffer.Height)
-    {
-        return;
+        Renderer::Backbuffer.Print(this->Title.cstr(), TextPos, 1, Foreground, Background);    
     }
+    //break; //Fall trough
+    default:
+    {
+        if (this->Pos.X < 0 || this->Pos.X + this->FrameBuffer.Width > Renderer::Backbuffer.Width || this->Pos.Y < 0 || this->Pos.Y + this->FrameBuffer.Height > Renderer::Backbuffer.Height)
+        {
+            return;
+        }
 
-    //Copy this->FrameBuffer to Renderer::Backbuffer
+        //Copy this->FrameBuffer to Renderer::Backbuffer
 
-    void* Source = (uint8_t*)(this->FrameBuffer.Base);
-    void* Dest = (uint8_t*)(Renderer::Backbuffer.Base + this->Pos.X + Renderer::Backbuffer.PixelsPerScanline * this->Pos.Y);
+        void* Source = (uint8_t*)(this->FrameBuffer.Base);
+        void* Dest = (uint8_t*)(Renderer::Backbuffer.Base + this->Pos.X + Renderer::Backbuffer.PixelsPerScanline * this->Pos.Y);
 
-    for (uint32_t y = 0; y < this->FrameBuffer.Height; y++)
-    {             
-        STL::CopyMemory(Source, Dest, this->FrameBuffer.PixelsPerScanline * 4);
-        Source = (void*)((uint64_t)Source + this->FrameBuffer.PixelsPerScanline * 4);
-        Dest = (void*)((uint64_t)Dest + Renderer::Backbuffer.PixelsPerScanline * 4);   
+        for (uint32_t y = 0; y < this->FrameBuffer.Height; y++)
+        {             
+            STL::CopyMemory(Source, Dest, this->FrameBuffer.PixelsPerScanline * 4);
+            Source = (void*)((uint64_t)Source + this->FrameBuffer.PixelsPerScanline * 4);
+            Dest = (void*)((uint64_t)Dest + Renderer::Backbuffer.PixelsPerScanline * 4);   
+        }  
+    }
+    break;
     }
 }
 
@@ -206,8 +225,10 @@ Process::Process(STL::PROC Procedure)
     this->Title = Info.Title;
     this->SetDepth(Info.Depth);
 
-    if (Info.Type == STL::PROT::FULLSCREEN)
-    {            
+    switch (this->Type)
+    {
+    case STL::PROT::FULLSCREEN:
+    {
         this->Pos = STL::Point(0, 0);
         this->FrameBuffer.Height = Renderer::Backbuffer.Height;  
         this->FrameBuffer.Width = Renderer::Backbuffer.Width;
@@ -218,8 +239,10 @@ Process::Process(STL::PROC Procedure)
         this->FrameBuffer.Clear();
         this->PushRequest(STL::PROR::DRAW);
     }
-    else if (Info.Type == STL::PROT::FRAMELESSWINDOW || Info.Type == STL::PROT::WINDOWED)
-    {               
+    break;
+    case STL::PROT::FRAMELESSWINDOW:
+    case STL::PROT::WINDOWED:
+    {
         this->FrameBuffer.Height = Info.Height;  
         this->FrameBuffer.Width = Info.Width;
         this->FrameBuffer.PixelsPerScanline = Info.Width + 1;
@@ -228,5 +251,12 @@ Process::Process(STL::PROC Procedure)
 
         this->FrameBuffer.Clear();
         this->PushRequest(STL::PROR::DRAW);
+    }
+    break;
+    default:
+    {
+        Debug::Error("Program of unknown type started");
+    }
+    break;
     }
 } 
