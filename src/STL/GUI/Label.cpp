@@ -32,7 +32,7 @@ namespace STL
         {
         case LabelAlign::Negative:
         {
-            TextPos.Y = this->TopLeft.Y + RAISEDWIDTH * Scale;
+            TextPos.Y = this->TopLeft.Y + RAISED_WIDTH * Scale;
         }
         break;
         case LabelAlign::Center:
@@ -42,7 +42,7 @@ namespace STL
         break;        
         case LabelAlign::Positive:
         {
-            TextPos.Y = this->BottomRight.Y - RAISEDWIDTH * Scale;
+            TextPos.Y = this->BottomRight.Y - RAISED_WIDTH * Scale;
         }
         break;
         }*/
@@ -53,7 +53,7 @@ namespace STL
         {
         case LabelAlign::Negative:
         {
-            TextPos.X = this->TopLeft.X + RAISEDWIDTH * Scale;
+            TextPos.X = this->TopLeft.X + RAISED_WIDTH * Scale;
         }
         break;
         case LabelAlign::Center:
@@ -63,7 +63,7 @@ namespace STL
         break;        
         case LabelAlign::Positive:
         {
-            TextPos.X = this->BottomRight.X - RAISEDWIDTH * Scale - STL::Length(this->Text.cstr()) * 8 * Scale;
+            TextPos.X = this->BottomRight.X - RAISED_WIDTH * Scale - STL::Length(this->Text.cstr()) * 8 * Scale;
         }
         break;
         }

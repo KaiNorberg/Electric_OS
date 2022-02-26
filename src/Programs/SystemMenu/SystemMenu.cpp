@@ -22,7 +22,7 @@ namespace SystemMenu
 
     void OpenAnimation(STL::Framebuffer* Buffer)
     {
-        Buffer->DrawRaisedRect(STL::Point(RAISEDWIDTH, RAISEDWIDTH), STL::Point(Buffer->Width - RAISEDWIDTH, Buffer->Height - RAISEDWIDTH), STL::ARGB(200));
+        Buffer->DrawRaisedRect(STL::Point(RAISED_WIDTH, RAISED_WIDTH), STL::Point(Buffer->Width - RAISED_WIDTH, Buffer->Height - RAISED_WIDTH), STL::ARGB(200));
     
         StartAnimation(nullptr);
     }
@@ -39,15 +39,15 @@ namespace SystemMenu
             Info->Left = 1920 - 200 - 25;
             Info->Top = 50;
             Info->Width = 200;
-            Info->Height = RAISEDWIDTH * 12 + 3 * (RAISEDWIDTH * 2 + 25);
+            Info->Height = RAISED_WIDTH * 12 + 3 * (RAISED_WIDTH * 2 + 25);
             Info->Title = "SystemMenu";
 
-            TTYButton = STL::Button(STL::ARGB(200), "To TTY", STL::Point(RAISEDWIDTH * 3, RAISEDWIDTH * 3), 
-                                        STL::Point(Info->Width - RAISEDWIDTH * 3, RAISEDWIDTH * 3 + (RAISEDWIDTH * 2 + 25)));
-            RestartButton = STL::Button(STL::ARGB(200), "Restart", STL::Point(RAISEDWIDTH * 3, RAISEDWIDTH * 6 + (RAISEDWIDTH * 2 + 25)), 
-                                        STL::Point(Info->Width - RAISEDWIDTH * 3, RAISEDWIDTH * 6 + 2 * (RAISEDWIDTH * 2 + 25)));
-            ShutDownButton = STL::Button(STL::ARGB(200), "Shut Down", STL::Point(RAISEDWIDTH * 3, RAISEDWIDTH * 9 + 2 * (RAISEDWIDTH * 2 + 25)), 
-                                        STL::Point(Info->Width - RAISEDWIDTH * 3, RAISEDWIDTH * 9 + 3 * (RAISEDWIDTH * 2 + 25)));
+            TTYButton = STL::Button(STL::ARGB(200), "To TTY", STL::Point(RAISED_WIDTH * 3, RAISED_WIDTH * 3), 
+                                        STL::Point(Info->Width - RAISED_WIDTH * 3, RAISED_WIDTH * 3 + (RAISED_WIDTH * 2 + 25)));
+            RestartButton = STL::Button(STL::ARGB(200), "Restart", STL::Point(RAISED_WIDTH * 3, RAISED_WIDTH * 6 + (RAISED_WIDTH * 2 + 25)), 
+                                        STL::Point(Info->Width - RAISED_WIDTH * 3, RAISED_WIDTH * 6 + 2 * (RAISED_WIDTH * 2 + 25)));
+            ShutDownButton = STL::Button(STL::ARGB(200), "Shut Down", STL::Point(RAISED_WIDTH * 3, RAISED_WIDTH * 9 + 2 * (RAISED_WIDTH * 2 + 25)), 
+                                        STL::Point(Info->Width - RAISED_WIDTH * 3, RAISED_WIDTH * 9 + 3 * (RAISED_WIDTH * 2 + 25)));
 
             StartAnimation(OpenAnimation);
         }

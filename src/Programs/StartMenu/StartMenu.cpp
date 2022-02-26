@@ -15,7 +15,7 @@ namespace StartMenu
         StartableProcess() = default;
     };
 
-    const uint64_t StartableProcessesAmount = 2;
+    const uint64_t StartableProcessesAmount = 3;
     StartableProcess StartableProcesses[StartableProcessesAmount];
 
     void(*CurrentAnimation)(STL::Framebuffer*);
@@ -29,7 +29,7 @@ namespace StartMenu
 
     void OpenAnimation(STL::Framebuffer* Buffer)
     {
-        Buffer->DrawRaisedRect(STL::Point(RAISEDWIDTH, RAISEDWIDTH), STL::Point(Buffer->Width - RAISEDWIDTH, Buffer->Height - RAISEDWIDTH), STL::ARGB(200));
+        Buffer->DrawRaisedRect(STL::Point(RAISED_WIDTH, RAISED_WIDTH), STL::Point(Buffer->Width - RAISED_WIDTH, Buffer->Height - RAISED_WIDTH), STL::ARGB(200));
     
         StartAnimation(nullptr);
     }
@@ -44,11 +44,12 @@ namespace StartMenu
 
             StartableProcesses[0].Name = "Calculator";
             StartableProcesses[1].Name = "Terminal";
+            StartableProcesses[2].Name = "Tetris";
 
             for (uint64_t i = 0; i < StartableProcessesAmount; i++)
             {
-                STL::Point TopLeft = STL::Point(RAISEDWIDTH * 3, RAISEDWIDTH * ((i + 1) * 3) + i * (RAISEDWIDTH * 2 + 25));
-                STL::Point BottomRight = STL::Point(200 - RAISEDWIDTH * 3, RAISEDWIDTH * ((i + 1) * 3) + ((i + 1)) * (RAISEDWIDTH * 2 + 25));
+                STL::Point TopLeft = STL::Point(RAISED_WIDTH * 3, RAISED_WIDTH * ((i + 1) * 3) + i * (RAISED_WIDTH * 2 + 25));
+                STL::Point BottomRight = STL::Point(200 - RAISED_WIDTH * 3, RAISED_WIDTH * ((i + 1) * 3) + ((i + 1)) * (RAISED_WIDTH * 2 + 25));
 
                 StartableProcesses[i].Button = STL::Button(STL::ARGB(200), StartableProcesses[i].Name.cstr(), TopLeft, BottomRight);
             }
@@ -58,7 +59,7 @@ namespace StartMenu
             Info->Left = 25;
             Info->Top = 50;
             Info->Width = 200;
-            Info->Height = StartableProcesses[StartableProcessesAmount - 1].Button.BottomRight.Y + RAISEDWIDTH * 3;
+            Info->Height = StartableProcesses[StartableProcessesAmount - 1].Button.BottomRight.Y + RAISED_WIDTH * 3;
             Info->Title = "StartMenu";
 
             StartAnimation(OpenAnimation);

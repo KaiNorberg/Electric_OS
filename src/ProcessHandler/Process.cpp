@@ -30,8 +30,8 @@ void Process::SetPos(STL::Point NewPos)
     {
     case STL::PROT::WINDOWED:
     {
-        this->Pos.X = STL::Clamp(this->Pos.X, (int32_t)RAISEDWIDTH, (int32_t)(Renderer::Backbuffer.Width - this->FrameBuffer.Width - RAISEDWIDTH));
-        this->Pos.Y = STL::Clamp(this->Pos.Y, (int32_t)RAISEDWIDTH + FRAME_OFFSET.Y, (int32_t)(Renderer::Backbuffer.Height - this->FrameBuffer.Height - RAISEDWIDTH));        
+        this->Pos.X = STL::Clamp(this->Pos.X, (int32_t)RAISED_WIDTH, (int32_t)(Renderer::Backbuffer.Width - this->FrameBuffer.Width - RAISED_WIDTH));
+        this->Pos.Y = STL::Clamp(this->Pos.Y, (int32_t)RAISED_WIDTH + FRAME_OFFSET.Y, (int32_t)(Renderer::Backbuffer.Height - this->FrameBuffer.Height - RAISED_WIDTH));        
     }
     break;
     default:
@@ -169,7 +169,7 @@ void Process::Render()
         Renderer::Backbuffer.DrawRaisedRect(this->GetCloseButtonPos(), this->GetCloseButtonPos() + CLOSE_BUTTON_SIZE, STL::ARGB(200));
 
         //Print Title
-        STL::Point TextPos = this->Pos + STL::Point(RAISEDWIDTH * 2, -FRAME_OFFSET.Y / 2 - 8);
+        STL::Point TextPos = this->Pos + STL::Point(RAISED_WIDTH * 2, -FRAME_OFFSET.Y / 2 - 8);
         Renderer::Backbuffer.Print(this->Title.cstr(), TextPos, 1, Foreground, Background);    
     }
     //break; //Fall trough

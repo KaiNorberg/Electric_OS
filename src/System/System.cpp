@@ -11,6 +11,7 @@
 #include "Programs/StartMenu/StartMenu.h"
 #include "Programs/Terminal/Terminal.h"
 #include "Programs/Calculator/Calculator.h"
+#include "Programs/Tetris/Tetris.h"
 
 #include "Renderer/Renderer.h"
 #include "RTC/RTC.h"
@@ -531,7 +532,8 @@ namespace System
             StartableProcess("systemmenu", SystemMenu::Procedure),
             StartableProcess("startmenu", StartMenu::Procedure),
             StartableProcess("terminal", Terminal::Procedure),
-            StartableProcess("calculator", Calculator::Procedure)
+            StartableProcess("calculator", Calculator::Procedure),
+            StartableProcess("tetris", Tetris::Procedure)
         };
 
         uint64_t Hash = STL::HashWord(STL::NextWord(Command));

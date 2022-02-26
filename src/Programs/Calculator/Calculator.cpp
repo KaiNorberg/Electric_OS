@@ -9,8 +9,8 @@
 
 #define BUTTON_SIZE STL::Point(50, 50 / (16/9))
 
-#define LABEL_POS STL::Point(RAISEDWIDTH * 2, RAISEDWIDTH * 2)
-#define LABEL_SIZE STL::Point(RAISEDWIDTH * 2 + 40 + 3 * (RAISEDWIDTH * 3 + BUTTON_SIZE.X), 40)
+#define LABEL_POS STL::Point(RAISED_WIDTH * 2, RAISED_WIDTH * 2)
+#define LABEL_SIZE STL::Point(RAISED_WIDTH * 2 + 40 + 3 * (RAISED_WIDTH * 3 + BUTTON_SIZE.X), 40)
 
 namespace Calculator
 {
@@ -33,7 +33,7 @@ namespace Calculator
 
     STL::Point GetButtonPosition(uint8_t X, uint8_t Y)
     {
-        return STL::Point(RAISEDWIDTH * 2 + X * (RAISEDWIDTH * 3 + BUTTON_SIZE.X), RAISEDWIDTH * 5 + LABEL_SIZE.Y + Y * (RAISEDWIDTH * 3 + BUTTON_SIZE.X));
+        return STL::Point(RAISED_WIDTH * 2 + X * (RAISED_WIDTH * 3 + BUTTON_SIZE.X), RAISED_WIDTH * 5 + LABEL_SIZE.Y + Y * (RAISED_WIDTH * 3 + BUTTON_SIZE.X));
     }
 
     STL::PROR Procedure(STL::PROM Message, STL::PROI Input)
@@ -47,8 +47,8 @@ namespace Calculator
             Info->Depth = 1;
             Info->Left = 360;
             Info->Top = 200;
-            Info->Width = LABEL_POS.X + LABEL_SIZE.X + RAISEDWIDTH * 3;
-            Info->Height = RAISEDWIDTH * 4 + LABEL_SIZE.Y + 4 * (RAISEDWIDTH * 3 + BUTTON_SIZE.X);
+            Info->Width = LABEL_POS.X + LABEL_SIZE.X + RAISED_WIDTH * 3;
+            Info->Height = RAISED_WIDTH * 4 + LABEL_SIZE.Y + 4 * (RAISED_WIDTH * 3 + BUTTON_SIZE.X);
             Info->Title = "Calculator";
 
             PreviousNum = 0;

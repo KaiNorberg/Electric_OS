@@ -7,12 +7,7 @@ LDS = src/linker.ld
 CC = gcc
 ASMC = nasm
 LD = ld
-
-OPTIMFLAGS = -O2 -fno-align-functions -fno-align-jumps -fno-align-labels -fno-align-loops
-OPTIMFLAGS += -fgcse-after-reload -fipa-cp-clone -floop-interchange -floop-unroll-and-jam 
-OPTIMFLAGS += -fpeel-loops -fpredictive-commoning -fsplit-loops -fsplit-paths -ftree-loop-distribution 
-OPTIMFLAGS += -ftree-partial-pre -funswitch-loops -fvect-cost-model=dynamic -fversion-loops-for-strides
-CFLAGS = -Wall -fno-rtti -ffreestanding -fno-threadsafe-statics -fno-stack-protector -fno-exceptions -Isrc/ -std=c++20 $(OPTIMFLAGS)
+CFLAGS = -Wall -fno-rtti -ffreestanding -fno-threadsafe-statics -fno-stack-protector -fno-exceptions -Isrc/ -std=c++20 -Os
 ASMFLAGS =
 LDFLAGS = -T $(LDS) -Bsymbolic -nostdlib
 

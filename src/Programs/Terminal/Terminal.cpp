@@ -7,7 +7,7 @@
 
 #include "Version.h"
 
-#define NEWLINE_OFFSET RAISEDWIDTH * 3
+#define NEWLINE_OFFSET RAISED_WIDTH * 3
 
 namespace Terminal
 {
@@ -118,11 +118,11 @@ namespace Terminal
                 RedrawText = false;
 
                 //Draw Edge
-                Buffer->DrawRect(STL::Point(0, 0), STL::Point(Buffer->Width, RAISEDWIDTH  * 2), STL::ARGB(200));
-                Buffer->DrawRect(STL::Point(0, 0), STL::Point(RAISEDWIDTH * 2, Buffer->Height), STL::ARGB(200));
-                Buffer->DrawRect(STL::Point(Buffer->Width - RAISEDWIDTH * 2, 0), STL::Point(Buffer->Width, Buffer->Height), STL::ARGB(200));
-                Buffer->DrawRect(STL::Point(0, Buffer->Height - RAISEDWIDTH * 2), STL::Point(Buffer->Width, Buffer->Height), STL::ARGB(200));
-                Buffer->DrawSunkenRectEdge(STL::Point(RAISEDWIDTH * 2, RAISEDWIDTH * 2), STL::Point(Buffer->Width - RAISEDWIDTH * 2, Buffer->Height - RAISEDWIDTH  * 2));
+                Buffer->DrawRect(STL::Point(0, 0), STL::Point(Buffer->Width, RAISED_WIDTH  * 2), STL::ARGB(200));
+                Buffer->DrawRect(STL::Point(0, 0), STL::Point(RAISED_WIDTH * 2, Buffer->Height), STL::ARGB(200));
+                Buffer->DrawRect(STL::Point(Buffer->Width - RAISED_WIDTH * 2, 0), STL::Point(Buffer->Width, Buffer->Height), STL::ARGB(200));
+                Buffer->DrawRect(STL::Point(0, Buffer->Height - RAISED_WIDTH * 2), STL::Point(Buffer->Width, Buffer->Height), STL::ARGB(200));
+                Buffer->DrawSunkenRectEdge(STL::Point(RAISED_WIDTH * 2, RAISED_WIDTH * 2), STL::Point(Buffer->Width - RAISED_WIDTH * 2, Buffer->Height - RAISED_WIDTH  * 2));
             }
 
             //Print command

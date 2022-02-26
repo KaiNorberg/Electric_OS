@@ -40,122 +40,80 @@ namespace STL
         *(ARGB*)((uint64_t)this->Base + Pixel.X * 4 + Pixel.Y * this->PixelsPerScanline * 4) = Color;
     }
 
-    void Framebuffer::DrawRaisedRectEdge(Point TopLeft, Point BottomRight)
+	void Framebuffer::DrawRectEdge(Point TopLeft, Point BottomRight, ARGB TopLeftColor, ARGB BottomRightColor)
     {
-        for (int y = TopLeft.Y - RAISEDWIDTH; y < TopLeft.Y; y++)
+        for (int y = TopLeft.Y - RAISED_WIDTH; y < TopLeft.Y; y++)
         {
-            for (int x = TopLeft.X - RAISEDWIDTH; x < BottomRight.X + RAISEDWIDTH; x++)
+            for (int x = TopLeft.X - RAISED_WIDTH; x < BottomRight.X + RAISED_WIDTH; x++)
             {                   
-                this->PutPixel(STL::Point(x, y), RAISEDHIGHCOLOR);                    
+                this->PutPixel(STL::Point(x, y), TopLeftColor);                    
             }
         }
 
-        for (int y = BottomRight.Y; y < BottomRight.Y + RAISEDWIDTH; y++)
+        for (int y = BottomRight.Y; y < BottomRight.Y + RAISED_WIDTH; y++)
         {
-            for (int x = TopLeft.X - RAISEDWIDTH; x < BottomRight.X + RAISEDWIDTH; x++)
+            for (int x = TopLeft.X - RAISED_WIDTH; x < BottomRight.X + RAISED_WIDTH; x++)
             {                   
-                this->PutPixel(STL::Point(x, y), RAISEDLOWCOLOR);                    
+                this->PutPixel(STL::Point(x, y), BottomRightColor);                    
             }
         }
 
-        for (int y = TopLeft.Y - RAISEDWIDTH; y < BottomRight.Y + RAISEDWIDTH; y++)
+        for (int y = TopLeft.Y - RAISED_WIDTH; y < BottomRight.Y + RAISED_WIDTH; y++)
         {
-            for (int x = TopLeft.X - RAISEDWIDTH; x < TopLeft.X; x++)
+            for (int x = TopLeft.X - RAISED_WIDTH; x < TopLeft.X; x++)
             {                   
-                this->PutPixel(STL::Point(x, y), RAISEDHIGHCOLOR);                    
+                this->PutPixel(STL::Point(x, y), TopLeftColor);                    
             }
         }
 
-        for (int y = TopLeft.Y - RAISEDWIDTH; y < BottomRight.Y + RAISEDWIDTH; y++)
+        for (int y = TopLeft.Y - RAISED_WIDTH; y < BottomRight.Y + RAISED_WIDTH; y++)
         {
-            for (int x = BottomRight.X; x < BottomRight.X + RAISEDWIDTH; x++)
+            for (int x = BottomRight.X; x < BottomRight.X + RAISED_WIDTH; x++)
             {                   
-                this->PutPixel(STL::Point(x, y), RAISEDLOWCOLOR);                    
+                this->PutPixel(STL::Point(x, y), BottomRightColor);                    
             }
         }
-
-        for (int y = 0; y < RAISEDWIDTH; y++)
+        
+        for (int y = 0; y < RAISED_WIDTH; y++)
         {
-            for (int x = 0; x < RAISEDWIDTH; x++)
+            for (int x = 0; x < RAISED_WIDTH; x++)
             {
-                if (y + x < RAISEDWIDTH)
+                if (y + x < RAISED_WIDTH)
                 {
-                    this->PutPixel(STL::Point(BottomRight.X + x, TopLeft.Y - RAISEDWIDTH + y), RAISEDHIGHCOLOR);
-                    this->PutPixel(STL::Point(TopLeft.X - RAISEDWIDTH + x, BottomRight.Y + y), RAISEDHIGHCOLOR);                    
+                    this->PutPixel(STL::Point(BottomRight.X + x, TopLeft.Y - RAISED_WIDTH + y), TopLeftColor);
+                    this->PutPixel(STL::Point(TopLeft.X - RAISED_WIDTH + x, BottomRight.Y + y), TopLeftColor);                    
                 }
                 else
                 {
-                    this->PutPixel(STL::Point(BottomRight.X + x, TopLeft.Y - RAISEDWIDTH + y), RAISEDLOWCOLOR);
-                    this->PutPixel(STL::Point(TopLeft.X - RAISEDWIDTH + x, BottomRight.Y + y), RAISEDLOWCOLOR);
+                    this->PutPixel(STL::Point(BottomRight.X + x, TopLeft.Y - RAISED_WIDTH + y), BottomRightColor);
+                    this->PutPixel(STL::Point(TopLeft.X - RAISED_WIDTH + x, BottomRight.Y + y), BottomRightColor);
                 }
             }
         }          
     }
 
+    void Framebuffer::DrawRaisedRectEdge(Point TopLeft, Point BottomRight)
+    {
+        this->DrawRectEdge(TopLeft, BottomRight, RAISEDHIGHCOLOR, RAISEDLOWCOLOR);
+    }
+
     void Framebuffer::DrawRaisedRect(Point TopLeft, Point BottomRight, ARGB Color)
     {
-        DrawRect(TopLeft, BottomRight, Color);
+        this->DrawRect(TopLeft, BottomRight, Color);
 
-        DrawRaisedRectEdge(TopLeft, BottomRight);
+        this->DrawRaisedRectEdge(TopLeft, BottomRight);
     }
 
     void Framebuffer::DrawSunkenRectEdge(Point TopLeft, Point BottomRight)
     {
-        for (int y = TopLeft.Y - RAISEDWIDTH; y < TopLeft.Y; y++)
-        {
-            for (int x = TopLeft.X - RAISEDWIDTH; x < BottomRight.X + RAISEDWIDTH; x++)
-            {                   
-                this->PutPixel(STL::Point(x, y), RAISEDLOWCOLOR);                    
-            }
-        }
-
-        for (int y = BottomRight.Y; y < BottomRight.Y + RAISEDWIDTH; y++)
-        {
-            for (int x = TopLeft.X - RAISEDWIDTH; x < BottomRight.X + RAISEDWIDTH; x++)
-            {                   
-                this->PutPixel(STL::Point(x, y), RAISEDHIGHCOLOR);                    
-            }
-        }
-
-        for (int y = TopLeft.Y - RAISEDWIDTH; y < BottomRight.Y + RAISEDWIDTH; y++)
-        {
-            for (int x = TopLeft.X - RAISEDWIDTH; x < TopLeft.X; x++)
-            {                   
-                this->PutPixel(STL::Point(x, y), RAISEDLOWCOLOR);                    
-            }
-        }
-
-        for (int y = TopLeft.Y - RAISEDWIDTH; y < BottomRight.Y + RAISEDWIDTH; y++)
-        {
-            for (int x = BottomRight.X; x < BottomRight.X + RAISEDWIDTH; x++)
-            {                   
-                this->PutPixel(STL::Point(x, y), RAISEDHIGHCOLOR);                    
-            }
-        }
-
-        for (int y = 0; y < RAISEDWIDTH; y++)
-        {
-            for (int x = 0; x < RAISEDWIDTH; x++)
-            {
-                if (y + x < RAISEDWIDTH)
-                {
-                    this->PutPixel(STL::Point(BottomRight.X + x, TopLeft.Y - RAISEDWIDTH + y), RAISEDLOWCOLOR);
-                    this->PutPixel(STL::Point(TopLeft.X - RAISEDWIDTH + x, BottomRight.Y + y), RAISEDLOWCOLOR);                    
-                }
-                else
-                {
-                    this->PutPixel(STL::Point(BottomRight.X + x, TopLeft.Y - RAISEDWIDTH + y), RAISEDHIGHCOLOR);
-                    this->PutPixel(STL::Point(TopLeft.X - RAISEDWIDTH + x, BottomRight.Y + y), RAISEDHIGHCOLOR);
-                }
-            }
-        }
+        this->DrawRectEdge(TopLeft, BottomRight, RAISEDLOWCOLOR, RAISEDHIGHCOLOR);
     }
 
     void Framebuffer::DrawSunkenRect(Point TopLeft, Point BottomRight, ARGB Color)
     {
-        DrawRect(TopLeft, BottomRight, Color);
+        this->DrawRect(TopLeft, BottomRight, Color);
 
-        DrawSunkenRectEdge(TopLeft, BottomRight);
+        this->DrawSunkenRectEdge(TopLeft, BottomRight);
     }
 
     void Framebuffer::DrawRect(STL::Point TopLeft, STL::Point BottomRight, ARGB Color)

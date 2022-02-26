@@ -5,7 +5,7 @@
 #include "ARGB.h"
 #include "STL/Math/Point.h"
 
-#define RAISEDWIDTH 4
+#define RAISED_WIDTH 4
 #define RAISEDHIGHCOLOR STL::ARGB(255)
 #define RAISEDLOWCOLOR STL::ARGB(60)
 
@@ -26,6 +26,8 @@ namespace STL
 		ARGB GetPixel(Point Pixel);
 
 		void PutPixel(Point Pixel, ARGB Color);
+
+		void DrawRectEdge(Point TopLeft, Point BottomRight, ARGB TopLeftColor, ARGB BottomRightColor);
 
 		void DrawRaisedRectEdge(Point TopLeft, Point BottomRight);
 

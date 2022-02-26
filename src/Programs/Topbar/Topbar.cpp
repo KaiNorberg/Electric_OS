@@ -9,7 +9,7 @@
 
 #include "Programs/Desktop/Desktop.h"
 
-#define TOPBAR_PADDING 8 + RAISEDWIDTH * 4 
+#define TOPBAR_PADDING 8 + RAISED_WIDTH * 4 
 #define BUTTONGAP 125
 #define BUTTONWIDTH 100
 
@@ -41,24 +41,24 @@ namespace Topbar
         {
             Buffer->DrawRect(STL::Point(0, 0), STL::Point(Buffer->Width, Buffer->Height), Desktop::BackgroundColor);
         }
-        else if (AnimationCounter > Buffer->Height - RAISEDWIDTH)
+        else if (AnimationCounter > Buffer->Height - RAISED_WIDTH)
         {
             StartAnimation(nullptr);   
             return;
         }
 
-        uint64_t Offset = ((Buffer->Height - RAISEDWIDTH) - AnimationCounter);
+        uint64_t Offset = ((Buffer->Height - RAISED_WIDTH) - AnimationCounter);
 
-        Buffer->DrawRaisedRect(STL::Point(RAISEDWIDTH, RAISEDWIDTH), STL::Point(Buffer->Width - RAISEDWIDTH, AnimationCounter), BackgroundColor);
+        Buffer->DrawRaisedRect(STL::Point(RAISED_WIDTH, RAISED_WIDTH), STL::Point(Buffer->Width - RAISED_WIDTH, AnimationCounter), BackgroundColor);
 
-        TimeDateLabel.TopLeft.Y = 4 + RAISEDWIDTH * 2 - Offset;
-        TimeDateLabel.BottomRight.Y = Buffer->Height - 4 - RAISEDWIDTH * 2 - Offset;
+        TimeDateLabel.TopLeft.Y = 4 + RAISED_WIDTH * 2 - Offset;
+        TimeDateLabel.BottomRight.Y = Buffer->Height - 4 - RAISED_WIDTH * 2 - Offset;
 
-        SystemButton.TopLeft.Y = 4 + RAISEDWIDTH * 2 - Offset;
-        SystemButton.BottomRight.Y = Buffer->Height - 4 - RAISEDWIDTH * 2 - Offset;
+        SystemButton.TopLeft.Y = 4 + RAISED_WIDTH * 2 - Offset;
+        SystemButton.BottomRight.Y = Buffer->Height - 4 - RAISED_WIDTH * 2 - Offset;
 
-        StartButton.TopLeft.Y = 4 + RAISEDWIDTH * 2 - Offset;
-        StartButton.BottomRight.Y = Buffer->Height - 4 - RAISEDWIDTH * 2 - Offset;
+        StartButton.TopLeft.Y = 4 + RAISED_WIDTH * 2 - Offset;
+        StartButton.BottomRight.Y = Buffer->Height - 4 - RAISED_WIDTH * 2 - Offset;
     }
 
     STL::PROR Procedure(STL::PROM Message, STL::PROI Input)
@@ -73,18 +73,18 @@ namespace Topbar
             Info->Left = 0;
             Info->Top = 0;
             Info->Width = 1920;
-            Info->Height = 16 + TOPBAR_PADDING + RAISEDWIDTH;
+            Info->Height = 16 + TOPBAR_PADDING + RAISED_WIDTH;
             Info->Title = "Topbar";
 
             BackgroundColor = STL::ARGB(255, 200, 200, 200);
 
             SystemMenuID = -1;
 
-            TimeDateLabel = STL::Label("TEMP", STL::Point(Info->Width / 2 - 100, 4 + RAISEDWIDTH * 2), STL::Point(Info->Width / 2 + 100, Info->Height - 4 - RAISEDWIDTH * 2));
+            TimeDateLabel = STL::Label("TEMP", STL::Point(Info->Width / 2 - 100, 4 + RAISED_WIDTH * 2), STL::Point(Info->Width / 2 + 100, Info->Height - 4 - RAISED_WIDTH * 2));
             TimeDateLabel.Style = STL::LabelStyle::Sunken;
 
-            SystemButton = STL::Button(BackgroundColor, "System", STL::Point(Info->Width - BUTTONGAP - BUTTONWIDTH / 2, 4 + RAISEDWIDTH * 2), STL::Point(Info->Width - BUTTONGAP + BUTTONWIDTH / 2, Info->Height - 4 - RAISEDWIDTH * 2));
-            StartButton = STL::Button(BackgroundColor, "Start", STL::Point(BUTTONGAP - BUTTONWIDTH / 2, 4 + RAISEDWIDTH * 2), STL::Point(BUTTONGAP + BUTTONWIDTH / 2, Info->Height - 4 - RAISEDWIDTH * 2));
+            SystemButton = STL::Button(BackgroundColor, "System", STL::Point(Info->Width - BUTTONGAP - BUTTONWIDTH / 2, 4 + RAISED_WIDTH * 2), STL::Point(Info->Width - BUTTONGAP + BUTTONWIDTH / 2, Info->Height - 4 - RAISED_WIDTH * 2));
+            StartButton = STL::Button(BackgroundColor, "Start", STL::Point(BUTTONGAP - BUTTONWIDTH / 2, 4 + RAISED_WIDTH * 2), STL::Point(BUTTONGAP + BUTTONWIDTH / 2, Info->Height - 4 - RAISED_WIDTH * 2));
 
             StartAnimation(OpenAnimation);
         }
