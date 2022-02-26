@@ -18,8 +18,20 @@ STL::Point Process::GetPos()
 }
 
 STL::Point Process::GetSize()
-{
-    return STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height);
+{    
+    switch (this->Type)
+    {
+    case STL::PROT::MINIMIZED:
+    {
+        return STL::Point(MINIMIZED_WINDOW_WIDTH, 0);
+    }
+    break;
+    default:
+    {
+        return STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height);
+    }
+    break;
+    }
 }
 
 void Process::SetPos(STL::Point NewPos)
@@ -32,6 +44,12 @@ void Process::SetPos(STL::Point NewPos)
     {
         this->Pos.X = STL::Clamp(this->Pos.X, (int32_t)RAISED_WIDTH, (int32_t)(Renderer::Backbuffer.Width - this->FrameBuffer.Width - RAISED_WIDTH));
         this->Pos.Y = STL::Clamp(this->Pos.Y, (int32_t)RAISED_WIDTH + FRAME_OFFSET.Y, (int32_t)(Renderer::Backbuffer.Height - this->FrameBuffer.Height - RAISED_WIDTH));        
+    }
+    break;    
+    case STL::PROT::MINIMIZED:
+    {
+        this->Pos.X = STL::Clamp(this->Pos.X, (int32_t)RAISED_WIDTH, (int32_t)(Renderer::Backbuffer.Width - RAISED_WIDTH));
+        this->Pos.Y = STL::Clamp(this->Pos.Y, (int32_t)RAISED_WIDTH + FRAME_OFFSET.Y, (int32_t)(Renderer::Backbuffer.Height - RAISED_WIDTH));        
     }
     break;
     default:
@@ -55,7 +73,7 @@ const char* Process::GetTitle()
 
 STL::PROR Process::PopRequest()
 {
-    if (RequestAmount > 0)
+    if (this->Type != STL::PROT::MINIMIZED && RequestAmount > 0)
     {        
         RequestAmount--;
         return Requests[RequestAmount];
@@ -65,7 +83,7 @@ STL::PROR Process::PopRequest()
 
 void Process::PushRequest(STL::PROR Request)
 {
-    if (Request != STL::PROR::SUCCESS && RequestAmount < 16)
+    if (this->Type != STL::PROT::MINIMIZED && Request != STL::PROR::SUCCESS && RequestAmount < 16)
     {
         Requests[RequestAmount] = Request;
         RequestAmount++;
@@ -79,7 +97,25 @@ STL::PROC Process::GetProcedure()
 
 STL::Point Process::GetCloseButtonPos()
 {
-    return CLOSE_BUTTON_OFFSET + STL::Point(this->FrameBuffer.Width, 0) + this->Pos; 
+    return CLOSE_BUTTON_OFFSET + STL::Point(this->GetSize().X, 0) + this->Pos; 
+}
+
+STL::Point Process::GetMinimizeButtonPos()
+{
+    return MINIMIZE_BUTTON_OFFSET + STL::Point(this->GetSize().X, 0) + this->Pos; 
+}
+    
+void Process::Minimize()
+{
+    if (this->Type == STL::PROT::MINIMIZED)
+    {
+        this->Type = STL::PROT::WINDOWED;
+    }
+    else if (this->Type == STL::PROT::WINDOWED)
+    {
+        this->Type = STL::PROT::MINIMIZED;
+    }
+    this->SetPos(this->Pos);
 }
 
 void Process::SetDepth(uint64_t Depth)
@@ -145,7 +181,8 @@ void Process::Draw()
 void Process::Render()
 {
     switch (this->Type)
-    {
+    {    
+    case STL::PROT::MINIMIZED:
     case STL::PROT::WINDOWED:
     {
         STL::ARGB Background;
@@ -161,16 +198,32 @@ void Process::Render()
             Foreground = STL::ARGB(192);            
         }
 
-        //Draw topbar
-        Renderer::Backbuffer.DrawRaisedRectEdge(this->Pos - FRAME_OFFSET, this->Pos + STL::Point(this->FrameBuffer.Width, this->FrameBuffer.Height));
-        Renderer::Backbuffer.DrawRect(this->Pos - FRAME_OFFSET, this->Pos + STL::Point(this->FrameBuffer.Width, 0), Background);
+        STL::Point Size = this->GetSize();
 
-        //Draw close button
-        Renderer::Backbuffer.DrawRaisedRect(this->GetCloseButtonPos(), this->GetCloseButtonPos() + CLOSE_BUTTON_SIZE, STL::ARGB(200));
+        //Draw topbar
+        Renderer::Backbuffer.DrawRaisedRectEdge(this->Pos - FRAME_OFFSET, this->Pos + Size);
+        Renderer::Backbuffer.DrawRect(this->Pos - FRAME_OFFSET, this->Pos + STL::Point(Size.X, 0), Background);
+
+        //Draw close button                    
+        STL::Point CloseButtonPos = this->GetCloseButtonPos();                    
+        Renderer::Backbuffer.DrawRect(CloseButtonPos, CloseButtonPos + CLOSE_BUTTON_SIZE, STL::ARGB(200));
+        Renderer::Backbuffer.PutChar('X', CloseButtonPos + STL::Point(RAISED_WIDTH, 2), 1, STL::ARGB(0), STL::ARGB(200));
+        Renderer::Backbuffer.DrawRaisedRectEdge(CloseButtonPos, CloseButtonPos + CLOSE_BUTTON_SIZE);
+
+        //Draw minimize button                    
+        STL::Point MinimizeButtonPos = this->GetMinimizeButtonPos();
+        Renderer::Backbuffer.DrawRect(MinimizeButtonPos, MinimizeButtonPos + MINIMIZE_BUTTON_SIZE, STL::ARGB(200));
+        Renderer::Backbuffer.PutChar('_', MinimizeButtonPos + STL::Point(RAISED_WIDTH, 0), 1, STL::ARGB(0), STL::ARGB(200));
+        Renderer::Backbuffer.DrawRaisedRectEdge(MinimizeButtonPos, MinimizeButtonPos + MINIMIZE_BUTTON_SIZE);
 
         //Print Title
         STL::Point TextPos = this->Pos + STL::Point(RAISED_WIDTH * 2, -FRAME_OFFSET.Y / 2 - 8);
-        Renderer::Backbuffer.Print(this->Title.cstr(), TextPos, 1, Foreground, Background);    
+        Renderer::Backbuffer.Print(this->Title.cstr(), TextPos, 1, Foreground, Background); 
+
+        if (this->Type == STL::PROT::MINIMIZED)
+        {
+            return;
+        }   
     }
     //break; //Fall trough
     default:

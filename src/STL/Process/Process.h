@@ -31,7 +31,8 @@ namespace STL
     {
         FULLSCREEN,
         WINDOWED,
-        FRAMELESSWINDOW
+        FRAMELESSWINDOW,
+        MINIMIZED
     };
 
     typedef void* PROI; //Process input

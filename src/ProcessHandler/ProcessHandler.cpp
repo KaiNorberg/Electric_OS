@@ -81,12 +81,21 @@ namespace ProcessHandler
         {
             for (uint32_t i = Processes.Length(); i --> 0; )
             {                    
-                if (Mouse::LeftHeld && Processes[i]->GetType() == STL::PROT::WINDOWED && STL::Contains(Processes[i]->GetPos() - FRAME_OFFSET, Processes[i]->GetPos() + STL::Point(Processes[i]->GetSize().X, 0), Mouse::Position))
+                if (Mouse::LeftHeld && (Processes[i]->GetType() == STL::PROT::WINDOWED || Processes[i]->GetType() == STL::PROT::MINIMIZED) && 
+                    STL::Contains(Processes[i]->GetPos() - FRAME_OFFSET, Processes[i]->GetPos() + STL::Point(Processes[i]->GetSize().X, 0), Mouse::Position))
                 {               
                     STL::Point CloseButtonPos = Processes[i]->GetCloseButtonPos();
                     if (STL::Contains(CloseButtonPos, CloseButtonPos + CLOSE_BUTTON_SIZE, Mouse::Position)) //If over close button
                     {
                         KillProcess(Processes[i]->GetID());
+                        break;
+                    }
+
+                    STL::Point MinimizeButtonPos = Processes[i]->GetMinimizeButtonPos();
+                    if (STL::Contains(MinimizeButtonPos, MinimizeButtonPos + MINIMIZE_BUTTON_SIZE, Mouse::Position)) //If over close button
+                    {
+                        Processes[i]->Minimize();
+                        Compositor::RedrawRequest = true;
                         break;
                     }
 

@@ -9,10 +9,9 @@
 #define FRAME_OFFSET STL::Point(0, 30)
 #define CLOSE_BUTTON_SIZE STL::Point(16, 16)
 #define CLOSE_BUTTON_OFFSET STL::Point(((FRAME_OFFSET.X - CLOSE_BUTTON_SIZE.X) / 2 - CLOSE_BUTTON_SIZE.X), -FRAME_OFFSET.Y / 2 - CLOSE_BUTTON_SIZE.Y / 2)
-#define MOVING_WINDOW_OUTLINE_AMOUNT 100 * 2
-#define MOVING_WINDOW_OUTLINE_SPEED 10
-#define MOVING_WINDOW_OUTLINE_THICKNESS RAISED_WIDTH
-#define MOVING_WINDOW_OUTLINE_COLOR STL::ARGB(255, 224, 108, 117)
+#define MINIMIZE_BUTTON_SIZE STL::Point(16, 16)
+#define MINIMIZE_BUTTON_OFFSET CLOSE_BUTTON_OFFSET - STL::Point(16 + RAISED_WIDTH * 3, 0)
+#define MINIMIZED_WINDOW_WIDTH 200
 
 class Process
 {
@@ -35,6 +34,10 @@ public:
     STL::PROC GetProcedure();
 
     STL::Point GetCloseButtonPos();
+
+    STL::Point GetMinimizeButtonPos();
+
+    void Minimize();
 
     void PushRequest(STL::PROR Request);
 

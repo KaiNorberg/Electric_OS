@@ -7,6 +7,7 @@ LDS = src/linker.ld
 CC = gcc
 ASMC = nasm
 LD = ld
+
 CFLAGS = -Wall -fno-rtti -ffreestanding -fno-threadsafe-statics -fno-stack-protector -fno-exceptions -Isrc/ -std=c++20 -Os
 ASMFLAGS =
 LDFLAGS = -T $(LDS) -Bsymbolic -nostdlib
