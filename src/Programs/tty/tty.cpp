@@ -43,7 +43,7 @@ namespace tty
             Write("Welcome to the tty of ");
             Write(OS_VERSION);
             Write("!\n\r");
-            Write("Type \"help\" for a list of all available commands.\n\n\r");
+            Write("Type \"help\" or \"start desktop\" to get started.\n\n\r");
             Write(STL::System("sysfetch"));
             Write("\n\r");
             Write("> ");
