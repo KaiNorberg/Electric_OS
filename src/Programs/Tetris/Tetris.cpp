@@ -43,6 +43,8 @@
 #define RED_SHADOW STL::ARGB(255, 181, 0, 0)
 #define RED_HIGHLIGHT STL::ARGB(255, 255, 181, 180)
 
+#define PIECE_BLOCK_COUNT 4
+
 #define START_FALL_RATE 100
 
 namespace Tetris
@@ -65,6 +67,15 @@ namespace Tetris
     uint64_t CurrentFallRate = START_FALL_RATE;
 
     uint64_t NewPieceSeed = 1234;
+    
+    void(*CurrentAnimation)(STL::Framebuffer*);
+    uint64_t AnimationCounter = 0;
+
+    inline void StartAnimation(void(*Animation)(STL::Framebuffer*))
+    {
+        AnimationCounter = 0;
+        CurrentAnimation = Animation;
+    }
 
     STL::Point GetScreenPosition(STL::Point Pos)
     {
@@ -132,92 +143,134 @@ namespace Tetris
         }
     }
 
-    void WritePiece(STL::Point GridPos, BlockType Type, BlockType ColorType)
+    STL::Point RotatePoint(STL::Point P, uint8_t Steps)
+    {
+        STL::Point Result = P;
+
+        for (int i = 0; i < Steps; i++)
+        {
+            Result = STL::Point(Result.Y, Result.X * -1);
+        }
+
+        return Result;
+    }
+
+    const STL::Point* GetShape(BlockType Type, uint8_t RotationSteps)
     {
         switch (Type)
         {
         case BlockType::LIGHT_BLUE:
         {    
-            const STL::Point Piece[] = {STL::Point(-1, 0), STL::Point(0, 0), STL::Point(1, 0), STL::Point(2, 0)};
+            static const STL::Point Piece[] = {STL::Point(-1, 0), STL::Point(0, 0), STL::Point(1, 0), STL::Point(2, 0)};
+            static STL::Point RotatedPiece[PIECE_BLOCK_COUNT] = {};
 
-            for (uint32_t i = 0; i < 4; i++)
+            for (int i = 0; i < PIECE_BLOCK_COUNT; i++)
             {
-                STL::Point FinalPos = GridPos + Piece[i];
-                Grid[FinalPos.X + FinalPos.Y * GRID_WIDTH] = ColorType;
+                RotatedPiece[i] = RotatePoint(Piece[i], RotationSteps);
             }
+
+            return RotatedPiece;
         }   
         break;        
         case BlockType::DARK_BLUE:
         {
-            const STL::Point Piece[] = {STL::Point(0, 1), STL::Point(0, 0), STL::Point(1, 0), STL::Point(2, 0)};
+            static const STL::Point Piece[] = {STL::Point(0, 1), STL::Point(0, 0), STL::Point(1, 0), STL::Point(2, 0)};
+            static STL::Point RotatedPiece[PIECE_BLOCK_COUNT] = {};
 
-            for (uint32_t i = 0; i < 4; i++)
+            for (int i = 0; i < PIECE_BLOCK_COUNT; i++)
             {
-                STL::Point FinalPos = GridPos + Piece[i];
-                Grid[FinalPos.X + FinalPos.Y * GRID_WIDTH] = ColorType;
+                RotatedPiece[i] = RotatePoint(Piece[i], RotationSteps);
             }
+
+            return RotatedPiece;
         }   
         break;           
         case BlockType::ORANGE:
         {
-            const STL::Point Piece[] = {STL::Point(-1, 0), STL::Point(0, 0), STL::Point(1, 0), STL::Point(1, 1)};
+            static const STL::Point Piece[] = {STL::Point(-1, 0), STL::Point(0, 0), STL::Point(1, 0), STL::Point(1, 1)};
+            static STL::Point RotatedPiece[PIECE_BLOCK_COUNT] = {};
 
-            for (uint32_t i = 0; i < 4; i++)
+            for (int i = 0; i < PIECE_BLOCK_COUNT; i++)
             {
-                STL::Point FinalPos = GridPos + Piece[i];
-                Grid[FinalPos.X + FinalPos.Y * GRID_WIDTH] = ColorType;
+                RotatedPiece[i] = RotatePoint(Piece[i], RotationSteps);
             }
+
+            return RotatedPiece;
         }   
         break;             
         case BlockType::YELLOW:
         {
-            const STL::Point Piece[] = {STL::Point(1, 1), STL::Point(0, 0), STL::Point(1, 0), STL::Point(0, 1)};
+            static const STL::Point Piece[] = {STL::Point(1, 1), STL::Point(0, 0), STL::Point(1, 0), STL::Point(0, 1)};
+            static STL::Point RotatedPiece[PIECE_BLOCK_COUNT] = {};
 
-            for (uint32_t i = 0; i < 4; i++)
+            for (int i = 0; i < PIECE_BLOCK_COUNT; i++)
             {
-                STL::Point FinalPos = GridPos + Piece[i];
-                Grid[FinalPos.X + FinalPos.Y * GRID_WIDTH] = ColorType;
+                RotatedPiece[i] = RotatePoint(Piece[i], RotationSteps);
             }
+
+            return RotatedPiece;
         }   
         break;             
         case BlockType::PURPLE:
         {
-            const STL::Point Piece[] = {STL::Point(-1, 0), STL::Point(0, 0), STL::Point(0, 1), STL::Point(1, 0)};
+            static const STL::Point Piece[] = {STL::Point(-1, 0), STL::Point(0, 0), STL::Point(0, 1), STL::Point(1, 0)};
+            static STL::Point RotatedPiece[PIECE_BLOCK_COUNT] = {};
 
-            for (uint32_t i = 0; i < 4; i++)
+            for (int i = 0; i < PIECE_BLOCK_COUNT; i++)
             {
-                STL::Point FinalPos = GridPos + Piece[i];
-                Grid[FinalPos.X + FinalPos.Y * GRID_WIDTH] = ColorType;
+                RotatedPiece[i] = RotatePoint(Piece[i], RotationSteps);
             }
+
+            return RotatedPiece;
         }   
         break;         
         case BlockType::GREEN:
         {
-            const STL::Point Piece[] = {STL::Point(-1, 0), STL::Point(0, 0), STL::Point(0, 1), STL::Point(1, 1)};
+            static const STL::Point Piece[] = {STL::Point(-1, 0), STL::Point(0, 0), STL::Point(0, 1), STL::Point(1, 1)};
+            static STL::Point RotatedPiece[PIECE_BLOCK_COUNT] = {};
 
-            for (uint32_t i = 0; i < 4; i++)
+            for (int i = 0; i < PIECE_BLOCK_COUNT; i++)
             {
-                STL::Point FinalPos = GridPos + Piece[i];
-                Grid[FinalPos.X + FinalPos.Y * GRID_WIDTH] = ColorType;
+                RotatedPiece[i] = RotatePoint(Piece[i], RotationSteps);
             }
+
+            return RotatedPiece;
         }   
         break;         
         case BlockType::RED:
         {
-            const STL::Point Piece[] = {STL::Point(-1, 1), STL::Point(0, 1), STL::Point(0, 0), STL::Point(1, 0)};
+            static const STL::Point Piece[] = {STL::Point(-1, 1), STL::Point(0, 1), STL::Point(0, 0), STL::Point(1, 0)};
+            static STL::Point RotatedPiece[PIECE_BLOCK_COUNT] = {};
 
-            for (uint32_t i = 0; i < 4; i++)
+            for (int i = 0; i < PIECE_BLOCK_COUNT; i++)
             {
-                STL::Point FinalPos = GridPos + Piece[i];
-                Grid[FinalPos.X + FinalPos.Y * GRID_WIDTH] = ColorType;
+                RotatedPiece[i] = RotatePoint(Piece[i], RotationSteps);
             }
+
+            return RotatedPiece;
         }   
         break;
         default:
         {        
-
+            return nullptr;
         }   
         break;
+        }        
+    }
+
+    void WritePiece(STL::Point GridPos, uint8_t RotationSteps, BlockType ShapeType, BlockType ColorType)
+    {
+        const STL::Point* Shape = GetShape(ShapeType, RotationSteps);
+
+        if (Shape == nullptr)
+        {
+            return;
+        }
+
+        for (uint32_t i = 0; i < 4; i++)
+        {
+            STL::Point BlockPos = GridPos + Shape[i];
+            Grid[BlockPos.X + BlockPos.Y * GRID_WIDTH] = ColorType;
         }
     }
 
@@ -246,7 +299,7 @@ namespace Tetris
             }
         }
     }
-
+    
     void ClearGrid()
     {
         for (int x = 0; x < GRID_WIDTH; x++)
@@ -262,23 +315,119 @@ namespace Tetris
     {
         STL::Point Position;
         BlockType Type;
-
-        void Move(STL::Point Offset)
-        {
-            WritePiece(Position, Type, BlockType::EMPTY);
-            Position += Offset;
-            WritePiece(Position, Type, Type);
-        }
+        uint8_t RotationSteps = 0;
 
         void Generate()
         {            
-            WritePiece(Position, Type, BlockType::EMPTY);
+            //WritePiece(Position, Type, BlockType::EMPTY);
 
-            Position = STL::Point(GRID_WIDTH / 2, 5);
-            Type = (BlockType)(NewPieceSeed % 8 + 1);
+            RotationSteps = 0;
+            Position = STL::Point(GRID_WIDTH / 2, 0);
+            Type = (BlockType)(NewPieceSeed % 7 + 2);
 
-            WritePiece(Position, Type, Type);
+            WritePiece(Position, RotationSteps, Type, Type);
         }
+
+        bool Move(STL::Point Offset)
+        {            
+            if (Type == BlockType::EMPTY)
+            {
+                Generate();
+            }
+
+            WritePiece(Position, RotationSteps, Type, BlockType::EMPTY);
+
+            STL::Point NewPos = Position + Offset;
+
+            const STL::Point* Shape = GetShape(Type, RotationSteps);
+            if (Shape == nullptr)
+            {
+                return false;
+            }
+            for (uint32_t i = 0; i < 4; i++)
+            {
+                STL::Point BlockPos = NewPos + Shape[i];
+                if (BlockPos.X < 0 || BlockPos.X >= GRID_WIDTH || BlockPos.Y < 0 || BlockPos.Y >= GRID_HEIGHT || Grid[BlockPos.X + BlockPos.Y * GRID_WIDTH] != BlockType::EMPTY)
+                {            
+                    WritePiece(Position, RotationSteps, Type, Type);
+                    return false;
+                }
+            }
+
+            Position = NewPos;
+            WritePiece(Position, RotationSteps, Type, Type);
+
+            return true;
+        }
+
+        void Rotate()
+        {                       
+            if (Type == BlockType::EMPTY)
+            {
+                Generate();
+            }
+
+            WritePiece(Position, RotationSteps, Type, BlockType::EMPTY);
+
+            const STL::Point* NewShape = GetShape(Type, RotationSteps + 1);
+            if (NewShape == nullptr)
+            {
+                return;
+            }
+            for (uint32_t i = 0; i < 4; i++)
+            {
+                STL::Point BlockPos = Position + NewShape[i];
+                if (BlockPos.X < 0 || BlockPos.X >= GRID_WIDTH || BlockPos.Y < 0 || BlockPos.Y >= GRID_HEIGHT || Grid[BlockPos.X + BlockPos.Y * GRID_WIDTH] != BlockType::EMPTY)
+                {            
+                    WritePiece(Position, RotationSteps, Type, Type);
+                    return;
+                }
+            }
+
+            RotationSteps++;
+            WritePiece(Position, RotationSteps, Type, Type);
+        }
+    }
+
+    void SplashScreenAnimation(STL::Framebuffer* Buffer)
+    {
+        static bool DrawText = true;
+
+        if (AnimationCounter <= 1)
+        {
+            DrawGridOutline(Buffer);
+
+            DrawGrid(Buffer); 
+            DrawText = true;
+        }
+        else if (AnimationCounter % 100 == 0)
+        {
+            DrawText = !DrawText;            
+        }
+
+        if (DrawText)
+        {
+            const uint8_t Scale = 3;
+            const uint8_t TextWidth = 8 * Scale;
+            STL::Point TextPos = STL::Point(Buffer->Width / 2 - (TextWidth * 11) / 2, Buffer->Height - Buffer->Height / 3);
+
+            Buffer->Print("PRESS ENTER", TextPos, Scale, GRID_OUTLINE_COLOR, STL::ARGB(0)); 
+        }
+        else
+        {
+            DrawGrid(Buffer);                   
+        }
+
+        const uint8_t Scale = 5;
+        const uint8_t TextWidth = 8 * Scale;
+        STL::Point TitlePos = STL::Point(Buffer->Width / 2 - TextWidth * (6 / 2), Buffer->Height / 5);
+
+        Buffer->PutChar('T', TitlePos + STL::Point(TextWidth * 0, 0), Scale, RED_COLOR, STL::ARGB(0)); 
+        Buffer->PutChar('E', TitlePos + STL::Point(TextWidth * 1, 0), Scale, ORANGE_COLOR, STL::ARGB(0)); 
+        Buffer->PutChar('T', TitlePos + STL::Point(TextWidth * 2, 0), Scale, YELLOW_COLOR, STL::ARGB(0)); 
+        Buffer->PutChar('R', TitlePos + STL::Point(TextWidth * 3, 0), Scale, GREEN_COLOR, STL::ARGB(0)); 
+        Buffer->PutChar('I', TitlePos + STL::Point(TextWidth * 4, 0), Scale, LIGHT_BLUE_COLOR, STL::ARGB(0)); 
+        Buffer->PutChar('S', TitlePos + STL::Point(TextWidth * 5, 0), Scale, DARK_BLUE_COLOR, STL::ARGB(0)); 
     }
 
     STL::PROR Procedure(STL::PROM Message, STL::PROI Input)
@@ -299,26 +448,46 @@ namespace Tetris
             CurrentPiece::Type = BlockType::EMPTY;
 
             ClearGrid();
+
+            StartAnimation(SplashScreenAnimation);
         }
         break;
         case STL::PROM::DRAW:
         {
-            STL::Framebuffer* Buffer = (STL::Framebuffer*)Input;
-        
-            DrawGridOutline(Buffer);
+            STL::Framebuffer* Buffer = (STL::Framebuffer*)Input;           
+            
+            if (CurrentAnimation != nullptr)
+            {
+                CurrentAnimation(Buffer);
+                AnimationCounter++;
 
-            DrawGrid(Buffer);
+                if (CurrentAnimation == nullptr)
+                {
+                    return STL::PROR::DRAW;
+                }
+            }
+            else
+            {
+                DrawGrid(Buffer);
+            }   
         }
         break;        
         case STL::PROM::TICK:
         {   
             uint64_t CurrentTick = *(uint64_t*)Input;
 
-            NewPieceSeed += CurrentTick * 5231;
+            NewPieceSeed = NewPieceSeed * 1103515245 + 12345;
 
-            if (CurrentTick % CurrentFallRate == 0)
+            if (CurrentAnimation != nullptr)
+            {
+                return STL::PROR::DRAW;
+            }
+            else if (CurrentTick % CurrentFallRate == 0)
             {   
-                CurrentPiece::Move(STL::Point(0, 1));
+                if (!CurrentPiece::Move(STL::Point(0, 1)))
+                {
+                    CurrentPiece::Generate();
+                }
                 return STL::PROR::DRAW;
             }
         }
@@ -327,7 +496,46 @@ namespace Tetris
         {
             uint8_t Key = *(uint8_t*)Input;
 
-            CurrentPiece::Generate();
+            if (CurrentAnimation != nullptr)
+            {
+                if (Key == ENTER)
+                {
+                    StartAnimation(nullptr);
+                }
+            }
+
+            switch (Key)
+            {
+            case 's':
+            {
+                if (!CurrentPiece::Move(STL::Point(0, 1)))
+                {
+                    CurrentPiece::Generate();
+                }
+            }
+            break;
+            case 'a':
+            {
+                if (!CurrentPiece::Move(STL::Point(-1, 0)))
+                {
+                    //CurrentPiece::Generate();
+                }
+            }
+            break;
+            case 'd':
+            {
+                if (!CurrentPiece::Move(STL::Point(1, 0)))
+                {
+                    //CurrentPiece::Generate();
+                }
+            }
+            break;            
+            case 'r':
+            {
+                CurrentPiece::Rotate();
+            }
+            break;            
+            }
 
             return STL::PROR::DRAW;
         }
