@@ -6,6 +6,8 @@
 
 namespace STL
 {
+    uint32_t Rand();
+
     uint32_t GetDigit(uint32_t Number, uint32_t Digit);
 
     uint32_t GetDigitAmount(uint32_t Number);
