@@ -19,8 +19,5 @@ If your insane enough to try and run on it real hardware simply flash the .img f
 ## Next steps 
 
 Fix shutdown general protection fault.  
-Add more GUI objects?  
 Write more comments.  
 Create own stack in the kernel.  
-Implement "taskbar/dock".  
-Implement Tetris.  
