@@ -6,6 +6,7 @@
 #include "STL/System/System.h"
 #include "STL/GUI/Button.h"
 #include "STL/GUI/Label.h"
+#include "STL/Math/Math.h"
 
 #define BLOCK_SIZE 30
 #define GRID_WIDTH 10
@@ -43,6 +44,8 @@
 #define RED_SHADOW STL::ARGB(255, 181, 0, 0)
 #define RED_HIGHLIGHT STL::ARGB(255, 255, 181, 180)
 
+#define WHITE_COLOR STL::ARGB(255)
+
 #define PIECE_BLOCK_COUNT 4
 
 #define START_FALL_RATE 100
@@ -65,11 +68,11 @@ namespace Tetris
     BlockType Grid[GRID_WIDTH * GRID_HEIGHT];
 
     uint64_t CurrentFallRate = START_FALL_RATE;
-
-    uint64_t NewPieceSeed = 1234;
     
     void(*CurrentAnimation)(STL::Framebuffer*);
     uint64_t AnimationCounter = 0;
+
+    void Reset();
 
     inline void StartAnimation(void(*Animation)(STL::Framebuffer*))
     {
@@ -311,81 +314,95 @@ namespace Tetris
         }
     }
 
-    namespace CurrentPiece
+    void GameOverAnimation(STL::Framebuffer* Buffer)
     {
-        STL::Point Position;
-        BlockType Type;
-        uint8_t RotationSteps = 0;
+        static bool DrawText = true;
 
-        void Generate()
-        {            
-            //WritePiece(Position, Type, BlockType::EMPTY);
+        if (AnimationCounter <= 1)
+        {
+            DrawGridOutline(Buffer);
+            
+            Reset();
 
-            RotationSteps = 0;
-            Position = STL::Point(GRID_WIDTH / 2, 0);
-            Type = (BlockType)(NewPieceSeed % 7 + 2);
-
-            WritePiece(Position, RotationSteps, Type, Type);
+            DrawGrid(Buffer); 
+            DrawText = true;
+        }
+        else if (AnimationCounter % 35 == 0)
+        {
+            DrawText = !DrawText;            
         }
 
-        bool Move(STL::Point Offset)
-        {            
-            if (Type == BlockType::EMPTY)
-            {
-                Generate();
-            }
+        if (DrawText)
+        {
+            const uint8_t Scale = 3;
+            const uint8_t TextWidth = 8 * Scale;
+            STL::Point TextPos = STL::Point(Buffer->Width / 2 - (TextWidth * 11) / 2, Buffer->Height - Buffer->Height / 3);
 
-            WritePiece(Position, RotationSteps, Type, BlockType::EMPTY);
+            Buffer->Print("PRESS ENTER", TextPos, Scale, GRID_OUTLINE_COLOR, STL::ARGB(0)); 
+        }
+        else
+        {
+            DrawGrid(Buffer);                   
+        }
 
-            STL::Point NewPos = Position + Offset;
+        const uint8_t Scale = 4;
+        const uint8_t TextWidth = 8 * Scale;
+        STL::Point TextPos = STL::Point(Buffer->Width / 2 - TextWidth * (8 / 2), Buffer->Height / 5);
 
-            const STL::Point* Shape = GetShape(Type, RotationSteps);
-            if (Shape == nullptr)
+        Buffer->PutChar('G', TextPos + STL::Point(TextWidth * 0, 0), Scale, RED_COLOR, STL::ARGB(0)); 
+        Buffer->PutChar('A', TextPos + STL::Point(TextWidth * 1, 0), Scale, ORANGE_COLOR, STL::ARGB(0)); 
+        Buffer->PutChar('M', TextPos + STL::Point(TextWidth * 2, 0), Scale, YELLOW_COLOR, STL::ARGB(0)); 
+        Buffer->PutChar('E', TextPos + STL::Point(TextWidth * 3, 0), Scale, GREEN_COLOR, STL::ARGB(0)); 
+        Buffer->PutChar('O', TextPos + STL::Point(TextWidth * 4, 0), Scale, LIGHT_BLUE_COLOR, STL::ARGB(0)); 
+        Buffer->PutChar('V', TextPos + STL::Point(TextWidth * 5, 0), Scale, DARK_BLUE_COLOR, STL::ARGB(0)); 
+        Buffer->PutChar('E', TextPos + STL::Point(TextWidth * 6, 0), Scale, PURPLE_COLOR, STL::ARGB(0)); 
+        Buffer->PutChar('R', TextPos + STL::Point(TextWidth * 7, 0), Scale, RED_COLOR, STL::ARGB(0)); 
+
+    }
+
+    void LineClearAnimation(STL::Framebuffer* Buffer)
+    {
+        const uint8_t AnimationSpeed = 2;
+
+        bool LineFound = false;
+
+        for (int y = 0; y < GRID_HEIGHT; y++)
+        {
+            bool LineFull = true;
+            for (int x = 0; x < GRID_WIDTH; x++)
             {
-                return false;
-            }
-            for (uint32_t i = 0; i < 4; i++)
-            {
-                STL::Point BlockPos = NewPos + Shape[i];
-                if (BlockPos.X < 0 || BlockPos.X >= GRID_WIDTH || BlockPos.Y < 0 || BlockPos.Y >= GRID_HEIGHT || Grid[BlockPos.X + BlockPos.Y * GRID_WIDTH] != BlockType::EMPTY)
-                {            
-                    WritePiece(Position, RotationSteps, Type, Type);
-                    return false;
+                if (Grid[x + y * GRID_WIDTH] == BlockType::EMPTY)
+                {
+                    LineFull = false;
+                    break;
                 }
             }
 
-            Position = NewPos;
-            WritePiece(Position, RotationSteps, Type, Type);
+            if (LineFull)
+            {                          
+                LineFound = true;
+                uint8_t Left = 5 - (AnimationCounter / AnimationSpeed);
+                uint8_t Right = 4 + (AnimationCounter / AnimationSpeed);
 
-            return true;
-        }
+                DrawBlock(Buffer, STL::Point(Left, y), STL::ARGB(0), STL::ARGB(0), STL::ARGB(0));
+                DrawBlock(Buffer, STL::Point(Right, y), STL::ARGB(0), STL::ARGB(0), STL::ARGB(0));
 
-        void Rotate()
-        {                       
-            if (Type == BlockType::EMPTY)
-            {
-                Generate();
-            }
-
-            WritePiece(Position, RotationSteps, Type, BlockType::EMPTY);
-
-            const STL::Point* NewShape = GetShape(Type, RotationSteps + 1);
-            if (NewShape == nullptr)
-            {
-                return;
-            }
-            for (uint32_t i = 0; i < 4; i++)
-            {
-                STL::Point BlockPos = Position + NewShape[i];
-                if (BlockPos.X < 0 || BlockPos.X >= GRID_WIDTH || BlockPos.Y < 0 || BlockPos.Y >= GRID_HEIGHT || Grid[BlockPos.X + BlockPos.Y * GRID_WIDTH] != BlockType::EMPTY)
-                {            
-                    WritePiece(Position, RotationSteps, Type, Type);
-                    return;
+                if (Left == 0)
+                {
+                    for (int y2 = y; y2 >= 1; y2--)
+                    {
+                        for (int x = 0; x < GRID_WIDTH; x++)
+                        {
+                            Grid[x + y2 * GRID_WIDTH] = Grid[x + (y2 - 1) * GRID_WIDTH];
+                        }
+                    }
                 }
             }
+        }
 
-            RotationSteps++;
-            WritePiece(Position, RotationSteps, Type, Type);
+        if (!LineFound)
+        {                    
+            StartAnimation(nullptr);
         }
     }
 
@@ -400,7 +417,7 @@ namespace Tetris
             DrawGrid(Buffer); 
             DrawText = true;
         }
-        else if (AnimationCounter % 100 == 0)
+        else if (AnimationCounter % 35 == 0)
         {
             DrawText = !DrawText;            
         }
@@ -430,6 +447,141 @@ namespace Tetris
         Buffer->PutChar('S', TitlePos + STL::Point(TextWidth * 5, 0), Scale, DARK_BLUE_COLOR, STL::ARGB(0)); 
     }
 
+    namespace CurrentPiece
+    {
+        STL::Point Position;
+        BlockType Type;
+        uint8_t RotationSteps = 0;
+
+        void Draw(STL::Framebuffer* Buffer)
+        {
+            const STL::Point* Shape = GetShape(Type, RotationSteps);
+            if (Shape == nullptr)
+            {
+                return;
+            }
+            for (uint32_t i = 0; i < 4; i++)
+            {
+                STL::Point BlockPos = Position + Shape[i];
+                DrawBlock(Buffer, BlockPos, Type);
+            }
+        }
+
+        void Write()
+        {
+            WritePiece(Position, RotationSteps, Type, Type);
+        }
+
+        void Generate()
+        {            
+            RotationSteps = 0;
+            Position = STL::Point(GRID_WIDTH / 2, 0);
+            Type = (BlockType)(STL::Rand() % 7 + 2);            
+            
+            const STL::Point* Shape = GetShape(Type, RotationSteps);
+            if (Shape == nullptr)
+            {
+                return;
+            }
+            for (uint32_t i = 0; i < 4; i++)
+            {
+                STL::Point BlockPos = Position + Shape[i];
+                if (Grid[BlockPos.X + BlockPos.Y * GRID_WIDTH] != BlockType::EMPTY)
+                {            
+                    StartAnimation(GameOverAnimation);
+                }
+            }
+        }
+
+        bool Move(STL::Point Offset)
+        {            
+            if (Type == BlockType::EMPTY)
+            {
+                Generate();
+            }
+
+            STL::Point NewPos = Position + Offset;
+
+            const STL::Point* Shape = GetShape(Type, RotationSteps);
+            if (Shape == nullptr)
+            {
+                return false;
+            }
+            for (uint32_t i = 0; i < 4; i++)
+            {
+                STL::Point BlockPos = NewPos + Shape[i];
+                if (BlockPos.X < 0 || BlockPos.X >= GRID_WIDTH || BlockPos.Y < 0 || BlockPos.Y >= GRID_HEIGHT || Grid[BlockPos.X + BlockPos.Y * GRID_WIDTH] != BlockType::EMPTY)
+                {            
+                    return false;
+                }
+            }
+
+            Position = NewPos;
+
+            return true;
+        }
+
+        void Rotate()
+        {                       
+            if (Type == BlockType::EMPTY)
+            {
+                Generate();
+            }
+
+            const STL::Point* NewShape = GetShape(Type, RotationSteps + 1);
+            if (NewShape == nullptr)
+            {
+                return;
+            }
+            for (uint32_t i = 0; i < 4; i++)
+            {
+                STL::Point BlockPos = Position + NewShape[i];
+                if (BlockPos.X < 0 || BlockPos.X >= GRID_WIDTH || BlockPos.Y < 0 || BlockPos.Y >= GRID_HEIGHT || Grid[BlockPos.X + BlockPos.Y * GRID_WIDTH] != BlockType::EMPTY)
+                {            
+                    return;
+                }
+            }
+
+            RotationSteps++;
+        }
+
+        void DrawOutline(STL::Framebuffer* Buffer)
+        {
+            const STL::Point* Shape = GetShape(Type, RotationSteps);
+            if (Shape == nullptr || Type == BlockType::EMPTY)
+            {
+                return;
+            }
+
+            int8_t Offset = 0;
+
+            while (true)
+            {            
+                for (uint32_t i = 0; i < 4; i++)
+                {
+                    STL::Point BlockPos = Position + Shape[i] + STL::Point(0, Offset);
+                    if (BlockPos.Y >= GRID_HEIGHT || Grid[BlockPos.X + BlockPos.Y * GRID_WIDTH] != BlockType::EMPTY)
+                    {            
+                        Offset--;
+                        for (uint32_t j = 0; j < 4; j++)
+                        {                    
+                            STL::Point ScreenPos = GetScreenPosition(Position + Shape[j] + STL::Point(0, Offset));
+                            Buffer->DrawRectEdge(ScreenPos + RAISED_WIDTH, ScreenPos + BLOCK_SIZE - RAISED_WIDTH, WHITE_COLOR, WHITE_COLOR);
+                        }
+                        return;
+                    }
+                }
+                Offset++;     
+            }
+        }
+    }
+
+    void Reset()
+    {
+        CurrentPiece::Type = BlockType::EMPTY;
+        ClearGrid();
+    }
+
     STL::PROR Procedure(STL::PROM Message, STL::PROI Input)
     {
         switch(Message)
@@ -445,7 +597,7 @@ namespace Tetris
             Info->Height = (GRID_HEIGHT + 2) * BLOCK_SIZE;
             Info->Title = "Tetris";
 
-            CurrentPiece::Type = BlockType::EMPTY;
+            Reset();
 
             ClearGrid();
 
@@ -469,14 +621,14 @@ namespace Tetris
             else
             {
                 DrawGrid(Buffer);
+                CurrentPiece::Draw(Buffer);
+                CurrentPiece::DrawOutline(Buffer);
             }   
         }
         break;        
         case STL::PROM::TICK:
         {   
             uint64_t CurrentTick = *(uint64_t*)Input;
-
-            NewPieceSeed = NewPieceSeed * 1103515245 + 12345;
 
             if (CurrentAnimation != nullptr)
             {
@@ -486,6 +638,8 @@ namespace Tetris
             {   
                 if (!CurrentPiece::Move(STL::Point(0, 1)))
                 {
+                    CurrentPiece::Write();            
+                    StartAnimation(LineClearAnimation);
                     CurrentPiece::Generate();
                 }
                 return STL::PROR::DRAW;
@@ -509,7 +663,9 @@ namespace Tetris
             case 's':
             {
                 if (!CurrentPiece::Move(STL::Point(0, 1)))
-                {
+                {                    
+                    CurrentPiece::Write();                    
+                    StartAnimation(LineClearAnimation);
                     CurrentPiece::Generate();
                 }
             }
