@@ -2,6 +2,13 @@
 
 namespace STL
 {
+    uint32_t Rand()
+    {
+        static uint64_t Seed = 1103515245;
+        Seed = Seed * 1103515245 + 12345;
+        return (uint32_t)((Seed / 65536) >> 32);
+    }
+
     uint32_t GetDigit(uint32_t Number, uint32_t Digit)
     {
         uint32_t Y = IntPow(10, Digit);
