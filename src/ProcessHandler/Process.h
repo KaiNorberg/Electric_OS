@@ -55,7 +55,7 @@ public:
 
     void Draw();
 
-    void Render();
+    void Render(STL::Framebuffer* Buffer);
 
     void SendMessage(STL::PROM Message, STL::PROI Input = nullptr);
     

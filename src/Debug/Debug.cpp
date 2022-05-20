@@ -45,8 +45,7 @@ namespace Debug
         uint8_t Scale = 3;
         STL::Point StartPoint = STL::Point(100, 50);
 
-        Renderer::DrawMouse = false;
-        Renderer::Backbuffer.Clear();
+        Renderer::Clear();
 
         Renderer::Background = STL::ARGB(0);
         Renderer::Foreground = STL::ARGB(255);
@@ -115,8 +114,6 @@ namespace Debug
 
         Renderer::CursorPos = STL::Point(StartPoint.X, StartPoint.Y + 16 * 18 * Scale);
         Renderer::Print("Please manually reboot your machine.", Scale);
-
-	    Renderer::SwapBuffers();
 
         while (true)
         {

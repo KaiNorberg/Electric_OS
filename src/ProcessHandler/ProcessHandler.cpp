@@ -129,7 +129,7 @@ namespace ProcessHandler
         Mouse::MiddleHeld = false;
         Mouse::RightHeld = false;
 
-        Renderer::RedrawMouse();
+        Compositor::RedrawMouse();
     }   
 
     void PITInterupt()

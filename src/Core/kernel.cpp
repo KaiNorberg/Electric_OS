@@ -25,7 +25,7 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 	PageTableManager::Init(BootInfo->ScreenBuffer);
 	Heap::Init();
 
-	//Renderer setup.
+	//Font setup.
 	STL::SetFonts(BootInfo->PSFFonts, BootInfo->FontAmount);
 	Renderer::Init(BootInfo->ScreenBuffer);
 
@@ -39,6 +39,8 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 	PCI::Init();
 	AHCI::Init();
 
+	//Process start.
+	Compositor::Init(BootInfo->ScreenBuffer);
 	ProcessHandler::Loop();
 
 	while(true)

@@ -21,6 +21,7 @@
 #include "Memory/Paging/PageAllocator.h"
 #include "Memory/Heap.h"
 #include "ProcessHandler/ProcessHandler.h"
+#include "ProcessHandler/Compositor.h"
 #include "ACPI/ACPI.h"
 #include "PCI/PCI.h"
 #include "UEFI/UEFI.h"
@@ -57,7 +58,7 @@ namespace System
 
         SettableVar SettableVars[] =
         {
-            SettableVar("drawmouse", &Renderer::DrawMouse, sizeof(Renderer::DrawMouse)),
+            SettableVar("drawmouse", &Compositor::DrawMouse, sizeof(Compositor::DrawMouse)),
             SettableVar("font", &STL::SelectedFont, sizeof(STL::SelectedFont))
         };
 
@@ -450,25 +451,27 @@ namespace System
 
     const char* CommandShutdown(const char* Command)
     {
-        Renderer::Backbuffer.Fill(STL::ARGB(255, 60, 120, 180));
+        STL::Point ScreenSize = Renderer::GetScreenSize();
 
-        Renderer::Backbuffer.DrawRaisedRect(STL::Point(Renderer::Backbuffer.Width / 2 - 350, Renderer::Backbuffer.Height / 2 - 250), 
-        STL::Point(Renderer::Backbuffer.Width / 2 + 350, Renderer::Backbuffer.Height / 2 + 250), STL::ARGB(255, 200, 200, 200));
- 
-        Renderer::Background = STL::ARGB(STL::ARGB(255, 200, 200, 200));
-        Renderer::Foreground = STL::ARGB(STL::ARGB(255, 0, 0, 0));
+        Renderer::Clear();
 
-        Renderer::CursorPos = STL::Point(Renderer::Backbuffer.Width / 2 - 14 * 8, Renderer::Backbuffer.Height / 2 - 100);
-        Renderer::Print("Please wait...", 2);
+        Renderer::Background = STL::ARGB(0);
+        Renderer::Foreground = STL::ARGB(255, 255, 0, 0);
 
-        Renderer::CursorPos = STL::Point(Renderer::Backbuffer.Width / 2 - 41 * 8, Renderer::Backbuffer.Height / 2 + 50);
-        Renderer::Print("It is now safe to turn off your computer.", 2);
-
-        Renderer::SwapBuffers();
+        Renderer::CursorPos = STL::Point(ScreenSize.X / 2 - (14 * 8 * 3) / 2, ScreenSize.Y / 3);
+        Renderer::Print("Please wait...", 3);
 
         asm("CLI");
 
-        UEFI::GetRT()->ResetSystem(EfiResetType::Shutdown, 0, 0, nullptr);
+        //UEFI::GetRT()->ResetSystem(EfiResetType::Shutdown, 0, 0, nullptr);
+
+        Renderer::Clear();
+
+        Renderer::Background = STL::ARGB(0);
+        Renderer::Foreground = STL::ARGB(255);
+
+        Renderer::CursorPos = STL::Point(ScreenSize.X / 2 - (40 * 8 * 3) / 2, ScreenSize.Y / 3);
+        Renderer::Print("It is now safe to turn off your computer", 3);
 
         while (true)
         {
@@ -479,26 +482,28 @@ namespace System
     }  
 
     const char* CommandRestart(const char* Command)
-    {
-        Renderer::Backbuffer.Fill(STL::ARGB(255, 60, 120, 180));
+    {       
+        STL::Point ScreenSize = Renderer::GetScreenSize();
 
-        Renderer::Backbuffer.DrawRaisedRect(STL::Point(Renderer::Backbuffer.Width / 2 - 350, Renderer::Backbuffer.Height / 2 - 250), 
-        STL::Point(Renderer::Backbuffer.Width / 2 + 350, Renderer::Backbuffer.Height / 2 + 250), STL::ARGB(255, 200, 200, 200));
- 
-        Renderer::Background = STL::ARGB(STL::ARGB(255, 200, 200, 200));
-        Renderer::Foreground = STL::ARGB(STL::ARGB(255, 0, 0, 0));
+        Renderer::Clear();
 
-        Renderer::CursorPos = STL::Point(Renderer::Backbuffer.Width / 2 - 14 * 8, Renderer::Backbuffer.Height / 2 - 100);
-        Renderer::Print("Please wait...", 2);
+        Renderer::Background = STL::ARGB(0);
+        Renderer::Foreground = STL::ARGB(255, 255, 0, 0);
 
-        Renderer::CursorPos = STL::Point(Renderer::Backbuffer.Width / 2 - 41 * 8, Renderer::Backbuffer.Height / 2 + 50);
-        Renderer::Print("It is now safe to turn off your computer.", 2);
-
-        Renderer::SwapBuffers();
+        Renderer::CursorPos = STL::Point(ScreenSize.X / 2 - (14 * 8 * 3) / 2, ScreenSize.Y / 3);
+        Renderer::Print("Please wait...", 3);
         
         asm("CLI");
 
         UEFI::GetRT()->ResetSystem(EfiResetType::Cold, 0, 0, nullptr);
+
+        Renderer::Clear();
+
+        Renderer::Background = STL::ARGB(0);
+        Renderer::Foreground = STL::ARGB(255);
+
+        Renderer::CursorPos = STL::Point(ScreenSize.X / 2 - (40 * 8 * 3) / 2, ScreenSize.Y / 3);
+        Renderer::Print("It is now safe to turn off your computer", 3);
 
         while (true)
         {

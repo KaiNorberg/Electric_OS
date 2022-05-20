@@ -14,6 +14,7 @@
 #include "Debug/Debug.h"
 #include "System/System.h"
 #include "ProcessHandler/ProcessHandler.h"
+#include "ProcessHandler/Compositor.h"
 #include "ACPI/ACPI.h"
 #include "AHCI/AHCI.h"
 #include "PCI/PCI.h"

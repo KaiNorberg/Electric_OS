@@ -42,20 +42,23 @@ void Process::SetPos(STL::Point NewPos)
     {
     case STL::PROT::WINDOWED:
     {
-        this->Pos.X = STL::Clamp(this->Pos.X, (int32_t)RAISED_WIDTH, (int32_t)(Renderer::Backbuffer.Width - this->FrameBuffer.Width - RAISED_WIDTH));
-        this->Pos.Y = STL::Clamp(this->Pos.Y, (int32_t)RAISED_WIDTH + FRAME_OFFSET.Y, (int32_t)(Renderer::Backbuffer.Height - this->FrameBuffer.Height - RAISED_WIDTH));        
+        STL::Point ScreenSize = Renderer::GetScreenSize();
+        this->Pos.X = STL::Clamp(this->Pos.X, (int32_t)RAISED_WIDTH, (int32_t)(ScreenSize.X - this->FrameBuffer.Width - RAISED_WIDTH));
+        this->Pos.Y = STL::Clamp(this->Pos.Y, (int32_t)RAISED_WIDTH + FRAME_OFFSET.Y, (int32_t)(ScreenSize.Y - this->FrameBuffer.Height - RAISED_WIDTH));        
     }
     break;    
     case STL::PROT::MINIMIZED:
-    {
-        this->Pos.X = STL::Clamp(this->Pos.X, (int32_t)RAISED_WIDTH, (int32_t)(Renderer::Backbuffer.Width - RAISED_WIDTH));
-        this->Pos.Y = STL::Clamp(this->Pos.Y, (int32_t)RAISED_WIDTH + FRAME_OFFSET.Y, (int32_t)(Renderer::Backbuffer.Height - RAISED_WIDTH));        
+    {        
+        STL::Point ScreenSize = Renderer::GetScreenSize();
+        this->Pos.X = STL::Clamp(this->Pos.X, (int32_t)RAISED_WIDTH, (int32_t)(ScreenSize.X - RAISED_WIDTH));
+        this->Pos.Y = STL::Clamp(this->Pos.Y, (int32_t)RAISED_WIDTH + FRAME_OFFSET.Y, (int32_t)(ScreenSize.Y - RAISED_WIDTH));        
     }
     break;
     default:
-    {
-        this->Pos.X = STL::Clamp(this->Pos.X, (int32_t)0, (int32_t)(Renderer::Backbuffer.Width - this->FrameBuffer.Width));
-        this->Pos.Y = STL::Clamp(this->Pos.Y, (int32_t)0, (int32_t)(Renderer::Backbuffer.Height - this->FrameBuffer.Height));        
+    {        
+        STL::Point ScreenSize = Renderer::GetScreenSize();
+        this->Pos.X = STL::Clamp(this->Pos.X, (int32_t)0, (int32_t)(ScreenSize.X - this->FrameBuffer.Width));
+        this->Pos.Y = STL::Clamp(this->Pos.Y, (int32_t)0, (int32_t)(ScreenSize.Y - this->FrameBuffer.Height));        
     }
     break;
     }
@@ -178,7 +181,7 @@ void Process::Draw()
     this->SendMessage(STL::PROM::DRAW, &this->FrameBuffer);
 }
 
-void Process::Render()
+void Process::Render(STL::Framebuffer* Buffer)
 {
     switch (this->Type)
     {    
@@ -201,24 +204,24 @@ void Process::Render()
         STL::Point Size = this->GetSize();
 
         //Draw topbar
-        Renderer::Backbuffer.DrawRaisedRectEdge(this->Pos - FRAME_OFFSET, this->Pos + Size);
-        Renderer::Backbuffer.DrawRect(this->Pos - FRAME_OFFSET, this->Pos + STL::Point(Size.X, 0), Background);
+        Buffer->DrawRaisedRectEdge(this->Pos - FRAME_OFFSET, this->Pos + Size);
+        Buffer->DrawRect(this->Pos - FRAME_OFFSET, this->Pos + STL::Point(Size.X, 0), Background);
 
         //Draw close button                    
         STL::Point CloseButtonPos = this->GetCloseButtonPos();                    
-        Renderer::Backbuffer.DrawRect(CloseButtonPos, CloseButtonPos + CLOSE_BUTTON_SIZE, STL::ARGB(200));
-        Renderer::Backbuffer.PutChar('X', CloseButtonPos + STL::Point(RAISED_WIDTH, 2), 1, STL::ARGB(0), STL::ARGB(200));
-        Renderer::Backbuffer.DrawRaisedRectEdge(CloseButtonPos, CloseButtonPos + CLOSE_BUTTON_SIZE);
+        Buffer->DrawRect(CloseButtonPos, CloseButtonPos + CLOSE_BUTTON_SIZE, STL::ARGB(200));
+        Buffer->PutChar('X', CloseButtonPos + STL::Point(RAISED_WIDTH, 2), 1, STL::ARGB(0), STL::ARGB(200));
+        Buffer->DrawRaisedRectEdge(CloseButtonPos, CloseButtonPos + CLOSE_BUTTON_SIZE);
 
         //Draw minimize button                    
         STL::Point MinimizeButtonPos = this->GetMinimizeButtonPos();
-        Renderer::Backbuffer.DrawRect(MinimizeButtonPos, MinimizeButtonPos + MINIMIZE_BUTTON_SIZE, STL::ARGB(200));
-        Renderer::Backbuffer.PutChar('_', MinimizeButtonPos + STL::Point(RAISED_WIDTH, 0), 1, STL::ARGB(0), STL::ARGB(200));
-        Renderer::Backbuffer.DrawRaisedRectEdge(MinimizeButtonPos, MinimizeButtonPos + MINIMIZE_BUTTON_SIZE);
+        Buffer->DrawRect(MinimizeButtonPos, MinimizeButtonPos + MINIMIZE_BUTTON_SIZE, STL::ARGB(200));
+        Buffer->PutChar('_', MinimizeButtonPos + STL::Point(RAISED_WIDTH, 0), 1, STL::ARGB(0), STL::ARGB(200));
+        Buffer->DrawRaisedRectEdge(MinimizeButtonPos, MinimizeButtonPos + MINIMIZE_BUTTON_SIZE);
 
         //Print Title
         STL::Point TextPos = this->Pos + STL::Point(RAISED_WIDTH * 2, -FRAME_OFFSET.Y / 2 - 8);
-        Renderer::Backbuffer.Print(this->Title.cstr(), TextPos, 1, Foreground, Background); 
+        Buffer->Print(this->Title.cstr(), TextPos, 1, Foreground, Background); 
 
         if (this->Type == STL::PROT::MINIMIZED)
         {
@@ -228,21 +231,19 @@ void Process::Render()
     //break; //Fall trough
     default:
     {
-        if (this->Pos.X < 0 || this->Pos.X + this->FrameBuffer.Width > Renderer::Backbuffer.Width || this->Pos.Y < 0 || this->Pos.Y + this->FrameBuffer.Height > Renderer::Backbuffer.Height)
+        if (this->Pos.X < 0 || this->Pos.X + this->FrameBuffer.Width > Buffer->Width || this->Pos.Y < 0 || this->Pos.Y + this->FrameBuffer.Height > Buffer->Height)
         {
             return;
         }
 
-        //Copy this->FrameBuffer to Renderer::Backbuffer
 
         void* Source = (uint8_t*)(this->FrameBuffer.Base);
-        void* Dest = (uint8_t*)(Renderer::Backbuffer.Base + this->Pos.X + Renderer::Backbuffer.PixelsPerScanline * this->Pos.Y);
-
+        void* Dest = (uint8_t*)(Buffer->Base + this->Pos.X + Buffer->PixelsPerScanline * this->Pos.Y);
         for (uint32_t y = 0; y < this->FrameBuffer.Height; y++)
         {             
             STL::CopyMemory(Source, Dest, this->FrameBuffer.PixelsPerScanline * 4);
             Source = (void*)((uint64_t)Source + this->FrameBuffer.PixelsPerScanline * 4);
-            Dest = (void*)((uint64_t)Dest + Renderer::Backbuffer.PixelsPerScanline * 4);   
+            Dest = (void*)((uint64_t)Dest + Buffer->PixelsPerScanline * 4);   
         }  
     }
     break;
@@ -283,9 +284,9 @@ Process::Process(STL::PROC Procedure)
     case STL::PROT::FULLSCREEN:
     {
         this->Pos = STL::Point(0, 0);
-        this->FrameBuffer.Height = Renderer::Backbuffer.Height;  
-        this->FrameBuffer.Width = Renderer::Backbuffer.Width;
-        this->FrameBuffer.PixelsPerScanline = Renderer::Backbuffer.Width + 1;
+        this->FrameBuffer.Height = Renderer::GetScreenSize().Y;  
+        this->FrameBuffer.Width = Renderer::GetScreenSize().X;
+        this->FrameBuffer.PixelsPerScanline = Renderer::GetScreenSize().X + 1;
         this->FrameBuffer.Size = (this->FrameBuffer.Height + 1) * this->FrameBuffer.PixelsPerScanline * 4;
         this->FrameBuffer.Base = (STL::ARGB*)Heap::Allocate(this->FrameBuffer.Size);
     
