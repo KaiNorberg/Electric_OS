@@ -101,42 +101,6 @@ EFI_FILE* LoadFile(EFI_FILE* Directory, CHAR16* Path)
 	return LoadedFile;
 }
 
-Framebuffer GetFramebuffer()
-{
-	EFI_GUID GOP_GUID = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
-	EFI_GRAPHICS_OUTPUT_PROTOCOL* GOP;
-	EFI_STATUS Status = uefi_call_wrapper(BS->LocateProtocol, 3, &GOP_GUID, NULL, (void**)&GOP);
-
-	Print(L"Initializing GOP..\n\r");
-	if (EFI_ERROR(Status))
-	{
-		Print(L"ERROR: GOP Failed!\n\r");
-		
-		while (1)
-		{
-			__asm__("HLT");
-		}
-	}
-
-	Framebuffer NewBuffer;
-
-	NewBuffer.Base = (unsigned int*)GOP->Mode->FrameBufferBase;
-	NewBuffer.Size = GOP->Mode->FrameBufferSize;
-	NewBuffer.Width = GOP->Mode->Info->HorizontalResolution;
-	NewBuffer.Height = GOP->Mode->Info->VerticalResolution;
-	NewBuffer.PixelsPerScanline = GOP->Mode->Info->PixelsPerScanLine;
-
-	Print(L"GOP BUFFER INFO\n\r");
-	Print(L"Base: 0x%x\n\r", NewBuffer.Base);
-	Print(L"Size: 0x%x\n\r", NewBuffer.Size);
-	Print(L"Width: %d\n\r", NewBuffer.Width);
-	Print(L"Height: %d\n\r", NewBuffer.Height);
-	Print(L"PixelsPerScanline: %d\n\r", NewBuffer.PixelsPerScanline);
-	Print(L"GOP BUFFER INFO END\n\r");
-
-	return NewBuffer;
-}
-
 PSF_FONT LoadPSFFont(EFI_FILE* Directory, CHAR16* Path)
 {
 	EFI_FILE* Font = LoadFile(Directory, Path);
@@ -173,11 +137,9 @@ PSF_FONT LoadPSFFont(EFI_FILE* Directory, CHAR16* Path)
 	}
 
 	void* GlyphBuffer;
-	{
-		Font->SetPosition(Font, sizeof(PSF_HEADER));
-		SystemTable->BootServices->AllocatePool(EfiLoaderData, GlyphBufferSize, (void**)&GlyphBuffer);
-		Font->Read(Font, &GlyphBufferSize, GlyphBuffer);
-	}
+	Font->SetPosition(Font, sizeof(PSF_HEADER));
+	SystemTable->BootServices->AllocatePool(EfiLoaderData, GlyphBufferSize, (void**)&GlyphBuffer);
+	Font->Read(Font, &GlyphBufferSize, GlyphBuffer);
 
 	PSF_FONT newFont;
 
@@ -190,30 +152,6 @@ PSF_FONT LoadPSFFont(EFI_FILE* Directory, CHAR16* Path)
 	Print(L"FONT INFO END\n\r");
 
 	return newFont;
-}
-
-EFI_MEMORY_MAP GetMemoryMap()
-{
-	Print(L"Retrieving EFI Memory Map...\n\r");
-
-	EFI_MEMORY_DESCRIPTOR* Base = NULL;
-	UINTN MapSize, MapKey;
-	UINTN DescriptorSize;
-	UINT32 DescriptorVersion;
-	{
-
-		SystemTable->BootServices->GetMemoryMap(&MapSize, Base, &MapKey, &DescriptorSize, &DescriptorVersion);
-		SystemTable->BootServices->AllocatePool(EfiLoaderData, MapSize, (void**)&Base);
-		SystemTable->BootServices->GetMemoryMap(&MapSize, Base, &MapKey, &DescriptorSize, &DescriptorVersion);
-	}
-
-	EFI_MEMORY_MAP NewMap;
-	NewMap.Base = Base;
-	NewMap.Size = MapSize;
-	NewMap.DescSize = DescriptorSize;
-	NewMap.Key = MapKey;
-
-	return NewMap;
 }
 
 Elf64_Ehdr LoadELFFile(EFI_FILE* Directory, CHAR16* Path)
@@ -250,13 +188,11 @@ Elf64_Ehdr LoadELFFile(EFI_FILE* Directory, CHAR16* Path)
 	}
 
 	Elf64_Phdr* phdrs;
-	{
-		File->SetPosition(File, Header.e_phoff);
+	File->SetPosition(File, Header.e_phoff);
+	UINTN size = Header.e_phnum * Header.e_phentsize;
+	SystemTable->BootServices->AllocatePool(EfiLoaderData, size, (void**)&phdrs);
+	File->Read(File, &size, phdrs);
 
-		UINTN size = Header.e_phnum * Header.e_phentsize;
-		SystemTable->BootServices->AllocatePool(EfiLoaderData, size, (void**)&phdrs);
-		File->Read(File, &size, phdrs);
-	}
 	for (Elf64_Phdr* phdr = phdrs; (char*)phdr < (char*)phdrs + Header.e_phnum * Header.e_phentsize; phdr = (Elf64_Phdr*)((char*)phdr + Header.e_phentsize))
 	{
 		switch (phdr->p_type)
@@ -276,6 +212,63 @@ Elf64_Ehdr LoadELFFile(EFI_FILE* Directory, CHAR16* Path)
 	}
 
 	return Header;
+}
+
+Framebuffer GetFramebuffer()
+{
+	EFI_GUID GOP_GUID = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
+	EFI_GRAPHICS_OUTPUT_PROTOCOL* GOP;
+	EFI_STATUS Status = uefi_call_wrapper(BS->LocateProtocol, 3, &GOP_GUID, NULL, (void**)&GOP);
+
+	Print(L"Initializing GOP..\n\r");
+	if (EFI_ERROR(Status))
+	{
+		Print(L"ERROR: GOP Failed!\n\r");
+		
+		while (1)
+		{
+			__asm__("HLT");
+		}
+	}
+
+	Framebuffer NewBuffer;
+
+	NewBuffer.Base = (unsigned int*)GOP->Mode->FrameBufferBase;
+	NewBuffer.Size = GOP->Mode->FrameBufferSize;
+	NewBuffer.Width = GOP->Mode->Info->HorizontalResolution;
+	NewBuffer.Height = GOP->Mode->Info->VerticalResolution;
+	NewBuffer.PixelsPerScanline = GOP->Mode->Info->PixelsPerScanLine;
+
+	Print(L"GOP BUFFER INFO\n\r");
+	Print(L"Base: 0x%x\n\r", NewBuffer.Base);
+	Print(L"Size: 0x%x\n\r", NewBuffer.Size);
+	Print(L"Width: %d\n\r", NewBuffer.Width);
+	Print(L"Height: %d\n\r", NewBuffer.Height);
+	Print(L"PixelsPerScanline: %d\n\r", NewBuffer.PixelsPerScanline);
+	Print(L"GOP BUFFER INFO END\n\r");
+
+	return NewBuffer;
+}
+
+EFI_MEMORY_MAP GetMemoryMap()
+{
+	Print(L"Retrieving EFI Memory Map...\n\r");
+
+	EFI_MEMORY_DESCRIPTOR* Base = NULL;
+	UINTN MapSize, MapKey;
+	UINTN DescriptorSize;
+	UINT32 DescriptorVersion;
+	SystemTable->BootServices->GetMemoryMap(&MapSize, Base, &MapKey, &DescriptorSize, &DescriptorVersion);
+	SystemTable->BootServices->AllocatePool(EfiLoaderData, MapSize, (void**)&Base);
+	SystemTable->BootServices->GetMemoryMap(&MapSize, Base, &MapKey, &DescriptorSize, &DescriptorVersion);
+
+	EFI_MEMORY_MAP NewMap;
+	NewMap.Base = Base;
+	NewMap.Size = MapSize;
+	NewMap.DescSize = DescriptorSize;
+	NewMap.Key = MapKey;
+
+	return NewMap;
 }
 
 void* GetRSDP()
@@ -313,14 +306,11 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 
 	PSF_FONT FontVGA = LoadPSFFont(FontsDir, L"zap-vga16.psf");
 	PSF_FONT FontLight = LoadPSFFont(FontsDir, L"zap-light16.psf");
-
 	PSF_FONT* Fonts[] = {&FontVGA, &FontLight};
 
 	Framebuffer newBuffer = GetFramebuffer();
 	EFI_MEMORY_MAP newMap = GetMemoryMap();
 	void* RSDP = GetRSDP();
-
-	void (*KernelMain)(BootInfo*) = ((__attribute__((sysv_abi)) void (*)(BootInfo*)) KernelELF.e_entry);
 
 	Print(L"Exiting boot services...\n\r");
 	SystemTable->BootServices->ExitBootServices(ImageHandle, newMap.Key);
@@ -332,6 +322,8 @@ EFI_STATUS efi_main(EFI_HANDLE In_ImageHandle, EFI_SYSTEM_TABLE* In_SystemTable)
 	bootInfo.MemoryMap = &newMap;
 	bootInfo.RSDP = RSDP;
 	bootInfo.RT = SystemTable->RuntimeServices;
+
+	void (*KernelMain)(BootInfo*) = ((__attribute__((sysv_abi)) void (*)(BootInfo*)) KernelELF.e_entry);
 
 	Print(L"Entering Kernel...\n\r");
 	KernelMain(&bootInfo);

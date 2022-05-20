@@ -43,6 +43,7 @@ extern "C" void KernelMain(BootLoaderInfo* BootInfo)
 	Compositor::Init(BootInfo->ScreenBuffer);
 	ProcessHandler::Loop();
 
+	//Catch to make sure control never returns to the bootloader.
 	while(true)
 	{
 		asm("HLT");
