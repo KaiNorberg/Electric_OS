@@ -18,6 +18,8 @@ If your insane enough to try and run on it real hardware simply flash the .img f
 
 ## Next steps 
 
+Implement grandfather system for processes.
+Implement startchild and startsibling commands.
 Fix shutdown general protection fault.  
 Write more comments.  
 Create own stack in the kernel.  
