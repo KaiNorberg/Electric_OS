@@ -1,4 +1,4 @@
-# Electric_OS  
+# Electric_OS [![License](https://img.shields.io/badge/licence-MIT-green)](https://github.com/Kaj9296/Electric_OS/LICENCE) 
   
 A simple operating system inspired by whetever will work.  
 
