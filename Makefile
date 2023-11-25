@@ -54,7 +54,7 @@ setup:
 
 buildimg:
 	dd if=/dev/zero of=$(BINDIR)/$(OSNAME).img bs=512 count=93750
-	sudo mformat -i $(BINDIR)/$(OSNAME).img -f 1440 ::
+	mkfs -t vfat $(BINDIR)/$(OSNAME).img
 	mmd -i $(BINDIR)/$(OSNAME).img ::/EFI
 	mmd -i $(BINDIR)/$(OSNAME).img ::/EFI/BOOT
 	mmd -i $(BINDIR)/$(OSNAME).img ::/KERNEL
