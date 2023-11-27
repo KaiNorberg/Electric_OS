@@ -2,7 +2,7 @@
   
 A simple operating system inspired by whetever will work.  
 
-OBS! This operating system is no longer being worked on as i have started work on a new operating system that can be found [here](https://github.com/Kaj9296/PatchworkOS).
+OBS! This operating system is no longer being worked on because i have started work on a new operating system that can be found [here](https://github.com/Kaj9296/PatchworkOS).
 
 # About  
 Boot Loader: GNU-EFI  
